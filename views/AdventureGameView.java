@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * You are asked to demo your visualization via a Zoom
  * recording. Place a link to your recording below.
  *
- * ZOOM LINK: <https://drive.google.com/file/d/1P4X0Z1zrX9-beCiuVGpRTXhAwRoVXvLI/view?usp=drive_link>
+ * ZOOM LINK: <>
  * PASSWORD: <PASSWORD HERE>
  */
 public class AdventureGameView {
@@ -176,6 +177,41 @@ public class AdventureGameView {
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
+
+
+
+    }
+    public void settingMenu(){
+        // Buttons
+        saveButton = new Button("Save");
+        saveButton.setId("Save");
+        customizeButton(saveButton, 100, 50);
+        makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
+        addSaveEvent();
+
+
+
+        loadButton = new Button("Load");
+        loadButton.setId("Load");
+        customizeButton(loadButton, 100, 50);
+        makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
+        addLoadEvent();
+
+        helpButton = new Button("Instructions");
+        helpButton.setId("Instructions");
+        customizeButton(helpButton, 200, 50);
+        makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
+        addInstructionEvent();
+
+        HBox topButtons = new HBox();
+        topButtons.getChildren().addAll(saveButton, helpButton, loadButton);
+        topButtons.setSpacing(10);
+        topButtons.setAlignment(Pos.CENTER);
+        ColorAdjust colorAdjust = new ColorAdjust();
+
+    }
+
+    public void updatedSetting(ArrayList l){
 
     }
 
