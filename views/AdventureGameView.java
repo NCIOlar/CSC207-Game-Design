@@ -37,6 +37,12 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
+    VBox Buttons;
+
+    //Setting buttons
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
+    Setting setting = new Setting(new GridPane());
+
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
@@ -168,8 +174,9 @@ public class AdventureGameView {
         settingsButton.setId("Settings");
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingEvent();
 
-        VBox Buttons = new VBox();
+        Buttons = new VBox();
         Buttons.getChildren().addAll(easyButton_home, mediumButton_home, hardButton_home, loadButton_home, helpButton_home);
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
@@ -244,35 +251,81 @@ public class AdventureGameView {
 
 
     }
-    public void settingMenu(){
+    public void showSettingMenu(){
+       //update setting on current girdpane
+
+        gridPane.getChildren().clear(); // reset gridpane
         // Buttons
-        saveButton = new Button("Save");
-        saveButton.setId("Save");
-        customizeButton(saveButton, 100, 50);
-        makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
-        addSaveEvent();
+        menuButton = new Button("Menu");
+        menuButton.setId("menu");
+        customizeButton(menuButton, 200, 50);
+        makeButtonAccessible(menuButton, "menu", "menu", "menu");
+        addMenu();
+
+        increaseBrightnessButton = new Button("Increase Brightness");
+        increaseBrightnessButton.setId("increaseBrightness");
+        customizeButton(increaseBrightnessButton, 200, 50);
+        makeButtonAccessible(increaseBrightnessButton, "increaseBrightness", "This button increase birghtness.", "This button increase birghtness");
+        addIncreaseBrightnessEvent();
 
 
 
-        loadButton = new Button("Load");
-        loadButton.setId("Load");
-        customizeButton(loadButton, 100, 50);
-        makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
-        addLoadEvent();
+        decreaseBrightnessButton = new Button("Decrease Brightness");
+        decreaseBrightnessButton.setId("decreaseBrightness");
+        customizeButton(decreaseBrightnessButton, 200, 50);
+        makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
+        addDecreaseBrightnessEvent();
 
-        helpButton = new Button("Instructions");
-        helpButton.setId("Instructions");
-        customizeButton(helpButton, 200, 50);
-        makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
-        addInstructionEvent();
 
-        HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton);
-        topButtons.setSpacing(10);
-        topButtons.setAlignment(Pos.CENTER);
-        ColorAdjust colorAdjust = new ColorAdjust();
+
+        VBox settingButtons = new VBox();
+        settingButtons.getChildren().addAll(menuButton, increaseBrightnessButton, decreaseBrightnessButton);
+        settingButtons.setSpacing(30);
+        settingButtons.setAlignment(Pos.CENTER);
+
+
+
+
+        gridPane.add(settingButtons, 1 ,1);
 
     }
+
+    public void addSettingEvent(){
+        settingsButton.setOnAction(e -> {
+            showSettingMenu();
+        });
+
+    }
+
+    public void addMenu(){
+        menuButton.setOnAction(e -> {
+            gridPane.getChildren().clear();
+            gridPane.add( Buttons, 1, 1 );  // Add buttons
+            gridPane.add(settingsButton, 2, 0);
+            addSettingEvent();
+        });
+
+    }
+    public void addIncreaseBrightnessEvent(){
+        increaseBrightnessButton.setOnAction(e -> {
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setBrightness(setting.increaseBrightness());
+            gridPane.setEffect(colorAdjust);
+        });
+
+    }
+
+    public void addDecreaseBrightnessEvent(){
+        decreaseBrightnessButton.setOnAction(e -> {
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setBrightness(setting.decreaseBrightness());
+            gridPane.setEffect(colorAdjust);
+
+        });
+
+    }
+
+
 
     public void updatedSetting(ArrayList l){
 
