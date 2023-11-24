@@ -44,27 +44,7 @@ public class Gaming_Troll implements Troll {
      */
     public boolean playGame() {
         giveInstructions();
-        for (Integer i = 0; i < 3; i++) {
-            String answer = scanner.next();
-            try {
-                Integer ans = Integer.parseInt(answer);
-                if (ans.equals(this.answer)) {
-                    System.out.println("Nice job, you may pass!");
-                    return true;
-                } else if (ans > this.answer) {
-                    System.out.println("Too high");
-                    System.out.println("Try Again");
-                } else {
-                    System.out.println("Too low");
-                    System.out.println("Try Again");
-                }
-            } catch (NumberFormatException nfe) {
-                System.out.println("This is not an integer!");
-                System.out.println("Try Again");
-            }
-        }
-        System.out.println("You lose. You shall not pass\n");
-        return false;
+        return true;
     }
 
     /**
