@@ -20,7 +20,6 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -41,14 +40,14 @@ public class AdventureGameView {
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
-    Boolean mapToggle = false;
-    Map map;
+    Boolean mapToggle = false; //is map on display?
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
+    Map map;
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
@@ -57,8 +56,7 @@ public class AdventureGameView {
      * __________________________
      * Initializes attributes
      */
-    public AdventureGameView(AdventureGame model, Stage stage) throws IOException {
-        this.model = model;
+    public AdventureGameView(Stage stage) throws IOException {
         this.stage = stage;
         intiUI();
     }
@@ -69,7 +67,7 @@ public class AdventureGameView {
     public void intiUI() throws IOException {
 
         // setting up the stage
-        this.stage.setTitle("hewenju2's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
+        this.stage.setTitle("Last Hope");
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
@@ -79,9 +77,9 @@ public class AdventureGameView {
         gridPane.setBackground(new Background(background));
 
         //Three columns, three rows for the GridPane
-        ColumnConstraints column1 = new ColumnConstraints(150);
-        ColumnConstraints column2 = new ColumnConstraints(650);
-        ColumnConstraints column3 = new ColumnConstraints(150);
+        ColumnConstraints column1 = new ColumnConstraints(200);
+        ColumnConstraints column2 = new ColumnConstraints(600);
+        ColumnConstraints column3 = new ColumnConstraints(200);
         column3.setHgrow( Priority.SOMETIMES ); //let some columns grow to take any extra space
         column1.setHgrow( Priority.SOMETIMES );
 
@@ -98,37 +96,37 @@ public class AdventureGameView {
         // Buttons
         saveButton = new Button("Save");
         saveButton.setId("Save");
-        customizeButton(saveButton, 50, 50);
+        customizeButton(saveButton, 65, 50);
         makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
         addSaveEvent();
 
         loadButton = new Button("Load");
         loadButton.setId("Load");
-        customizeButton(loadButton, 50, 50);
+        customizeButton(loadButton, 65, 50);
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
         helpButton = new Button("Help");
         helpButton.setId("Help");
-        customizeButton(helpButton, 50, 50);
+        customizeButton(helpButton, 100, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
         mapButton = new Button("Map");
         mapButton.setId("Map");
-        customizeButton(mapButton, 50, 50);
+        customizeButton(mapButton, 65, 50);
         makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
         addMapEvent();
 
         shopButton = new Button("Shop");
         shopButton.setId("Shop");
-        customizeButton(shopButton, 50, 50);
+        customizeButton(shopButton, 65, 50);
         makeButtonAccessible(shopButton, "Shop Button", "This button pops up a shop containing goods.", "This button pops up a shop containing goods. Click it to buy equipments that you need when playing!");
         addShopEvent();
 
         homepageButton = new Button("Home");
         homepageButton.setId("Home");
-        customizeButton(homepageButton, 50, 50);
+        customizeButton(homepageButton, 100, 50);
         makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
         addHomeEvent();
 
@@ -162,10 +160,6 @@ public class AdventureGameView {
         makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
         addHardEvent();
 
-        // Initialize Map
-        map = new Map(this);
-        map.generateMap();
-
         Image settings_icon = new Image("Games/Settings.png");
         ImageView settings_iv =new ImageView(settings_icon);
         settings_iv.setFitHeight(40);
@@ -180,12 +174,6 @@ public class AdventureGameView {
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
 
-        //labels for inventory and room items
-        Label objLabel =  new Label("Objects in Room");
-        objLabel.setAlignment(Pos.CENTER);
-        objLabel.setStyle("-fx-text-fill: white;");
-        objLabel.setFont(new Font("Arial", 16));
-
         //add all the widgets to the GridPane
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
@@ -196,7 +184,6 @@ public class AdventureGameView {
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
-
         Image image = new Image("Games/Cursor.png");  //pass in the image path
         gridPane.getScene().setCursor(new ImageCursor(image));
     }
@@ -216,36 +203,37 @@ public class AdventureGameView {
         )));
 
         HBox topButtons1 = new HBox();
-        topButtons1.getChildren().addAll(homepageButton, mapButton, shopButton);
+        topButtons1.getChildren().addAll(mapButton, shopButton);
         topButtons1.setSpacing(10);
+        topButtons1.setPrefWidth(400);
         topButtons1.setAlignment(Pos.CENTER);
 
         HBox topButtons2 = new HBox();
-        topButtons2.getChildren().addAll(saveButton, helpButton, loadButton, settingsButton);
+        topButtons2.getChildren().addAll(homepageButton, settingsButton, helpButton);
         topButtons2.setSpacing(10);
+        topButtons2.setPrefWidth(400);
         topButtons2.setAlignment(Pos.CENTER);
 
+        HBox topButtons3 = new HBox();
+        topButtons3.getChildren().addAll(saveButton, loadButton);
+        topButtons3.setSpacing(10);
+        topButtons3.setPrefWidth(400);
+        topButtons3.setAlignment(Pos.CENTER);
 
         //labels for inventory and room items
-        Label objLabel =  new Label("Objects in Room");
-        objLabel.setAlignment(Pos.CENTER);
-        objLabel.setStyle("-fx-text-fill: white;");
-        objLabel.setFont(new Font("Arial", 16));
+        //Label objLabel =  new Label("Objects in Room");
+        //objLabel.setAlignment(Pos.CENTER);
+        //objLabel.setStyle("-fx-text-fill: white;");
+        //objLabel.setFont(new Font("Arial", 16));
 
         //add all the widgets to the GridPane
         gridPane.add( topButtons1, 0, 0);  // Add buttons
-        gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
-        gridPane.add( topButtons2, 2, 0);  // Add buttons
+        //gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
+        gridPane.add( topButtons2, 1, 0);  // Add buttons
+        gridPane.add( topButtons3, 2, 0);  // Add buttons
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
-
-        // Render everything
-        var scene = new Scene(gridPane ,  1000, 800);
-        scene.setFill(Color.BLACK);
-        this.stage.setScene(scene);
-        this.stage.setResizable(false);
-        this.stage.show();
 
     }
 
@@ -528,6 +516,17 @@ public class AdventureGameView {
         }
     }
 
+    public void showMap() throws IOException {
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+        if (mapToggle) {
+            updateScene("");
+            mapToggle = false;
+        } else {
+            gridPane.add(map.showMap(), 1, 1);
+            mapToggle = true;
+        }
+    }
+
     /**
      * This method handles the event related to the
      * help button.
@@ -537,20 +536,6 @@ public class AdventureGameView {
             stopArticulation(); //if speaking, stop
             showInstructions();
         });
-    }
-
-    public void showMap(){
-        // TODO:
-
-        if (mapToggle) {
-            map.hideMap();
-            mapToggle = false;
-        } else {
-            gridPane.add(map.showMap(), 1, 1);
-            mapToggle = true;
-        }
-
-
     }
 
     /**
@@ -568,12 +553,12 @@ public class AdventureGameView {
      * This method handles the event related to the
      * load button.
      */
-    public void addLoadEvent() {
-        loadButton.setOnAction(e -> {
-            gridPane.requestFocus();
-            LoadView loadView = new LoadView(this);
-        });
-    }
+        public void addLoadEvent() {
+            loadButton.setOnAction(e -> {
+                gridPane.requestFocus();
+                new LoadView(this);
+            });
+        }
 
     /**
      * This method handles the event related to the
@@ -584,9 +569,15 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            stopArticulation();
             intiGame();
         });
-
     }
 
     public void addMediumEvent() {
@@ -594,6 +585,13 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            stopArticulation();
             intiGame();
         });
     }
@@ -603,6 +601,13 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            stopArticulation();
             intiGame();
         });
     }
@@ -612,12 +617,25 @@ public class AdventureGameView {
     }
 
     public void addHomeEvent() {
-
+        homepageButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            gridPane.getChildren().removeIf(node -> true);
+            stopArticulation();
+            try {
+                intiUI();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
-    public void addMapEvent() {
+    public void addMapEvent() throws IOException {
         mapButton.setOnAction(e -> {
-            showMap();
+            try {
+                showMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
