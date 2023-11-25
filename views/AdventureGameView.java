@@ -538,6 +538,20 @@ public class AdventureGameView {
         });
     }
 
+    public void showMap(){
+        // TODO:
+
+        if (mapToggle) {
+            updateScene("");
+            mapToggle = false;
+        } else {
+            gridPane.add(map.showMap(), 1, 1);
+            mapToggle = true;
+        }
+
+
+    }
+
     /**
      * This method handles the event related to the
      * save button.
