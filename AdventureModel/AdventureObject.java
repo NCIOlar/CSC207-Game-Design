@@ -23,6 +23,10 @@ public class AdventureObject implements Serializable {
      * The location of the object.
      */
     private Room location = null;
+    // new attributes
+    public String objectType;
+    public int objectEffect;
+    public int objectCost;
 
     /**
      * Adventure Object Constructor
@@ -33,10 +37,13 @@ public class AdventureObject implements Serializable {
      * @param description One line description of the Object.
      * @param location The location of the Object in the game.
      */
-    public AdventureObject(String name, String description, Room location){
+    public AdventureObject(String name, String description, Room location, String objectType, int objectEffect, int objectCost){
         this.objectName = name;
         this.description = description;
         this.location = location;
+        this.objectType = objectType;
+        this.objectEffect = objectEffect;
+        this.objectCost = objectCost;
     }
 
     /**
@@ -67,5 +74,22 @@ public class AdventureObject implements Serializable {
     public Room getLocation(){
         return this.location;
     }
+
+    // returns the object's type (what it does)
+    public String getType() {
+        return this.objectType;
+    }
+
+    // returns the object's effect (magnitude of its effect)
+    public int getEffect() {
+        return this.objectEffect;
+    }
+
+    // returns the object's cost (for shop purposes)
+    public int getCost() {
+        return this.objectCost;
+    }
+
+
 
 }
