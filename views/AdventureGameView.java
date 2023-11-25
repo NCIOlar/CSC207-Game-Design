@@ -65,7 +65,7 @@ public class AdventureGameView {
      * __________________________
      * Initializes attributes
      */
-    public AdventureGameView(Stage stage) {
+    public AdventureGameView(Stage stage) throws IOException {
         this.stage = stage;
         intiUI();
     }
@@ -704,7 +704,11 @@ public class AdventureGameView {
             gridPane.requestFocus();
             gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
-            intiUI();
+            try {
+                intiUI();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
