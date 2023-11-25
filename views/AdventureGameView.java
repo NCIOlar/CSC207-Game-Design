@@ -256,7 +256,7 @@ public class AdventureGameView {
 
     }
     public void showSettingMenu(){
-       //update setting on current girdpane
+        //update setting on current girdpane
 
         gridPane.getChildren().clear(); // reset gridpane
         // Buttons
@@ -474,7 +474,7 @@ public class AdventureGameView {
      * Each Vbox should contain a collection of nodes (Buttons, ImageViews, you can decide)
      * Each node represents a different object.
      *
-     * Images of each object are in the assets 
+     * Images of each object are in the assets
      * folders of the given adventure game.
      */
     public void updateItems() {
@@ -731,12 +731,9 @@ public class AdventureGameView {
 
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
-            try {
-                showMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        })
+            showMap();
+            
+        });
     }
 
 
@@ -761,7 +758,7 @@ public class AdventureGameView {
     }
 
     /**
-     * This method stops articulations 
+     * This method stops articulations
      * (useful when transitioning to a new room or loading a new game)
      */
     public void stopArticulation() {
