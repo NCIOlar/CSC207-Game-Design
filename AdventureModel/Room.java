@@ -1,5 +1,7 @@
 package AdventureModel;
 
+import AdventureModel.Trolls.Troll;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -35,6 +37,8 @@ public class Room implements Serializable {
      * The list of objects in the room.
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
+
+    public Troll troll;
 
     /**
      * A boolean to store if the room has been visited or not
