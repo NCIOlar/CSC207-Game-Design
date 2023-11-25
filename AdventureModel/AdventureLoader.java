@@ -3,7 +3,6 @@ package AdventureModel;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Class AdventureLoader. Loads an adventure from files.
@@ -32,9 +31,6 @@ public class AdventureLoader {
         parseRooms();
         parseObjects();
         parseSynonyms();
-
-        Shop shop = new Shop(this.adventureName); // Create shops based on difficulty selected
-
         this.game.setHelpText(parseOtherFile("help"));
     }
 
@@ -104,18 +100,12 @@ public class AdventureLoader {
             String objectName = buff.readLine();
             String objectDescription = buff.readLine();
             String objectLocation = buff.readLine();
-//            String objectType = buff.readLine();
-//            int objectEffect = Integer.parseInt(buff.readLine());
-//            int objectCost = Integer.parseInt(buff.readLine());
-            String objectType = "";
-            int objectEffect = 0;
-            int objectCost = 0;
             String separator = buff.readLine();
             if (separator != null && !separator.isEmpty())
                 System.out.println("Formatting Error!");
             int i = Integer.parseInt(objectLocation);
             Room location = this.game.getRooms().get(i);
-            AdventureObject object = new AdventureObject(objectName, objectDescription, location, objectType, objectEffect, objectCost);
+            AdventureObject object = new AdventureObject(objectName, objectDescription, location);
             location.addGameObject(object);
         }
 
