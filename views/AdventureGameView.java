@@ -7,6 +7,7 @@ import javafx.scene.ImageCursor;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.ColorAdjust;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -20,6 +21,7 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -30,24 +32,31 @@ import java.util.ArrayList;
  * You are asked to demo your visualization via a Zoom
  * recording. Place a link to your recording below.
  *
- * ZOOM LINK: <https://drive.google.com/file/d/1P4X0Z1zrX9-beCiuVGpRTXhAwRoVXvLI/view?usp=drive_link>
+ * ZOOM LINK: <>
  * PASSWORD: <PASSWORD HERE>
  */
 public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
+    VBox Buttons;
+
+    //Setting buttons
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
+    Setting setting = new Setting(new GridPane());
+
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
-    Boolean mapToggle = false; //is map on display?
+    Boolean mapToggle = false;
+    Map map;
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
-    Map map;
+
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
@@ -168,8 +177,9 @@ public class AdventureGameView {
         settingsButton.setId("Settings");
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingEvent();
 
-        VBox Buttons = new VBox();
+        Buttons = new VBox();
         Buttons.getChildren().addAll(easyButton_home, mediumButton_home, hardButton_home, loadButton_home, helpButton_home);
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
@@ -184,6 +194,7 @@ public class AdventureGameView {
         this.stage.setScene(scene);
         this.stage.setResizable(false);
         this.stage.show();
+
         Image image = new Image("Games/Cursor.png");  //pass in the image path
         gridPane.getScene().setCursor(new ImageCursor(image));
     }
@@ -196,11 +207,10 @@ public class AdventureGameView {
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
-        gridPane.setBackground(new Background(new BackgroundFill(
-                Color.valueOf("#000000"),
-                new CornerRadii(0),
-                new Insets(0)
-        )));
+        String roomImage = "/Games/Homepage.png";
+        Image roomImageFile = new Image(roomImage);
+        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        gridPane.setBackground(new Background(background));
 
         HBox topButtons1 = new HBox();
         topButtons1.getChildren().addAll(mapButton, shopButton);
@@ -234,6 +244,94 @@ public class AdventureGameView {
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
+
+        // Render everything
+        var scene = new Scene(gridPane ,  1000, 800);
+        scene.setFill(Color.BLACK);
+        this.stage.setScene(scene);
+        this.stage.setResizable(false);
+        this.stage.show();
+
+
+
+    }
+    public void showSettingMenu(){
+       //update setting on current girdpane
+
+        gridPane.getChildren().clear(); // reset gridpane
+        // Buttons
+        menuButton = new Button("Menu");
+        menuButton.setId("menu");
+        customizeButton(menuButton, 200, 50);
+        makeButtonAccessible(menuButton, "menu", "menu", "menu");
+        addMenu();
+
+        increaseBrightnessButton = new Button("Increase Brightness");
+        increaseBrightnessButton.setId("increaseBrightness");
+        customizeButton(increaseBrightnessButton, 200, 50);
+        makeButtonAccessible(increaseBrightnessButton, "increaseBrightness", "This button increase birghtness.", "This button increase birghtness");
+        addIncreaseBrightnessEvent();
+
+
+
+        decreaseBrightnessButton = new Button("Decrease Brightness");
+        decreaseBrightnessButton.setId("decreaseBrightness");
+        customizeButton(decreaseBrightnessButton, 200, 50);
+        makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
+        addDecreaseBrightnessEvent();
+
+
+
+        VBox settingButtons = new VBox();
+        settingButtons.getChildren().addAll(menuButton, increaseBrightnessButton, decreaseBrightnessButton);
+        settingButtons.setSpacing(30);
+        settingButtons.setAlignment(Pos.CENTER);
+
+
+
+
+        gridPane.add(settingButtons, 1 ,1);
+
+    }
+
+    public void addSettingEvent(){
+        settingsButton.setOnAction(e -> {
+            showSettingMenu();
+        });
+
+    }
+
+    public void addMenu(){
+        menuButton.setOnAction(e -> {
+            gridPane.getChildren().clear();
+            gridPane.add( Buttons, 1, 1 );  // Add buttons
+            gridPane.add(settingsButton, 2, 0);
+            addSettingEvent();
+        });
+
+    }
+    public void addIncreaseBrightnessEvent(){
+        increaseBrightnessButton.setOnAction(e -> {
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setBrightness(setting.increaseBrightness());
+            gridPane.setEffect(colorAdjust);
+        });
+
+    }
+
+    public void addDecreaseBrightnessEvent(){
+        decreaseBrightnessButton.setOnAction(e -> {
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setBrightness(setting.decreaseBrightness());
+            gridPane.setEffect(colorAdjust);
+
+        });
+
+    }
+
+
+
+    public void updatedSetting(ArrayList l){
 
     }
 
@@ -376,7 +474,7 @@ public class AdventureGameView {
      * Each Vbox should contain a collection of nodes (Buttons, ImageViews, you can decide)
      * Each node represents a different object.
      *
-     * Images of each object are in the assets
+     * Images of each object are in the assets 
      * folders of the given adventure game.
      */
     public void updateItems() {
@@ -516,17 +614,6 @@ public class AdventureGameView {
         }
     }
 
-    public void showMap() throws IOException {
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
-        if (mapToggle) {
-            updateScene("");
-            mapToggle = false;
-        } else {
-            gridPane.add(map.showMap(), 1, 1);
-            mapToggle = true;
-        }
-    }
-
     /**
      * This method handles the event related to the
      * help button.
@@ -567,12 +654,12 @@ public class AdventureGameView {
      * This method handles the event related to the
      * load button.
      */
-        public void addLoadEvent() {
-            loadButton.setOnAction(e -> {
-                gridPane.requestFocus();
-                new LoadView(this);
-            });
-        }
+    public void addLoadEvent() {
+        loadButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            LoadView loadView = new LoadView(this);
+        });
+    }
 
     /**
      * This method handles the event related to the
@@ -583,12 +670,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -599,12 +680,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -615,12 +690,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -643,14 +712,8 @@ public class AdventureGameView {
         });
     }
 
-    public void addMapEvent() throws IOException {
-        mapButton.setOnAction(e -> {
-            try {
-                showMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
+    public void addMapEvent() {
+
     }
 
 

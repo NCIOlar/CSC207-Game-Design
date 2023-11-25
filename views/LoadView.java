@@ -1,6 +1,7 @@
 package views;
 
 import AdventureModel.AdventureGame;
+import javafx.beans.Observable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,9 +15,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Objects;
 
 
 /**
@@ -59,7 +57,7 @@ public class LoadView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        closeWindowButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
@@ -74,13 +72,13 @@ public class LoadView {
             }
         });
 
-        VBox selectGameBox = new VBox(10, selectGameLabel, GameList, selectGameButton);
+        VBox selectGameBox = new VBox(10, selectGameLabel, GameList, selectGameButton, closeWindowButton);
 
         // Default styles which can be modified
         GameList.setPrefHeight(100);
         selectGameLabel.setStyle("-fx-text-fill: #e8e6e3");
         selectGameLabel.setFont(new Font(16));
-        selectGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        selectGameButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         selectGameButton.setPrefSize(200, 50);
         selectGameButton.setFont(new Font(16));
         selectGameBox.setAlignment(Pos.CENTER);
@@ -98,10 +96,15 @@ public class LoadView {
      * @param listView the ListView containing all the .ser files in the Games/Saved directory.
      */
     private void getFiles(ListView<String> listView) {
-        File dir = new File(String.valueOf(Path.of("Games/Saved/")));
-        for(String file: Objects.requireNonNull(dir.list())){
-            if(file.endsWith(".ser")){
-                listView.getItems().add(file);
+        String separator = File.separator;
+        File theDir = new File("Games" + separator + "Saved");
+        if (theDir.exists()) {
+            File[] files = theDir.listFiles();
+            for (File file : files) {
+                String file_name = file.getName();
+                if (file_name.substring(file_name.length() - 4).equals(".ser")) {
+                    GameList.getItems().add(file_name);
+                }
             }
         }
     }
@@ -127,7 +130,13 @@ public class LoadView {
             this.adventureGameView.model = game;
             this.adventureGameView.intiGame();
             selectGameLabel.setText(selected);
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException e) {
+            adventureGameView.stopArticulation();
+            AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
+            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
+            this.adventureGameView.model = game;
+            selectGameLabel.setText("Error! A new game has been loaded");
+        } catch (ClassNotFoundException e) {
             adventureGameView.stopArticulation();
             AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
             this.adventureGameView = new AdventureGameView(adventureGameView.stage);
