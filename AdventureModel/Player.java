@@ -1,7 +1,5 @@
 package AdventureModel;
 
-import jdk.jshell.spi.ExecutionControl;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -14,29 +12,18 @@ public class Player implements Serializable {
      * The current room that the player is located in.
      */
     private Room currentRoom;
-    private Shop shop;
 
     /**
      * The list of items that the player is carrying at the moment.
      */
     public ArrayList<AdventureObject> inventory;
-    public String name;
-    public int health;
-    public int damage;
-    public int defense;
-    public int funds;
-    public boolean isImmune; // for mask item
+
     /**
      * Adventure Game Player Constructor
      */
     public Player(Room currentRoom) {
         this.inventory = new ArrayList<AdventureObject>();
         this.currentRoom = currentRoom;
-        this.health = 100;
-        this.damage = 20;
-        this.defense = 0;
-        this.funds = 0;
-        this.isImmune = false;
     }
 
     /**
@@ -68,8 +55,8 @@ public class Player implements Serializable {
      * @return true if object is in inventory, false otherwise
      */
     public boolean checkIfObjectInInventory(String s) {
-        for (AdventureObject adventureObject : this.inventory) {
-            if (adventureObject.getName().equals(s)) return true;
+        for(int i = 0; i<this.inventory.size();i++){
+            if(this.inventory.get(i).getName().equals(s)) return true;
         }
         return false;
     }
@@ -125,41 +112,11 @@ public class Player implements Serializable {
      */
     public ArrayList<String> getInventory() {
         ArrayList<String> objects = new ArrayList<>();
-        for (AdventureObject adventureObject : this.inventory) {
-            objects.add(adventureObject.getName());
+        for(int i=0;i<this.inventory.size();i++){
+            objects.add(this.inventory.get(i).getName());
         }
         return objects;
     }
 
-    // new methods
-    public String getName() {
-        return this.name;
-    }
-    public int getHealth() {
-        return this.health;
-    }
-    public int getDamage() {
-        return this.damage;
-    }
-    public int getDefense() {
-        return this.defense;
-    }
-    public int getFunds() {
-        return this.funds;
-    }
 
-    public boolean buyObject(AdventureObject object) {
-        if (this.funds >= object.getCost()) {
-            int updatedQuantity = this.shop.objectsForSale.get(object) - 1;
-            this.shop.objectsForSale.put(object, updatedQuantity);
-            this.inventory.add(object);
-            this.funds -= object.getCost();
-            return true;
-        } else {
-            return false;
-        }
-    }
-//    CODE THESE BELOW NOW ⛈️ 中国打野
-//    public boolean sellObject(AdventureObject object) {}
-//    public void useItem(AdventureObject object) {}
 }
