@@ -2,9 +2,8 @@ package views;
 
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
-import javafx.animation.PauseTransition;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.ImageCursor;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -13,19 +12,17 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.*;
-import javafx.scene.input.KeyEvent; //you will need these!
-import javafx.scene.input.KeyCode;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.util.Duration;
 import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Class AdventureGameView.
@@ -41,16 +38,17 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
-    Button saveButton, loadButton, helpButton; //buttons
+    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
+            easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
+    Boolean mapToggle = false;
+    Map map;
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
-    TextField inputTextField; //for user input
-
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
@@ -59,7 +57,7 @@ public class AdventureGameView {
      * __________________________
      * Initializes attributes
      */
-    public AdventureGameView(AdventureGame model, Stage stage) {
+    public AdventureGameView(AdventureGame model, Stage stage) throws IOException {
         this.model = model;
         this.stage = stage;
         intiUI();
@@ -68,24 +66,17 @@ public class AdventureGameView {
     /**
      * Initialize the UI
      */
-    public void intiUI() {
+    public void intiUI() throws IOException {
 
         // setting up the stage
         this.stage.setTitle("hewenju2's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
 
-        //Inventory + Room items
-        objectsInInventory.setSpacing(10);
-        objectsInInventory.setAlignment(Pos.TOP_CENTER);
-        objectsInRoom.setSpacing(10);
-        objectsInRoom.setAlignment(Pos.TOP_CENTER);
-
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
-        gridPane.setBackground(new Background(new BackgroundFill(
-                Color.valueOf("#000000"),
-                new CornerRadii(0),
-                new Insets(0)
-        )));
+        String roomImage = "/Games/Homepage.png";
+        Image roomImageFile = new Image(roomImage);
+        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        gridPane.setBackground(new Background(background));
 
         //Three columns, three rows for the GridPane
         ColumnConstraints column1 = new ColumnConstraints(150);
@@ -101,42 +92,93 @@ public class AdventureGameView {
         row1.setVgrow( Priority.SOMETIMES );
         row3.setVgrow( Priority.SOMETIMES );
 
-        gridPane.getColumnConstraints().addAll( column1 , column2 , column1 );
-        gridPane.getRowConstraints().addAll( row1 , row2 , row1 );
+        gridPane.getColumnConstraints().addAll( column1 , column2 , column3);
+        gridPane.getRowConstraints().addAll( row1 , row2 , row3);
 
         // Buttons
         saveButton = new Button("Save");
         saveButton.setId("Save");
-        customizeButton(saveButton, 100, 50);
+        customizeButton(saveButton, 50, 50);
         makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
         addSaveEvent();
 
         loadButton = new Button("Load");
         loadButton.setId("Load");
-        customizeButton(loadButton, 100, 50);
+        customizeButton(loadButton, 50, 50);
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
-        helpButton = new Button("Instructions");
-        helpButton.setId("Instructions");
-        customizeButton(helpButton, 200, 50);
+        helpButton = new Button("Help");
+        helpButton.setId("Help");
+        customizeButton(helpButton, 50, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
-        HBox topButtons = new HBox();
-        topButtons.getChildren().addAll(saveButton, helpButton, loadButton);
-        topButtons.setSpacing(10);
-        topButtons.setAlignment(Pos.CENTER);
+        mapButton = new Button("Map");
+        mapButton.setId("Map");
+        customizeButton(mapButton, 50, 50);
+        makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
+        addMapEvent();
 
-        inputTextField = new TextField();
-        inputTextField.setFont(new Font("Arial", 16));
-        inputTextField.setFocusTraversable(true);
+        shopButton = new Button("Shop");
+        shopButton.setId("Shop");
+        customizeButton(shopButton, 50, 50);
+        makeButtonAccessible(shopButton, "Shop Button", "This button pops up a shop containing goods.", "This button pops up a shop containing goods. Click it to buy equipments that you need when playing!");
+        addShopEvent();
 
-        inputTextField.setAccessibleRole(AccessibleRole.TEXT_AREA);
-        inputTextField.setAccessibleRoleDescription("Text Entry Box");
-        inputTextField.setAccessibleText("Enter commands in this box.");
-        inputTextField.setAccessibleHelp("This is the area in which you can enter commands you would like to play.  Enter a command and hit return to continue.");
-        addTextHandlingEvent(); //attach an event to this input field
+        homepageButton = new Button("Home");
+        homepageButton.setId("Home");
+        customizeButton(homepageButton, 50, 50);
+        makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
+        addHomeEvent();
+
+        loadButton_home = new Button("Load Game");
+        loadButton_home.setId("Load Game");
+        customizeButton(loadButton_home, 150, 50);
+        makeButtonAccessible(loadButton_home, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
+        addLoadEvent();
+
+        helpButton_home = new Button("Help");
+        helpButton_home.setId("Help");
+        customizeButton(helpButton_home, 150, 50);
+        makeButtonAccessible(helpButton_home, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
+        addInstructionEvent();
+
+        easyButton_home = new Button("Easy");
+        easyButton_home.setId("Easy");
+        customizeButton(easyButton_home, 150, 50);
+        makeButtonAccessible(easyButton_home, "Easy Button", "This button initializes game with easy mode.", "This button initializes game with easy mode. Click it to be able to play.");
+        addEasyEvent();
+
+        mediumButton_home = new Button("Medium");
+        mediumButton_home.setId("Medium");
+        customizeButton(mediumButton_home, 150, 50);
+        makeButtonAccessible(mediumButton_home, "Medium Button", "This button initializes game with medium mode.", "This button initializes game with medium mode. Click it to be able to play.");
+        addMediumEvent();
+
+        hardButton_home = new Button("Hard");
+        hardButton_home.setId("Hard");
+        customizeButton(hardButton_home, 150, 50);
+        makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
+        addHardEvent();
+
+        // Initialize Map
+        map = new Map(this);
+        map.generateMap();
+
+        Image settings_icon = new Image("Games/Settings.png");
+        ImageView settings_iv =new ImageView(settings_icon);
+        settings_iv.setFitHeight(40);
+        settings_iv.setFitWidth(40);
+        settingsButton = new Button("", settings_iv);
+        settingsButton.setId("Settings");
+        customizeButton(settingsButton, 50, 50);
+        makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+
+        VBox Buttons = new VBox();
+        Buttons.getChildren().addAll(easyButton_home, mediumButton_home, hardButton_home, loadButton_home, helpButton_home);
+        Buttons.setSpacing(30);
+        Buttons.setAlignment(Pos.BOTTOM_CENTER);
 
         //labels for inventory and room items
         Label objLabel =  new Label("Objects in Room");
@@ -144,34 +186,62 @@ public class AdventureGameView {
         objLabel.setStyle("-fx-text-fill: white;");
         objLabel.setFont(new Font("Arial", 16));
 
-        Label invLabel =  new Label("Your Inventory");
-        invLabel.setAlignment(Pos.CENTER);
-        invLabel.setStyle("-fx-text-fill: white;");
-        invLabel.setFont(new Font("Arial", 16));
+        //add all the widgets to the GridPane
+        gridPane.add( Buttons, 1, 1 );  // Add buttons
+        gridPane.add(settingsButton, 2, 0);
+
+        // Render everything
+        var scene = new Scene( gridPane ,  1000, 800);
+        scene.setFill(Color.BLACK);
+        this.stage.setScene(scene);
+        this.stage.setResizable(false);
+        this.stage.show();
+
+        Image image = new Image("Games/Cursor.png");  //pass in the image path
+        gridPane.getScene().setCursor(new ImageCursor(image));
+    }
+
+    public void intiGame() {
+
+        //Inventory + Room items
+        objectsInRoom.setSpacing(10);
+        objectsInRoom.setAlignment(Pos.TOP_CENTER);
+
+        // GridPane, anyone?
+        gridPane.setPadding(new Insets(20));
+        gridPane.setBackground(new Background(new BackgroundFill(
+                Color.valueOf("#000000"),
+                new CornerRadii(0),
+                new Insets(0)
+        )));
+
+        HBox topButtons1 = new HBox();
+        topButtons1.getChildren().addAll(homepageButton, mapButton, shopButton);
+        topButtons1.setSpacing(10);
+        topButtons1.setAlignment(Pos.CENTER);
+
+        HBox topButtons2 = new HBox();
+        topButtons2.getChildren().addAll(saveButton, helpButton, loadButton, settingsButton);
+        topButtons2.setSpacing(10);
+        topButtons2.setAlignment(Pos.CENTER);
+
+
+        //labels for inventory and room items
+        Label objLabel =  new Label("Objects in Room");
+        objLabel.setAlignment(Pos.CENTER);
+        objLabel.setStyle("-fx-text-fill: white;");
+        objLabel.setFont(new Font("Arial", 16));
 
         //add all the widgets to the GridPane
+        gridPane.add( topButtons1, 0, 0);  // Add buttons
         gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
-        gridPane.add( topButtons, 1, 0, 1, 1 );  // Add buttons
-        gridPane.add( invLabel, 2, 0, 1, 1 );  // Add label
-
-        Label commandLabel = new Label("What would you like to do?");
-        commandLabel.setStyle("-fx-text-fill: white;");
-        commandLabel.setFont(new Font("Arial", 16));
+        gridPane.add( topButtons2, 2, 0);  // Add buttons
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
-        // adding the text area and submit button to a VBox
-        VBox textEntry = new VBox();
-        textEntry.setStyle("-fx-background-color: #000000;");
-        textEntry.setPadding(new Insets(20, 20, 20, 20));
-        textEntry.getChildren().addAll(commandLabel, inputTextField);
-        textEntry.setSpacing(10);
-        textEntry.setAlignment(Pos.CENTER);
-        gridPane.add( textEntry, 0, 2, 3, 1 );
-
         // Render everything
-        var scene = new Scene( gridPane ,  1000, 800);
+        var scene = new Scene(gridPane ,  1000, 800);
         scene.setFill(Color.BLACK);
         this.stage.setScene(scene);
         this.stage.setResizable(false);
@@ -210,91 +280,7 @@ public class AdventureGameView {
     private void customizeButton(Button inputButton, int w, int h) {
         inputButton.setPrefSize(w, h);
         inputButton.setFont(new Font("Arial", 16));
-        inputButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
-    }
-
-    /**
-     * addTextHandlingEvent
-     * __________________________
-     * Add an event handler to the myTextField attribute 
-     *
-     * Your event handler should respond when users 
-     * hits the ENTER or TAB KEY. If the user hits 
-     * the ENTER Key, strip white space from the
-     * input to myTextField and pass the stripped 
-     * string to submitEvent for processing.
-     *
-     * If the user hits the TAB key, move the focus 
-     * of the scene onto any other node in the scene 
-     * graph by invoking requestFocus method.
-     */
-    private void addTextHandlingEvent() {
-        EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
-                    public void handle(KeyEvent keyEvent) {
-                        if (keyEvent.getCode() == KeyCode.ENTER) {
-                            String command = inputTextField.getText().strip();
-                            submitEvent(command);
-                        } else if (keyEvent.getCode() == KeyCode.TAB) {
-                            saveButton.requestFocus();
-                        }
-                    }
-        };
-
-        inputTextField.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
-
-    }
-
-
-    /**
-     * submitEvent
-     * __________________________
-     *
-     * @param text the command that needs to be processed
-     */
-    private void submitEvent(String text) {
-
-        text = text.strip(); //get rid of white space
-        stopArticulation(); //if speaking, stop
-
-        if (text.equalsIgnoreCase("LOOK") || text.equalsIgnoreCase("L")) {
-            String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription();
-            String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
-            if (!objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
-            articulateRoomDescription(); //all we want, if we are looking, is to repeat description.
-            return;
-        } else if (text.equalsIgnoreCase("HELP") || text.equalsIgnoreCase("H")) {
-            showInstructions();
-            return;
-        } else if (text.equalsIgnoreCase("COMMANDS") || text.equalsIgnoreCase("C")) {
-            showCommands(); //this is new!  We did not have this command in A1
-            return;
-        }
-
-        //try to move!
-        String output = this.model.interpretAction(text); //process the command!
-
-        if (output == null || (!output.equals("GAME OVER") && !output.equals("FORCED") && !output.equals("HELP"))) {
-            updateScene(output);
-            updateItems();
-        } else if (output.equals("GAME OVER")) {
-            updateScene("");
-            updateItems();
-            PauseTransition pause = new PauseTransition(Duration.seconds(10));
-            pause.setOnFinished(event -> {
-                Platform.exit();
-            });
-            pause.play();
-        } else if (output.equals("FORCED")) {
-            updateScene("");
-            updateItems();
-            if (this.model.player.getCurrentRoom() != null && this.model.player.getCurrentRoom().getCommands().contains("FORCED")) {
-                PauseTransition pause = new PauseTransition(Duration.seconds(5));
-                pause.setOnFinished(event -> {
-                    submitEvent("FORCED");
-                });
-                pause.play(); // method require revision
-            }
-        }
+        inputButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
     }
 
     /**
@@ -302,7 +288,7 @@ public class AdventureGameView {
      * __________________________
      *
      * update the text in the GUI (within roomDescLabel)
-     * to show all the moves that are possible from the 
+     * to show all the moves that are possible from the
      * current room.
      */
     private void showCommands() {
@@ -321,12 +307,12 @@ public class AdventureGameView {
      * below the image.
      * Otherwise, the current room description will be dispplayed
      * below the image.
-     * 
+     *
      * @param textToDisplay the text to display below the image.
      */
     public void updateScene(String textToDisplay) {
 
-        getRoomImage(); //get the image of the current room
+        Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
         roomDescLabel.setPrefWidth(500);
         roomDescLabel.setPrefHeight(500);
@@ -337,8 +323,10 @@ public class AdventureGameView {
         roomPane.setAlignment(Pos.TOP_CENTER);
         roomPane.setStyle("-fx-background-color: #000000;");
 
-        gridPane.add(roomPane, 1, 1);
         stage.sizeToScene();
+        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        gridPane.setBackground(new Background(background));
+
 
         //finally, articulate the description
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
@@ -349,7 +337,7 @@ public class AdventureGameView {
      * __________________________
      *
      * Format text for display.
-     * 
+     *
      * @param textToDisplay the text to be formatted for display.
      */
     private void formatText(String textToDisplay) {
@@ -368,10 +356,10 @@ public class AdventureGameView {
      * getRoomImage
      * __________________________
      *
-     * Get the image for the current room and place 
-     * it in the roomImageView 
+     * Get the image for the current room and place
+     * it in the roomImageView
      */
-    private void getRoomImage() {
+    private Image getRoomImage() {
 
         int roomNumber = this.model.getPlayer().getCurrentRoom().getRoomNumber();
         String roomImage = this.model.getDirectoryName() + "/room-images/" + roomNumber + ".png";
@@ -379,13 +367,15 @@ public class AdventureGameView {
         Image roomImageFile = new Image(roomImage);
         roomImageView = new ImageView(roomImageFile);
         roomImageView.setPreserveRatio(true);
-        roomImageView.setFitWidth(400);
-        roomImageView.setFitHeight(400);
+        roomImageView.setFitWidth(1000);
+        roomImageView.setFitHeight(800);
+
 
         //set accessible text
         roomImageView.setAccessibleRole(AccessibleRole.IMAGE_VIEW);
         roomImageView.setAccessibleText(this.model.getPlayer().getCurrentRoom().getRoomDescription());
         roomImageView.setFocusTraversable(true);
+        return roomImageFile;
     }
 
     /**
@@ -397,8 +387,8 @@ public class AdventureGameView {
      * The method should populate the objectsInRoom and objectsInInventory Vboxes.
      * Each Vbox should contain a collection of nodes (Buttons, ImageViews, you can decide)
      * Each node represents a different object.
-     * 
-     * Images of each object are in the assets 
+     *
+     * Images of each object are in the assets
      * folders of the given adventure game.
      */
     public void updateItems() {
@@ -549,6 +539,20 @@ public class AdventureGameView {
         });
     }
 
+    public void showMap(){
+        // TODO:
+
+        if (mapToggle) {
+            map.hideMap();
+            mapToggle = false;
+        } else {
+            gridPane.add(map.showMap(), 1, 1);
+            mapToggle = true;
+        }
+
+
+    }
+
     /**
      * This method handles the event related to the
      * save button.
@@ -568,6 +572,52 @@ public class AdventureGameView {
         loadButton.setOnAction(e -> {
             gridPane.requestFocus();
             LoadView loadView = new LoadView(this);
+        });
+    }
+
+    /**
+     * This method handles the event related to the
+     * easy button.
+     */
+    public void addEasyEvent() {
+        easyButton_home.setOnAction(e -> {
+            gridPane.requestFocus();
+            this.model = new AdventureGame("EasyGame");
+            gridPane.getChildren().removeIf(node -> true);
+            intiGame();
+        });
+
+    }
+
+    public void addMediumEvent() {
+        mediumButton_home.setOnAction(e -> {
+            gridPane.requestFocus();
+            this.model = new AdventureGame("MediumGame");
+            gridPane.getChildren().removeIf(node -> true);
+            intiGame();
+        });
+    }
+
+    public void addHardEvent() {
+        hardButton_home.setOnAction(e -> {
+            gridPane.requestFocus();
+            this.model = new AdventureGame("HardGame");
+            gridPane.getChildren().removeIf(node -> true);
+            intiGame();
+        });
+    }
+
+    public void addShopEvent() {
+
+    }
+
+    public void addHomeEvent() {
+
+    }
+
+    public void addMapEvent() {
+        mapButton.setOnAction(e -> {
+            showMap();
         });
     }
 
