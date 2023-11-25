@@ -39,12 +39,15 @@ public class AdventureGameView {
 
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
+<<<<<<< HEAD
+=======
     VBox Buttons;
 
     //Setting buttons
     Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
     Setting setting = new Setting(new GridPane());
 
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
@@ -76,7 +79,11 @@ public class AdventureGameView {
     public void intiUI() throws IOException {
 
         // setting up the stage
+<<<<<<< HEAD
+        this.stage.setTitle("hewenju2's Adventure Game"); //Replace <YOUR UTORID> with your UtorID
+=======
         this.stage.setTitle("Last Hope");
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
@@ -105,37 +112,58 @@ public class AdventureGameView {
         // Buttons
         saveButton = new Button("Save");
         saveButton.setId("Save");
+<<<<<<< HEAD
+        customizeButton(saveButton, 50, 50);
+=======
         customizeButton(saveButton, 65, 50);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
         makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
         addSaveEvent();
 
         loadButton = new Button("Load");
         loadButton.setId("Load");
+<<<<<<< HEAD
+        customizeButton(loadButton, 50, 50);
+=======
         customizeButton(loadButton, 65, 50);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
         helpButton = new Button("Help");
         helpButton.setId("Help");
+<<<<<<< HEAD
+        customizeButton(helpButton, 50, 50);
+=======
         customizeButton(helpButton, 100, 50);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addInstructionEvent();
 
         mapButton = new Button("Map");
         mapButton.setId("Map");
+<<<<<<< HEAD
+        customizeButton(mapButton, 50, 50);
+=======
         customizeButton(mapButton, 65, 50);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
         makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
         addMapEvent();
 
         shopButton = new Button("Shop");
         shopButton.setId("Shop");
+<<<<<<< HEAD
+        customizeButton(shopButton, 50, 50);
+=======
         customizeButton(shopButton, 65, 50);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
         makeButtonAccessible(shopButton, "Shop Button", "This button pops up a shop containing goods.", "This button pops up a shop containing goods. Click it to buy equipments that you need when playing!");
         addShopEvent();
 
         homepageButton = new Button("Home");
         homepageButton.setId("Home");
-        customizeButton(homepageButton, 100, 50);
+<<<<<<< HEAD
+        customizeButton(homepageButton, 50, 50);
         makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
         addHomeEvent();
 
@@ -145,6 +173,110 @@ public class AdventureGameView {
         makeButtonAccessible(loadButton_home, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
 
+        helpButton_home = new Button("Help");
+        helpButton_home.setId("Help");
+        customizeButton(helpButton_home, 150, 50);
+        makeButtonAccessible(helpButton_home, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
+        addInstructionEvent();
+
+        easyButton_home = new Button("Easy");
+        easyButton_home.setId("Easy");
+        customizeButton(easyButton_home, 150, 50);
+        makeButtonAccessible(easyButton_home, "Easy Button", "This button initializes game with easy mode.", "This button initializes game with easy mode. Click it to be able to play.");
+        addEasyEvent();
+
+        mediumButton_home = new Button("Medium");
+        mediumButton_home.setId("Medium");
+        customizeButton(mediumButton_home, 150, 50);
+        makeButtonAccessible(mediumButton_home, "Medium Button", "This button initializes game with medium mode.", "This button initializes game with medium mode. Click it to be able to play.");
+        addMediumEvent();
+
+        hardButton_home = new Button("Hard");
+        hardButton_home.setId("Hard");
+        customizeButton(hardButton_home, 150, 50);
+        makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
+        addHardEvent();
+
+        Image settings_icon = new Image("Games/Settings.png");
+        ImageView settings_iv =new ImageView(settings_icon);
+        settings_iv.setFitHeight(40);
+        settings_iv.setFitWidth(40);
+        settingsButton = new Button("", settings_iv);
+        settingsButton.setId("Settings");
+        customizeButton(settingsButton, 50, 50);
+        makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+
+        VBox Buttons = new VBox();
+        Buttons.getChildren().addAll(easyButton_home, mediumButton_home, hardButton_home, loadButton_home, helpButton_home);
+        Buttons.setSpacing(30);
+        Buttons.setAlignment(Pos.BOTTOM_CENTER);
+=======
+        customizeButton(homepageButton, 100, 50);
+        makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
+        addHomeEvent();
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
+
+        loadButton_home = new Button("Load Game");
+        loadButton_home.setId("Load Game");
+        customizeButton(loadButton_home, 150, 50);
+        makeButtonAccessible(loadButton_home, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
+        addLoadEvent();
+
+<<<<<<< HEAD
+        //add all the widgets to the GridPane
+        gridPane.add( Buttons, 1, 1 );  // Add buttons
+        gridPane.add(settingsButton, 2, 0);
+
+        // Render everything
+        var scene = new Scene( gridPane ,  1000, 800);
+        scene.setFill(Color.BLACK);
+        this.stage.setScene(scene);
+        this.stage.setResizable(false);
+        this.stage.show();
+
+        Image image = new Image("Games/Cursor.png");  //pass in the image path
+        gridPane.getScene().setCursor(new ImageCursor(image));
+    }
+
+    public void intiGame() {
+
+        //Inventory + Room items
+        objectsInRoom.setSpacing(10);
+        objectsInRoom.setAlignment(Pos.TOP_CENTER);
+
+        // GridPane, anyone?
+        gridPane.setPadding(new Insets(20));
+        gridPane.setBackground(new Background(new BackgroundFill(
+                Color.valueOf("#000000"),
+                new CornerRadii(0),
+                new Insets(0)
+        )));
+
+        HBox topButtons1 = new HBox();
+        topButtons1.getChildren().addAll(homepageButton, mapButton, shopButton);
+        topButtons1.setSpacing(10);
+        topButtons1.setAlignment(Pos.CENTER);
+
+        HBox topButtons2 = new HBox();
+        topButtons2.getChildren().addAll(saveButton, helpButton, loadButton, settingsButton);
+        topButtons2.setSpacing(10);
+        topButtons2.setAlignment(Pos.CENTER);
+
+
+        //labels for inventory and room items
+        Label objLabel =  new Label("Objects in Room");
+        objLabel.setAlignment(Pos.CENTER);
+        objLabel.setStyle("-fx-text-fill: white;");
+        objLabel.setFont(new Font("Arial", 16));
+
+        //add all the widgets to the GridPane
+        gridPane.add( topButtons1, 0, 0);  // Add buttons
+        gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
+        gridPane.add( topButtons2, 2, 0);  // Add buttons
+
+        updateScene(""); //method displays an image and whatever text is supplied
+        updateItems(); //update items shows inventory and objects in rooms
+=======
         helpButton_home = new Button("Help");
         helpButton_home.setId("Help");
         customizeButton(helpButton_home, 150, 50);
@@ -187,6 +319,7 @@ public class AdventureGameView {
         //add all the widgets to the GridPane
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
 
         // Render everything
         var scene = new Scene( gridPane ,  1000, 800);
@@ -474,7 +607,11 @@ public class AdventureGameView {
      * Each Vbox should contain a collection of nodes (Buttons, ImageViews, you can decide)
      * Each node represents a different object.
      *
+<<<<<<< HEAD
+     * Images of each object are in the assets
+=======
      * Images of each object are in the assets 
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
      * folders of the given adventure game.
      */
     public void updateItems() {
@@ -669,6 +806,8 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
+<<<<<<< HEAD
+=======
             try {
                 map = new Map(this);
                 map.generateMap();
@@ -676,6 +815,7 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
             stopArticulation();
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
             intiGame();
         });
     }
@@ -685,6 +825,8 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
+<<<<<<< HEAD
+=======
             try {
                 map = new Map(this);
                 map.generateMap();
@@ -692,6 +834,7 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
             stopArticulation();
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
             intiGame();
         });
     }
@@ -701,6 +844,8 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
+<<<<<<< HEAD
+=======
             try {
                 map = new Map(this);
                 map.generateMap();
@@ -708,6 +853,7 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
             stopArticulation();
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
             intiGame();
         });
     }
@@ -717,6 +863,13 @@ public class AdventureGameView {
     }
 
     public void addHomeEvent() {
+<<<<<<< HEAD
+
+    }
+
+    public void addMapEvent() {
+
+=======
         homepageButton.setOnAction(e -> {
             gridPane.requestFocus();
             gridPane.getChildren().removeIf(node -> true);
@@ -737,6 +890,7 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
         })
+>>>>>>> eb73d3d1686e1d5ec4c2a2d5b95f2dd910ace731
     }
 
 
