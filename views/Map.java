@@ -36,11 +36,12 @@ public class Map {
         map = new GridPane();
         isGenerated = new ArrayList<>(Collections.nCopies(10, 0));
         createBlueprint();
+        this.game.player.getCurrentRoom().visit();
     }
 
     public void generateMap(){
         for (int i = 0; i < blueprint.size(); i++) {
-            for (int j = 0; j < blueprint.get(0).length; j++) {
+            for (int j = 0; j < blueprint.get(i).length; j++) {
                 String room = blueprint.get(i)[j];
                 if(room.equals("-")){
                     Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
@@ -57,13 +58,19 @@ public class Map {
                     GridPane.setColumnIndex(passage, j);
                     map.getChildren().add(passage);
                 } else {
-                    map.getChildren().add(new Rectangle(100, 100, Color.BLUE));
-                    ImageView roomImage = getImage(Integer.parseInt(room));
-                    roomImage.setFitHeight(100);
-                    roomImage.setFitWidth(100);
-                    GridPane.setRowIndex(roomImage, i);
-                    GridPane.setColumnIndex(roomImage, j);
-                    map.getChildren().add(roomImage);
+//                    if(rooms.get(Integer.parseInt(room)).getVisited()) {
+                        ImageView roomImage = getImage(Integer.parseInt(room));
+                        roomImage.setFitHeight(100);
+                        roomImage.setFitWidth(100);
+                        GridPane.setRowIndex(roomImage, i);
+                        GridPane.setColumnIndex(roomImage, j);
+                        map.getChildren().add(roomImage);
+//                    }else{
+//                        Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
+//                        GridPane.setRowIndex(blackBox, i);
+//                        GridPane.setColumnIndex(blackBox, j);
+//                        map.getChildren().add(blackBox);
+//                    }
                 }
             }
         }
@@ -76,6 +83,7 @@ public class Map {
         while(buff.ready()){
             blueprint.add(buff.readLine().split(" "));
         }
+
     }
 
     private ImageView getImage(int roomNumber){
