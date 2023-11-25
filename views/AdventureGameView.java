@@ -629,7 +629,7 @@ public class AdventureGameView {
         // TODO:
 
         if (mapToggle) {
-            map.hideMap();
+            updateScene("");
             mapToggle = false;
         } else {
             gridPane.add(map.showMap(), 1, 1);
