@@ -26,7 +26,6 @@ public class SaveView {
     static String saveFileSuccess = "Saved Adventure Game!!";
     static String saveFileExistsError = "Error: File already exists";
     static String saveFileNotSerError = "Error: File must end with .ser";
-    private Label saveFileErrorLabel = new Label("");
     private Label saveGameLabel = new Label(String.format("Enter name of file to save"));
     private TextField saveFileNameTextField = new TextField("");
     private Button saveGameButton = new Button("Save Game");
@@ -46,12 +45,9 @@ public class SaveView {
         dialogVbox.setPadding(new Insets(20, 20, 20, 20));
         dialogVbox.setStyle("-fx-background-color: #121212;");
         saveGameLabel.setId("SaveGame"); // DO NOT MODIFY ID
-        saveFileErrorLabel.setId("SaveFileErrorLabel");
         saveFileNameTextField.setId("SaveFileNameTextField");
         saveGameLabel.setStyle("-fx-text-fill: #e8e6e3;");
         saveGameLabel.setFont(new Font(16));
-        saveFileErrorLabel.setStyle("-fx-text-fill: #e8e6e3;");
-        saveFileErrorLabel.setFont(new Font(16));
         saveFileNameTextField.setStyle("-fx-text-fill: #000000;");
         saveFileNameTextField.setFont(new Font(16));
 
@@ -60,7 +56,7 @@ public class SaveView {
 
         saveGameButton = new Button("Save board");
         saveGameButton.setId("SaveBoardButton"); // DO NOT MODIFY ID
-        saveGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        saveGameButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         saveGameButton.setPrefSize(200, 50);
         saveGameButton.setFont(new Font(16));
         AdventureGameView.makeButtonAccessible(saveGameButton, "save game", "This is a button to save the game", "Use this button to save the current game.");
@@ -68,13 +64,13 @@ public class SaveView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        closeWindowButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
         AdventureGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the save game window", "Use this button to close the save game window.");
 
-        VBox saveGameBox = new VBox(10, saveGameLabel, saveFileNameTextField, saveGameButton, saveFileErrorLabel, closeWindowButton);
+        VBox saveGameBox = new VBox(10, saveGameLabel, saveFileNameTextField, saveGameButton, closeWindowButton);
         saveGameBox.setAlignment(Pos.CENTER);
 
         dialogVbox.getChildren().add(saveGameBox);
@@ -98,7 +94,7 @@ public class SaveView {
         String file_end = file_name.substring(file_name.length() - 4);
         boolean contains = false;
         if (!file_end.equals(".ser")) {
-            saveFileErrorLabel.setText(saveFileNotSerError);
+            saveGameLabel.setText(saveFileNotSerError);
         } else {
             File theDir = new File("Games" + separator + "Saved");
             if (theDir.exists()) {
@@ -109,17 +105,17 @@ public class SaveView {
                     }
                 }
                 if (contains) {
-                    saveFileErrorLabel.setText(saveFileExistsError);
+                    saveGameLabel.setText(saveFileExistsError);
                 } else {
                     File file = new File("Games" + separator + "Saved" + separator + file_name);
                     this.adventureGameView.model.saveModel(file);
-                    saveFileErrorLabel.setText(saveFileSuccess);
+                    saveGameLabel.setText(saveFileSuccess);
                 }
             } else {
                 theDir.mkdirs();
                 File file = new File("Games" + separator + "Saved" + separator + file_name);
                 this.adventureGameView.model.saveModel(file);
-                saveFileErrorLabel.setText(saveFileSuccess);
+                saveGameLabel.setText(saveFileSuccess);
             }
         }
     }
