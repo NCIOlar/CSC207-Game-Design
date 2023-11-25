@@ -3,6 +3,7 @@ package views;
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -192,14 +193,6 @@ public class AdventureGameView {
         //Inventory + Room items
         objectsInRoom.setSpacing(10);
         objectsInRoom.setAlignment(Pos.TOP_CENTER);
-
-        // GridPane, anyone?
-        gridPane.setPadding(new Insets(20));
-        gridPane.setBackground(new Background(new BackgroundFill(
-                Color.valueOf("#000000"),
-                new CornerRadii(0),
-                new Insets(0)
-        )));
 
         HBox topButtons1 = new HBox();
         topButtons1.getChildren().addAll(mapButton, shopButton);
