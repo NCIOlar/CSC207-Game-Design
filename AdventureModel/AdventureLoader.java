@@ -33,29 +33,8 @@ public class AdventureLoader {
         parseObjects();
         parseSynonyms();
 
-        Shop shop = new Shop(); // Create shops based on difficulty selected
-        AdventureObject medkit = shop.newMedkit();
-        AdventureObject stim = shop.newStim();
-        AdventureObject vest = shop.newVest();
-        AdventureObject mask = shop.newMask();
-        AdventureObject skip = shop.newSkip();
-        if (adventureName.equals("EasyGame")) {
-            HashMap<AdventureObject, Integer> easyShop = new HashMap<AdventureObject, Integer>();
-            easyShop.put(medkit, 3);
-            easyShop.put(stim, 1);
-        } else if (adventureName.equals("MediumGame")) {
-            HashMap<AdventureObject, Integer> mediumShop = new HashMap<AdventureObject, Integer>();
-            mediumShop.put(medkit, 3);
-            mediumShop.put(stim, 1);
-            mediumShop.put(vest, 1);
-        } else {
-            HashMap<AdventureObject, Integer> hardShop = new HashMap<AdventureObject, Integer>();
-            hardShop.put(medkit, 3);
-            hardShop.put(stim, 1);
-            hardShop.put(vest, 1);
-            hardShop.put(mask, 1);
-            hardShop.put(skip, 1);
-        }
+        Shop shop = new Shop(this.adventureName); // Create shops based on difficulty selected
+
         this.game.setHelpText(parseOtherFile("help"));
     }
 
