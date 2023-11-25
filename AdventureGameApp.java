@@ -17,9 +17,9 @@ public class AdventureGameApp extends Application {
     }
 
     /*
-    * JavaFX is a Framework, and to use it we will have to
-    * respect its control flow!  To start the game, we need
-    * to call "launch" which will in turn call "start" ...
+     * JavaFX is a Framework, and to use it we will have to
+     * respect its control flow!  To start the game, we need
+     * to call "launch" which will in turn call "start" ...
      */
     @Override
     public void start(Stage primaryStage) throws IOException {
