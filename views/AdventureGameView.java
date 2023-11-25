@@ -3,6 +3,7 @@ package views;
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -250,6 +251,13 @@ public class AdventureGameView {
 
     public void intiGame() {
 
+<<<<<<< HEAD
+=======
+        //Inventory + Room items
+        objectsInRoom.setSpacing(10);
+        objectsInRoom.setAlignment(Pos.TOP_CENTER);
+
+>>>>>>> d38c821 (Homepage Version 1.1)
         HBox topButtons1 = new HBox();
         topButtons1.getChildren().addAll(mapButton, shopButton);
         topButtons1.setSpacing(10);
