@@ -626,8 +626,7 @@ public class AdventureGameView {
     }
 
     public void showMap(){
-        // TODO:
-
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         if (mapToggle) {
             updateScene("");
             mapToggle = false;
@@ -670,6 +669,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             stopArticulation();
             intiGame();
         });
@@ -680,6 +685,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             stopArticulation();
             intiGame();
         });
@@ -690,6 +701,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             stopArticulation();
             intiGame();
         });
@@ -713,7 +730,13 @@ public class AdventureGameView {
     }
 
     public void addMapEvent() {
-
+        mapButton.setOnAction(e -> {
+            try {
+                showMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        })
     }
 
 
