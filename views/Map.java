@@ -100,27 +100,51 @@ public class Map {
     }
 
     private boolean checkSurroundings(int row, int column){
+        if(checkUp(row, column)){
+            return true;
+        } else if (checkDown(row, column)) {
+            return true;
+        } else if (checkLeft(row, column)) {
+            return true;
+        } else if (checkRight(row, column)) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkUp(int row, int column){
         try{
             int top = Integer.parseInt(blueprint.get(row + 1)[column]);
             return rooms.get(top).getVisited();
         }catch(Exception e){
-            try{
-                int bot = Integer.parseInt(blueprint.get(row - 1)[column]);
-                return rooms.get(bot).getVisited();
-            }catch(Exception f){
-                try{
-                    int left = Integer.parseInt(blueprint.get(row)[column - 1]);
-                    return rooms.get(left).getVisited();
+            return false;
+        }
+    }
 
-                }catch(Exception g){
-                    try{
-                        int right = Integer.parseInt(blueprint.get(row - 1)[column + 1]);
-                        return rooms.get(right).getVisited();
-                    }catch(Exception h){
-                        return false;
-                    }
-                }
-            }
+    private boolean checkDown(int row, int column){
+        try{
+            int bot = Integer.parseInt(blueprint.get(row - 1)[column]);
+            return rooms.get(bot).getVisited();
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    private boolean checkLeft(int row, int column){
+        try{
+            int left = Integer.parseInt(blueprint.get(row)[column - 1]);
+            return rooms.get(left).getVisited();
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    private boolean checkRight(int row, int column){
+        try{
+            int right = Integer.parseInt(blueprint.get(row - 1)[column + 1]);
+            return rooms.get(right).getVisited();
+        }catch(Exception h){
+            return false;
         }
     }
 
