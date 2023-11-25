@@ -57,7 +57,7 @@ public class LoadView {
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
-        closeWindowButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
+        closeWindowButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
         closeWindowButton.setOnAction(e -> dialog.close());
@@ -72,13 +72,13 @@ public class LoadView {
             }
         });
 
-        VBox selectGameBox = new VBox(10, selectGameLabel, GameList, selectGameButton, closeWindowButton);
+        VBox selectGameBox = new VBox(10, selectGameLabel, GameList, selectGameButton);
 
         // Default styles which can be modified
         GameList.setPrefHeight(100);
         selectGameLabel.setStyle("-fx-text-fill: #e8e6e3");
         selectGameLabel.setFont(new Font(16));
-        selectGameButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
+        selectGameButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
         selectGameButton.setPrefSize(200, 50);
         selectGameButton.setFont(new Font(16));
         selectGameBox.setAlignment(Pos.CENTER);
@@ -126,21 +126,17 @@ public class LoadView {
         try {
             AdventureGame game = loadGame(selected);
             adventureGameView.stopArticulation();
-            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
-            this.adventureGameView.model = game;
-            this.adventureGameView.intiGame();
+            this.adventureGameView = new AdventureGameView(game, adventureGameView.stage); // method require revision
             selectGameLabel.setText(selected);
         } catch (IOException e) {
             adventureGameView.stopArticulation();
             AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
-            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
-            this.adventureGameView.model = game;
+            this.adventureGameView = new AdventureGameView(game, adventureGameView.stage);
             selectGameLabel.setText("Error! A new game has been loaded");
         } catch (ClassNotFoundException e) {
             adventureGameView.stopArticulation();
             AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
-            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
-            this.adventureGameView.model = game;
+            this.adventureGameView = new AdventureGameView(game, adventureGameView.stage);
             selectGameLabel.setText("Error! A new game has been loaded");
         }
     }
