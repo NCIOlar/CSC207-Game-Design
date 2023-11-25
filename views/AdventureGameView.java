@@ -21,6 +21,8 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -46,6 +48,8 @@ public class AdventureGameView {
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
     Boolean helpToggle = false; //is help on display?
+    Boolean mapToggle = false;
+    Map map;
 
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
@@ -69,7 +73,7 @@ public class AdventureGameView {
     /**
      * Initialize the UI
      */
-    public void intiUI() {
+    public void intiUI() throws IOException {
 
         // setting up the stage
         this.stage.setTitle("Last Hope");
@@ -203,11 +207,10 @@ public class AdventureGameView {
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
-        gridPane.setBackground(new Background(new BackgroundFill(
-                Color.valueOf("#000000"),
-                new CornerRadii(0),
-                new Insets(0)
-        )));
+        String roomImage = "/Games/Homepage.png";
+        Image roomImageFile = new Image(roomImage);
+        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        gridPane.setBackground(new Background(background));
 
         HBox topButtons1 = new HBox();
         topButtons1.getChildren().addAll(mapButton, shopButton);
@@ -243,7 +246,7 @@ public class AdventureGameView {
         updateItems(); //update items shows inventory and objects in rooms
 
         // Render everything
-        var scene = new Scene( gridPane ,  1000, 800);
+        var scene = new Scene(gridPane ,  1000, 800);
         scene.setFill(Color.BLACK);
         this.stage.setScene(scene);
         this.stage.setResizable(false);
@@ -620,6 +623,20 @@ public class AdventureGameView {
             stopArticulation(); //if speaking, stop
             showInstructions();
         });
+    }
+
+    public void showMap(){
+        // TODO:
+
+        if (mapToggle) {
+            map.hideMap();
+            mapToggle = false;
+        } else {
+            gridPane.add(map.showMap(), 1, 1);
+            mapToggle = true;
+        }
+
+
     }
 
     /**
