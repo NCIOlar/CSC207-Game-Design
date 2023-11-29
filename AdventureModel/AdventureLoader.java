@@ -1,5 +1,9 @@
 package AdventureModel;
 
+import AdventureModel.Trolls.Fighting_Troll;
+import AdventureModel.Trolls.Gaming_Troll;
+import AdventureModel.Trolls.Troll;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,11 +35,9 @@ public class AdventureLoader {
     public void loadGame() throws IOException {
         parseRooms();
         parseObjects();
-        parseSynonyms();
 
         Shop shop = new Shop(this.adventureName); // Create shops based on difficulty selected
 
-        this.game.setHelpText(parseOtherFile("help"));
     }
 
      /**
@@ -55,7 +57,7 @@ public class AdventureLoader {
             roomNumber = Integer.parseInt(currRoom); //current room number
 
             // now need to get room name
-            String roomName = buff.readLine();
+            String[] roomSettings = buff.readLine().split("/");
 
             // now we need to get the description
             String roomDescription = "";
@@ -66,8 +68,19 @@ public class AdventureLoader {
             }
             roomDescription += "\n";
 
-            // now we make the room object
-            Room room = new Room(roomName, roomNumber, roomDescription, adventureName);
+            Room room;
+            String roomName = roomSettings[0];
+            if (roomSettings.length == 4 && roomSettings[1].equals("FIGHT")) {
+                Troll troll = new Fighting_Troll(Integer.parseInt(roomSettings[2]), Integer.parseInt(roomSettings[3]));
+                room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
+            } else if (roomSettings.length == 3 && roomSettings[1].equals("GAMES")) {
+                Troll troll = new Gaming_Troll(roomSettings[2]);
+                room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
+            } else if (roomSettings.length == 3 && roomSettings[1].equals("DAMAGE")) {
+                room = new Room(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
+            } else {
+                room = new Room(roomName, roomNumber, roomDescription, adventureName);
+            }
 
             // now we make the motion table
             line = buff.readLine(); // reads the line after "-----"
@@ -120,39 +133,4 @@ public class AdventureLoader {
         }
 
     }
-
-     /**
-     * Parse Synonyms File
-     */
-    public void parseSynonyms() throws IOException {
-        String synonymsFileName = this.adventureName + "/synonyms.txt";
-        BufferedReader buff = new BufferedReader(new FileReader(synonymsFileName));
-        String line = buff.readLine();
-        while(line != null){
-            String[] commandAndSynonym = line.split("=");
-            String command1 = commandAndSynonym[0];
-            String command2 = commandAndSynonym[1];
-            this.game.getSynonyms().put(command1,command2);
-            line = buff.readLine();
-        }
-
-    }
-
-    /**
-     * Parse Files other than Rooms, Objects and Synonyms
-     *
-     * @param fileName the file to parse
-     */
-    public String parseOtherFile(String fileName) throws IOException {
-        String text = "";
-        fileName = this.adventureName + "/" + fileName + ".txt";
-        BufferedReader buff = new BufferedReader(new FileReader(fileName));
-        String line = buff.readLine();
-        while (line != null) { // while not EOF
-            text += line+"\n";
-            line = buff.readLine();
-        }
-        return text;
-    }
-
 }

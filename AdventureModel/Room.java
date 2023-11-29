@@ -38,7 +38,15 @@ public class Room implements Serializable {
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
 
+    /**
+     * The troll in the room, if available.
+     */
     public Troll troll;
+
+    /**
+     * The damage to the player of the room, if available.
+     */
+    public int damage;
 
     /**
      * A boolean to store if the room has been visited or not
@@ -60,6 +68,40 @@ public class Room implements Serializable {
         this.isVisited = false;
     }
 
+    /**
+     * AdvGameRoom constructor.
+     *
+     * @param roomName: The name of the room.
+     * @param roomNumber: The number of the room.
+     * @param roomDescription: The description of the room.
+     * @param troll: The troll of the room
+     */
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, Troll troll){
+        this.roomName = roomName;
+        this.roomNumber = roomNumber;
+        this.roomDescription = roomDescription;
+        this.adventureName = adventureName;
+        this.isVisited = false;
+        this.troll = troll;
+    }
+
+    /**
+     * AdvGameRoom constructor.
+     *
+     * @param roomName: The name of the room.
+     * @param roomNumber: The number of the room.
+     * @param roomDescription: The description of the room.
+     * @param damage: The damage of the room
+     */
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, int damage){
+        this.roomName = roomName;
+        this.roomNumber = roomNumber;
+        this.roomDescription = roomDescription;
+        this.adventureName = adventureName;
+        this.isVisited = false;
+        this.damage = damage;
+    }
+
 
     /**
      * Returns a comma delimited list of every
@@ -75,22 +117,6 @@ public class Room implements Serializable {
         }
         String objectStr = String.join(",", objectLst);
         return objectStr;
-    }
-
-    /**
-     * Returns a comma delimited list of every
-     * move that is possible from the given room,
-     * e.g. "DOWN, UP, NORTH, SOUTH".
-     *
-     * @return delimited string of possible moves
-     */
-    public String getCommands() {
-        ArrayList<String> commandLst = new ArrayList<String>();
-        for (Passage passage : this.motionTable.passageTable) {
-            commandLst.add(passage.getDirection());
-        }
-        String commandStr = String.join(",", commandLst);
-        return commandStr;
     }
 
     /**
@@ -192,5 +218,22 @@ public class Room implements Serializable {
         return this.motionTable;
     }
 
+    /**
+     * Getter method for the troll attribute.
+     *
+     * @return: The Troll of the room, if available
+     */
+    public Troll getTroll(){
+        return this.troll;
+    }
+
+    /**
+     * Getter method for the damage attribute.
+     *
+     * @return: The damage of the room, if available
+     */
+    public int getDamage(){
+        return this.damage;
+    }
 
 }

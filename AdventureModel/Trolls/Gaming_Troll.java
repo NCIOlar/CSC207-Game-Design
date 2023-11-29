@@ -17,9 +17,7 @@ public class Gaming_Troll implements Troll {
 
     public int  answer; //what number?
 
-    public int difficulty; // Difficulty is either 1 (easy), 2 (medium), 3 (hard)
-
-    public Gaming_Troll() {
+    public Gaming_Troll(String type) {
         Random rand = new Random();
         Integer num = rand.nextInt(10);
         this.scanner = new Scanner(System.in);
@@ -45,16 +43,5 @@ public class Gaming_Troll implements Troll {
     public boolean playGame() {
         giveInstructions();
         return true;
-    }
-
-    /**
-     * Main method, use for debugging
-     *
-     * @param args: Input arguments
-     */
-
-    public static void main(String [] args) throws InterruptedException {
-        Gaming_Troll s = new Gaming_Troll();
-        boolean a = s.playGame();
     }
 }
