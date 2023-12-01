@@ -11,7 +11,7 @@ You are at the greenhouse. A self sustaining potato farm solves the food issue.
 FORWARD    6/POTATO
 BACKWARD   1
 LEFT       3
-RIGHT      4
+RIGHT      5
 
 3
 Theatre/FIGHT/70/3
@@ -33,7 +33,7 @@ You are in an electrical room. Don't get electrocuted!
 LEFT       2
 
 6
-Cockpit
+Cockpit/DAMAGE/-3
 You are in the cockpit. Autopilot is such a lifesaver with the pilots gone.
 -----
 BACKWARD   2
@@ -101,7 +101,7 @@ RIGHT      13
 Map Room
 The map room displays a map of the observable universe!
 -----
-FORWARD    16/KEYS
+FORWARD    16/KEYCARD
 LEFT       6
 
 16
@@ -125,3 +125,9 @@ You are in a corridor.
 -----
 FORWARD    19/VACCINE
 LEFT       16
+
+19
+Escape Pod
+You have collected the vaccine and successfully saved millions of people from the virus. Congratulations.
+-----
+FORCED     0

@@ -26,6 +26,8 @@ public class Player implements Serializable {
     public int defense;
     public int funds;
     public boolean isImmune; // for mask item
+
+    public String requiredObj; // Required Object for entering a room
     /**
      * Adventure Game Player Constructor
      */

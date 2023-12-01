@@ -35,6 +35,7 @@ public class AdventureLoader {
     public void loadGame() throws IOException {
         parseRooms();
         parseObjects();
+        parseSynonyms();
 
         Shop shop = new Shop(this.adventureName); // Create shops based on difficulty selected
 
@@ -130,6 +131,23 @@ public class AdventureLoader {
             Room location = this.game.getRooms().get(i);
             AdventureObject object = new AdventureObject(objectName, objectDescription, location, objectType, objectEffect, objectCost);
             location.addGameObject(object);
+        }
+
+    }
+
+    /**
+     * Parse Synonyms File
+     */
+    public void parseSynonyms() throws IOException {
+        String synonymsFileName = this.adventureName + "/synonyms.txt";
+        BufferedReader buff = new BufferedReader(new FileReader(synonymsFileName));
+        String line = buff.readLine();
+        while(line != null){
+            String[] commandAndSynonym = line.split("=");
+            String command1 = commandAndSynonym[0];
+            String command2 = commandAndSynonym[1];
+            this.game.getSynonyms().put(command1,command2);
+            line = buff.readLine();
         }
 
     }
