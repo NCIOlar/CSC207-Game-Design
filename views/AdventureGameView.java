@@ -70,6 +70,8 @@ public class AdventureGameView {
 
     TextField inputTextField; //for user input
 
+    Boolean helpToggle = false; //is help on display?
+
     /**
      * Adventure Game View Constructor
      * __________________________
@@ -97,7 +99,6 @@ public class AdventureGameView {
         Image roomImageFile = new Image(roomImage);
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
-
         //Three columns, three rows for the GridPane
         ColumnConstraints column1 = new ColumnConstraints(200);
         ColumnConstraints column2 = new ColumnConstraints(600);
@@ -263,18 +264,18 @@ public class AdventureGameView {
         topButtons2.setPrefWidth(400);
         topButtons2.setAlignment(Pos.CENTER);
 
-        Label commandLabel = new Label("What would you like to do?");
+        Label commandLabel = new Label("Enter Command");
         commandLabel.setStyle("-fx-text-fill: BLACK;");
         commandLabel.setFont(new Font("Arial", 16));
 
         // adding the text area and submit button to a VBox
         VBox textEntry = new VBox();
-        textEntry.setStyle("-fx-background: rgba(255,255,255,0.5); -fx-background-color: rgba(255,255,255,0.5)");
+        textEntry.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
         textEntry.setPadding(new Insets(20, 20, 20, 20));
         textEntry.getChildren().addAll(commandLabel, inputTextField);
         textEntry.setSpacing(10);
         textEntry.setAlignment(Pos.CENTER);
-        gridPane.add( textEntry, 1, 2, 3, 1 );
+        gridPane.add( textEntry, 2, 2, 3, 1);
 
         Label objLabel =  new Label("Objects in Room");
         objLabel.setStyle("-fx-text-fill: WHITE;");
@@ -519,27 +520,42 @@ public class AdventureGameView {
      */
     public void updateScene(String textToDisplay) {
 
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
         Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
         roomDescLabel.setPrefWidth(600);
-        roomDescLabel.setPrefHeight(200);
+        roomDescLabel.setPrefHeight(150);
         roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
         roomDescLabel.setWrapText(true);
+        roomDescLabel.setStyle("-fx-text-fill: BLACK");
         VBox roomPane = new VBox(roomDescLabel);
         roomPane.setPadding(new Insets(10));
         roomPane.setAlignment(Pos.BOTTOM_CENTER);
-        roomPane.setStyle("-fx-background-color: #000000;");
+        roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
 
+        gridPane.add(roomPane, 1, 2);
         stage.sizeToScene();
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
 
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
-        Label playerInfo = new Label("❤️:" + model.player.health + "\n🔪: " + model.player.damage + "\n🛡️: " + model.player.defense);
-        playerInfo.setStyle("-fx-text-fill: RED; -fx-background: rgba(255,255,255,0.5); -fx-background-color: rgba(255,255,255,0.5)");
-        playerInfo.setFont(new Font("Arial", 32));
-        playerInfo.setAlignment(Pos.CENTER);
-        gridPane.add(playerInfo, 0, 2);
+        Label playerHealth = new Label("❤️: " + model.player.health);
+        playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
+        playerHealth.setFont(new Font("Arial", 32));
+        playerHealth.setAlignment(Pos.CENTER);
+        Label playerDamage = new Label("🔪: " + model.player.damage);
+        playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
+        playerDamage.setFont(new Font("Arial", 32));
+        playerDamage.setAlignment(Pos.CENTER);
+        Label playerDefense = new Label("🛡️: " + model.player.defense);
+        playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
+        playerDefense.setFont(new Font("Arial", 32));
+        playerDefense.setAlignment(Pos.CENTER);
+        VBox player = new VBox(playerHealth, playerDefense, playerDamage);
+        player.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
+        player.setPadding(new Insets(20, 20, 20, 20));
+        player.setSpacing(10);
+        gridPane.add(player, 0, 2);
 
         if (this.model.player.getCurrentRoom().troll != null) {
 
@@ -688,7 +704,7 @@ public class AdventureGameView {
         scO.setPadding(new Insets(10));
         scO.setMaxHeight(600);
         scO.setMaxWidth(150);
-        scO.setStyle("-fx-background: rgba(255,255,255,0.5); -fx-background-color:transparent;");
+        scO.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
 
@@ -722,6 +738,7 @@ public class AdventureGameView {
      */
     public void showInstructions() throws IOException {
 
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         String text = "";
         String fileName = "Games/help.txt";
         BufferedReader buff = new BufferedReader(new FileReader(fileName));
@@ -741,13 +758,65 @@ public class AdventureGameView {
         VBox helpBox = new VBox(helpLabel);
         helpBox.setPadding(new Insets(10));
         helpBox.setAlignment(Pos.TOP_CENTER);
-        helpBox.setStyle("-fx-background-color: #000000;");
+        helpBox.setStyle("-fx-background-color: rgba(0,0,0, 0.3);");
         helpLabel.setText(helpText);
         gridPane.add(helpBox, 1, 1);
         HBox lowButtons = new HBox();
         lowButtons.getChildren().addAll(homepageButton);
         lowButtons.setAlignment(Pos.CENTER);
         gridPane.add(lowButtons, 1, 2);
+    }
+
+    /*
+     * Show the game instructions.
+     *
+     * If helpToggle is FALSE:
+     * -- display the help text in the CENTRE of the gridPane (i.e. within cell 1,1)
+     * -- use whatever GUI elements to get the job done!
+     * -- set the helpToggle to TRUE
+     * -- REMOVE whatever nodes are within the cell beforehand!
+     *
+     * If helpToggle is TRUE:
+     * -- redraw the room image in the CENTRE of the gridPane (i.e. within cell 1,1)
+     * -- set the helpToggle to FALSE
+     * -- Again, REMOVE whatever nodes are within the cell beforehand!
+     */
+    public void showHelp() throws IOException {
+        if (helpToggle) {
+            gridPane.getChildren().removeIf(node -> true);
+            helpToggle = false;
+            intiGame();
+            updateScene("");
+        } else {
+            gridPane.getChildren().removeIf(node -> true);
+            String text = "";
+            String fileName = "Games/help.txt";
+            BufferedReader buff = new BufferedReader(new FileReader(fileName));
+            String line = buff.readLine();
+            while (line != null) { // while not EOF
+                text += line+"\n";
+                line = buff.readLine();
+            }
+            Label helpLabel = new Label(text);
+            helpLabel.setStyle("-fx-text-fill: white;");
+            helpLabel.setFont(new Font("Arial", 16));
+            helpLabel.setAlignment(Pos.CENTER);
+            helpLabel.setPrefWidth(500);
+            helpLabel.setPrefHeight(500);
+            helpLabel.setTextOverrun(OverrunStyle.CLIP);
+            helpLabel.setWrapText(true);
+            VBox helpBox = new VBox(helpLabel);
+            helpBox.setPadding(new Insets(10));
+            helpBox.setAlignment(Pos.TOP_CENTER);
+            helpBox.setStyle("-fx-background-color: rgba(0,0,0,0.3);");
+            helpLabel.setText(helpText);
+            gridPane.add(helpBox, 1, 1);
+            HBox lowButtons = new HBox();
+            lowButtons.getChildren().addAll(helpButton);
+            lowButtons.setAlignment(Pos.CENTER);
+            gridPane.add(lowButtons, 1, 2);
+            helpToggle = true;
+        }
     }
 
     /**
@@ -758,7 +827,7 @@ public class AdventureGameView {
         helpButton.setOnAction(e -> {
             stopArticulation(); //if speaking, stop
             try {
-                showInstructions();
+                showHelp();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
