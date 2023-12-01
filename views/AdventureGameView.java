@@ -2,27 +2,36 @@ package views;
 
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
+import views.Map;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
+import javafx.util.Duration;
 
-import java.io.File;
+import java.io.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -45,9 +54,8 @@ public class AdventureGameView {
     Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
     Setting setting = new Setting(new GridPane());
 
-    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, helpButton_home,
+    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
-    Boolean helpToggle = false; //is help on display?
     Boolean mapToggle = false;
     Map map;
 
@@ -60,6 +68,14 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
+    private String preMusic = "Games/Solar_Sailer.mp3";
+
+    String helpText; //help text
+
+    TextField inputTextField; //for user input
+
+    Boolean helpToggle = false; //is help on display?
+
     /**
      * Adventure Game View Constructor
      * __________________________
@@ -71,12 +87,15 @@ public class AdventureGameView {
     }
 
     /**
-     * Initialize the UI
+     * Initialize the UI (load the first homepage)
      */
     public void intiUI() throws IOException {
 
         // setting up the stage
         this.stage.setTitle("Last Hope");
+
+        objectsInRoom.setSpacing(10);
+        objectsInRoom.setAlignment(Pos.TOP_CENTER);
 
         // GridPane, anyone?
         gridPane.setPadding(new Insets(20));
@@ -84,7 +103,6 @@ public class AdventureGameView {
         Image roomImageFile = new Image(roomImage);
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
-
         //Three columns, three rows for the GridPane
         ColumnConstraints column1 = new ColumnConstraints(200);
         ColumnConstraints column2 = new ColumnConstraints(600);
@@ -101,6 +119,26 @@ public class AdventureGameView {
 
         gridPane.getColumnConstraints().addAll( column1 , column2 , column3);
         gridPane.getRowConstraints().addAll( row1 , row2 , row3);
+
+        inputTextField = new TextField();
+        inputTextField.setFont(new Font("Arial", 16));
+        inputTextField.setFocusTraversable(true);
+
+        inputTextField.setAccessibleRole(AccessibleRole.TEXT_AREA);
+        inputTextField.setAccessibleRoleDescription("Text Entry Box");
+        inputTextField.setAccessibleText("Enter commands in this box.");
+        inputTextField.setAccessibleHelp("This is the area in which you can enter commands you would like to play.  Enter a command and hit return to continue.");
+        addTextHandlingEvent(); //attach an event to this input field
+
+        String text = "";
+        String fileName = "Games/help.txt";
+        BufferedReader buff = new BufferedReader(new FileReader(fileName));
+        String line = buff.readLine();
+        while (line != null) { // while not EOF
+            text += line+"\n";
+            line = buff.readLine();
+        }
+        this.helpText = text;
 
         // Buttons
         saveButton = new Button("Save");
@@ -119,7 +157,7 @@ public class AdventureGameView {
         helpButton.setId("Help");
         customizeButton(helpButton, 100, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
-        addInstructionEvent();
+        addHelpEvent();
 
         mapButton = new Button("Map");
         mapButton.setId("Map");
@@ -137,19 +175,20 @@ public class AdventureGameView {
         homepageButton.setId("Home");
         customizeButton(homepageButton, 100, 50);
         makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
+        homepageButton.setAlignment(Pos.CENTER);
         addHomeEvent();
 
         loadButton_home = new Button("Load Game");
         loadButton_home.setId("Load Game");
         customizeButton(loadButton_home, 150, 50);
         makeButtonAccessible(loadButton_home, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
-        addLoadEvent();
+        addLoad_HomeEvent();
 
-        helpButton_home = new Button("Help");
-        helpButton_home.setId("Help");
-        customizeButton(helpButton_home, 150, 50);
-        makeButtonAccessible(helpButton_home, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
-        addInstructionEvent();
+        introductionButton_home = new Button("Introduction");
+        introductionButton_home.setId("Introduction");
+        customizeButton(introductionButton_home, 150, 50);
+        makeButtonAccessible(introductionButton_home, "Introduction Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
+        addIntroduction_HomeEvent();
 
         easyButton_home = new Button("Easy");
         easyButton_home.setId("Easy");
@@ -179,8 +218,8 @@ public class AdventureGameView {
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingEvent();
 
-        Buttons = new VBox();
-        Buttons.getChildren().addAll(easyButton_home, mediumButton_home, hardButton_home, loadButton_home, helpButton_home);
+        VBox Buttons = new VBox();
+        Buttons.getChildren().addAll(introductionButton_home, easyButton_home, mediumButton_home, hardButton_home, loadButton_home);
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
 
@@ -197,64 +236,190 @@ public class AdventureGameView {
 
         Image image = new Image("Games/Cursor.png");  //pass in the image path
         gridPane.getScene().setCursor(new ImageCursor(image));
+
+
+        String path2 = "Games/Solar_Sailer.mp3";
+        Media media = new Media(Paths.get(path2).toUri().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setAutoPlay(true);
     }
 
-    public void intiGame() {
+    /**
+     * Return to the homepage (after pressing home button when playing game)
+     */
+    public void returnHome() {
 
-        //Inventory + Room items
-        objectsInRoom.setSpacing(10);
-        objectsInRoom.setAlignment(Pos.TOP_CENTER);
-
-        // GridPane, anyone?
-        gridPane.setPadding(new Insets(20));
         String roomImage = "/Games/Homepage.png";
         Image roomImageFile = new Image(roomImage);
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
 
-        HBox topButtons1 = new HBox();
-        topButtons1.getChildren().addAll(mapButton, shopButton);
-        topButtons1.setSpacing(10);
-        topButtons1.setPrefWidth(400);
-        topButtons1.setAlignment(Pos.CENTER);
+        VBox Buttons = new VBox();
+        Buttons.getChildren().addAll(introductionButton_home, easyButton_home, mediumButton_home, hardButton_home, loadButton_home);
+        Buttons.setSpacing(30);
+        Buttons.setAlignment(Pos.BOTTOM_CENTER);
+
+        //add all the widgets to the GridPane
+        gridPane.add( Buttons, 1, 1 );  // Add buttons
+        gridPane.add(settingsButton, 2, 0);
+
+        this.stage.getScene().setOnKeyPressed(null);
+
+
+        String path2 = "Games/Solar_Sailer.mp3";
+        if (!preMusic.equals(path2)) {
+            preMusic = path2;
+            mediaPlayer.dispose();
+            Media media = new Media(Paths.get(path2).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+        }
+
+    }
+
+    public void intiGame() {
 
         HBox topButtons2 = new HBox();
-        topButtons2.getChildren().addAll(homepageButton, settingsButton, helpButton);
+        topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
         topButtons2.setSpacing(10);
         topButtons2.setPrefWidth(400);
         topButtons2.setAlignment(Pos.CENTER);
 
-        HBox topButtons3 = new HBox();
-        topButtons3.getChildren().addAll(saveButton, loadButton);
-        topButtons3.setSpacing(10);
-        topButtons3.setPrefWidth(400);
-        topButtons3.setAlignment(Pos.CENTER);
+        Label commandLabel = new Label("Enter Command");
+        commandLabel.setStyle("-fx-text-fill: BLACK;");
+        commandLabel.setFont(new Font("Arial", 16));
 
-        //labels for inventory and room items
-        //Label objLabel =  new Label("Objects in Room");
-        //objLabel.setAlignment(Pos.CENTER);
-        //objLabel.setStyle("-fx-text-fill: white;");
-        //objLabel.setFont(new Font("Arial", 16));
+        // adding the text area and submit button to a VBox
+        VBox textEntry = new VBox();
+        textEntry.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
+        textEntry.setPadding(new Insets(20, 20, 20, 20));
+        textEntry.getChildren().addAll(commandLabel, inputTextField);
+        textEntry.setSpacing(10);
+        textEntry.setAlignment(Pos.CENTER);
+        gridPane.add( textEntry, 2, 2, 3, 1);
+
+        Label objLabel =  new Label("Objects in Room");
+        objLabel.setStyle("-fx-text-fill: WHITE;");
+        objLabel.setFont(new Font("Arial", 16));
+        objLabel.setAlignment(Pos.BOTTOM_RIGHT);
 
         //add all the widgets to the GridPane
-        gridPane.add( topButtons1, 0, 0);  // Add buttons
-        //gridPane.add( objLabel, 0, 0, 1, 1 );  // Add label
         gridPane.add( topButtons2, 1, 0);  // Add buttons
-        gridPane.add( topButtons3, 2, 0);  // Add buttons
+        gridPane.add( objLabel, 0, 0);  // Add buttons
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
-        // Render everything
-        var scene = new Scene(gridPane ,  1000, 800);
-        scene.setFill(Color.BLACK);
-        this.stage.setScene(scene);
-        this.stage.setResizable(false);
-        this.stage.show();
-
-
+        EventHandler<KeyEvent> eventhandler = new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.W) {
+                    submitEvent("W");
+                } else if (keyEvent.getCode() == KeyCode.S) {
+                    submitEvent("S");
+                } else if (keyEvent.getCode() == KeyCode.A) {
+                    submitEvent("A");
+                } else if (keyEvent.getCode() == KeyCode.D) {
+                    submitEvent("D");
+                } else if (keyEvent.getCode() == KeyCode.E) {
+                    submitEvent("E");
+                }
+            }
+        };
+        this.stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
 
     }
+
+    /**
+     * addTextHandlingEvent
+     * __________________________
+     * Add an event handler to the myTextField attribute
+     *
+     * Your event handler should respond when users
+     * hits the ENTER or TAB KEY. If the user hits
+     * the ENTER Key, strip white space from the
+     * input to myTextField and pass the stripped
+     * string to submitEvent for processing.
+     *
+     * If the user hits the TAB key, move the focus
+     * of the scene onto any other node in the scene
+     * graph by invoking requestFocus method.
+     */
+    private void addTextHandlingEvent() {
+        EventHandler<KeyEvent> eventHandler = new EventHandler<KeyEvent>() {
+            public void handle(KeyEvent keyEvent) {
+                if (keyEvent.getCode() == KeyCode.ENTER) {
+                    String command = inputTextField.getText().strip();
+                    submitEvent(command);
+                } else if (keyEvent.getCode() == KeyCode.TAB) {
+                    saveButton.requestFocus();
+                }
+            }
+        };
+
+        inputTextField.addEventHandler(KeyEvent.KEY_PRESSED, eventHandler);
+
+    }
+
+
+    /**
+     * submitEvent
+     * __________________________
+     *
+     * @param text the command that needs to be processed
+     */
+    private void submitEvent(String text) {
+
+        text = text.strip(); //get rid of white space
+        stopArticulation(); //if speaking, stop
+
+        if (text.equalsIgnoreCase("COMMANDS") || text.equalsIgnoreCase("C")) {
+            showCommands(); //this is new!  We did not have this command in A1
+            return;
+        } else if (text.equalsIgnoreCase("BAG") || text.equalsIgnoreCase("E")) {
+            //IMPLEMENT BAG FUNCTION HERE!
+            return;
+        }
+
+        //try to move!
+        String output = this.model.interpretAction(text); //process the command!
+
+        if (output == null || (!output.equals("YOU LOST") && !output.equals("YOU WIN"))) {
+            updateScene("");
+            updateItems();
+        } else if (output.equals("YOU WIN")) {
+            updateScene("");
+            updateItems();
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+                returnHome();
+                this.model = null;
+            });
+        } else if (output.equals("YOU LOST")) {
+            updateScene("");
+            updateItems();
+            PauseTransition pause = new PauseTransition(Duration.seconds(3));
+            pause.setOnFinished(event -> {
+                returnHome();
+                this.model = null;
+            });
+            pause.play();
+        }
+    }
+
+    /**
+     * showCommands
+     * __________________________
+     *
+     * update the text in the GUI (within roomDescLabel)
+     * to show all the moves that are possible from the
+     * current room.
+     */
+    private void showCommands() {
+        String commands = model.player.getCurrentRoom().getCommands();
+        commands = "You possible moves are:\n" + commands;
+        roomDescLabel.setText(commands);
+    }
+
     public void showSettingMenu(){
         //update setting on current girdpane
 
@@ -272,23 +437,16 @@ public class AdventureGameView {
         makeButtonAccessible(increaseBrightnessButton, "increaseBrightness", "This button increase birghtness.", "This button increase birghtness");
         addIncreaseBrightnessEvent();
 
-
-
         decreaseBrightnessButton = new Button("Decrease Brightness");
         decreaseBrightnessButton.setId("decreaseBrightness");
         customizeButton(decreaseBrightnessButton, 200, 50);
         makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
         addDecreaseBrightnessEvent();
 
-
-
         VBox settingButtons = new VBox();
         settingButtons.getChildren().addAll(menuButton, increaseBrightnessButton, decreaseBrightnessButton);
         settingButtons.setSpacing(30);
         settingButtons.setAlignment(Pos.CENTER);
-
-
-
 
         gridPane.add(settingButtons, 1 ,1);
 
@@ -303,10 +461,12 @@ public class AdventureGameView {
 
     public void addMenu(){
         menuButton.setOnAction(e -> {
-            gridPane.getChildren().clear();
-            gridPane.add( Buttons, 1, 1 );  // Add buttons
-            gridPane.add(settingsButton, 2, 0);
-            addSettingEvent();
+//            gridPane.getChildren().clear();
+//            gridPane.add( Buttons, 1, 1 );  // Add buttons
+//            gridPane.add(settingsButton, 2, 0);
+//            addSettingEvent();
+              gridPane.getChildren().clear();
+              returnHome();
         });
 
     }
@@ -370,21 +530,6 @@ public class AdventureGameView {
     }
 
     /**
-     * showCommands
-     * __________________________
-     *
-     * update the text in the GUI (within roomDescLabel)
-     * to show all the moves that are possible from the
-     * current room.
-     */
-    private void showCommands() {
-        String commands = model.player.getCurrentRoom().getCommands();
-        commands = "You possible moves are:\n" + commands;
-        roomDescLabel.setText(commands);
-    }
-
-
-    /**
      * updateScene
      * __________________________
      *
@@ -398,24 +543,81 @@ public class AdventureGameView {
      */
     public void updateScene(String textToDisplay) {
 
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
         Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
-        roomDescLabel.setPrefWidth(500);
-        roomDescLabel.setPrefHeight(500);
+        roomDescLabel.setPrefWidth(600);
+        roomDescLabel.setPrefHeight(150);
         roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
         roomDescLabel.setWrapText(true);
-        VBox roomPane = new VBox(roomImageView,roomDescLabel);
+        roomDescLabel.setStyle("-fx-text-fill: BLACK");
+        VBox roomPane = new VBox(roomDescLabel);
         roomPane.setPadding(new Insets(10));
-        roomPane.setAlignment(Pos.TOP_CENTER);
-        roomPane.setStyle("-fx-background-color: #000000;");
+        roomPane.setAlignment(Pos.BOTTOM_CENTER);
+        roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
 
+        gridPane.add(roomPane, 1, 2);
         stage.sizeToScene();
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
 
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
+        Label playerHealth = new Label("❤️: " + model.player.health);
+        playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
+        playerHealth.setFont(new Font("Arial", 32));
+        playerHealth.setAlignment(Pos.CENTER);
+        Label playerDamage = new Label("🔪: " + model.player.damage);
+        playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
+        playerDamage.setFont(new Font("Arial", 32));
+        playerDamage.setAlignment(Pos.CENTER);
+        Label playerDefense = new Label("🛡️: " + model.player.defense);
+        playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
+        playerDefense.setFont(new Font("Arial", 32));
+        playerDefense.setAlignment(Pos.CENTER);
+        VBox player = new VBox(playerHealth, playerDefense, playerDamage);
+        player.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
+        player.setPadding(new Insets(20, 20, 20, 20));
+        player.setSpacing(10);
+        gridPane.add(player, 0, 2);
 
+        if (this.model.player.getCurrentRoom().troll != null) {
+
+        }
         //finally, articulate the description
-        if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+        // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+        int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
+        if(roomNum <= 8 || roomNum ==15){
+            String path2 = "Games/Sea_Of_Simulation.mp3";
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
+        }
+        else if (roomNum <= 14){
+            String path2 = "Games/Disc_Wars.mp3";
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
+        }
+        else{
+
+            String path2 = "Games/Flynn_Lives.mp3";
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
+
+        }
     }
 
     /**
@@ -484,7 +686,7 @@ public class AdventureGameView {
         String separator = File.separator;
         ArrayList<String> inventory = this.model.player.getInventory();
         for (String objectName : inventory) {
-            String objectImage = this.model.getDirectoryName() + separator + "objectImages" + separator + objectName + ".jpg";
+            String objectImage = this.model.getDirectoryName() + separator + "objectImages" + separator + objectName + ".png";
             Image objectImageFile = new Image(objectImage);
             ImageView objectImageView = new ImageView(objectImageFile);
             objectImageView.setPreserveRatio(true);
@@ -522,7 +724,7 @@ public class AdventureGameView {
 
         ArrayList<AdventureObject> objectInRoom = this.model.player.getCurrentRoom().objectsInRoom;
         for (AdventureObject object : objectInRoom) {
-            String objectImage = this.model.getDirectoryName() + separator + "objectImages" + separator + object.getName() + ".jpg";
+            String objectImage = this.model.getDirectoryName() + separator + "objectImages" + separator + object.getName() + ".png";
             Image objectImageFile = new Image(objectImage);
             ImageView objectImageView = new ImageView(objectImageFile);
             objectImageView.setPreserveRatio(true);
@@ -553,24 +755,72 @@ public class AdventureGameView {
             objectsInRoom.getChildren().add(objectButton);
         }
 
-        //write some code here to add images of objects in a given room to the objectsInRoom Vbox
-        //write some code here to add images of objects in a player's inventory room to the objectsInInventory Vbox
-        //please use setAccessibleText to add "alt" descriptions to your images!
-        //the path to the image of any is as follows:
-        //this.model.getDirectoryName() + "/objectImages/" + objectName + ".jpg";
-
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 1);
         ScrollPane scO = new ScrollPane(objectsInRoom);
         scO.setPadding(new Insets(10));
-        scO.setStyle("-fx-background: #000000; -fx-background-color:transparent;");
+        scO.setMaxHeight(600);
+        scO.setMaxWidth(150);
+        scO.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
 
-        ScrollPane scI = new ScrollPane(objectsInInventory);
-        scI.setFitToWidth(true);
-        scI.setStyle("-fx-background: #000000; -fx-background-color:transparent;");
-        gridPane.add(scI,2,1);
+    }
+
+    public void showMap(){
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+        if (mapToggle) {
+            updateScene("");
+            mapToggle = false;
+        } else {
+            gridPane.add(map.showMap(), 1, 1);
+            mapToggle = true;
+        }
 
 
+    }
+    /*
+     * Show the game instructions.
+     *
+     * If helpToggle is FALSE:
+     * -- display the help text in the CENTRE of the gridPane (i.e. within cell 1,1)
+     * -- use whatever GUI elements to get the job done!
+     * -- set the helpToggle to TRUE
+     * -- REMOVE whatever nodes are within the cell beforehand!
+     *
+     * If helpToggle is TRUE:
+     * -- redraw the room image in the CENTRE of the gridPane (i.e. within cell 1,1)
+     * -- set the helpToggle to FALSE
+     * -- Again, REMOVE whatever nodes are within the cell beforehand!
+     */
+    public void showInstructions() throws IOException {
+
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+        String text = "";
+        String fileName = "Games/help.txt";
+        BufferedReader buff = new BufferedReader(new FileReader(fileName));
+        String line = buff.readLine();
+        while (line != null) { // while not EOF
+            text += line+"\n";
+            line = buff.readLine();
+        }
+        Label helpLabel = new Label(text);
+        helpLabel.setStyle("-fx-text-fill: white;");
+        helpLabel.setFont(new Font("Arial", 16));
+        helpLabel.setAlignment(Pos.CENTER);
+        helpLabel.setPrefWidth(500);
+        helpLabel.setPrefHeight(500);
+        helpLabel.setTextOverrun(OverrunStyle.CLIP);
+        helpLabel.setWrapText(true);
+        VBox helpBox = new VBox(helpLabel);
+        helpBox.setPadding(new Insets(10));
+        helpBox.setAlignment(Pos.TOP_CENTER);
+        helpBox.setStyle("-fx-background-color: rgba(0,0,0, 0.3);");
+        helpLabel.setText(helpText);
+        gridPane.add(helpBox, 1, 1);
+        HBox lowButtons = new HBox();
+        lowButtons.getChildren().addAll(homepageButton);
+        lowButtons.setAlignment(Pos.CENTER);
+        gridPane.add(lowButtons, 1, 2);
     }
 
     /*
@@ -587,15 +837,23 @@ public class AdventureGameView {
      * -- set the helpToggle to FALSE
      * -- Again, REMOVE whatever nodes are within the cell beforehand!
      */
-    public void showInstructions() {
-
-        gridPane.getChildren().removeIf(node -> gridPane.getColumnIndex(node) == 1 && gridPane.getRowIndex(node) == 1);
-
+    public void showHelp() throws IOException {
         if (helpToggle) {
-            updateScene("");
+            gridPane.getChildren().removeIf(node -> true);
             helpToggle = false;
+            intiGame();
+            updateScene("");
         } else {
-            Label helpLabel = new Label(model.getInstructions());
+            gridPane.getChildren().removeIf(node -> true);
+            String text = "";
+            String fileName = "Games/help.txt";
+            BufferedReader buff = new BufferedReader(new FileReader(fileName));
+            String line = buff.readLine();
+            while (line != null) { // while not EOF
+                text += line+"\n";
+                line = buff.readLine();
+            }
+            Label helpLabel = new Label(text);
             helpLabel.setStyle("-fx-text-fill: white;");
             helpLabel.setFont(new Font("Arial", 16));
             helpLabel.setAlignment(Pos.CENTER);
@@ -606,10 +864,13 @@ public class AdventureGameView {
             VBox helpBox = new VBox(helpLabel);
             helpBox.setPadding(new Insets(10));
             helpBox.setAlignment(Pos.TOP_CENTER);
-            helpBox.setStyle("-fx-background-color: #000000;");
-            String helpString = model.getInstructions();
-            helpLabel.setText(helpString);
+            helpBox.setStyle("-fx-background-color: rgba(0,0,0,0.3);");
+            helpLabel.setText(helpText);
             gridPane.add(helpBox, 1, 1);
+            HBox lowButtons = new HBox();
+            lowButtons.getChildren().addAll(helpButton);
+            lowButtons.setAlignment(Pos.CENTER);
+            gridPane.add(lowButtons, 1, 2);
             helpToggle = true;
         }
     }
@@ -618,24 +879,30 @@ public class AdventureGameView {
      * This method handles the event related to the
      * help button.
      */
-    public void addInstructionEvent() {
+    public void addHelpEvent() {
         helpButton.setOnAction(e -> {
             stopArticulation(); //if speaking, stop
-            showInstructions();
+            try {
+                showHelp();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
-    public void showMap(){
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
-        if (mapToggle) {
-            updateScene("");
-            mapToggle = false;
-        } else {
-            gridPane.add(map.showMap(), 1, 1);
-            mapToggle = true;
-        }
-
-
+    /**
+     * This method handles the event related to the
+     * help button in homepage.
+     */
+    public void addIntroduction_HomeEvent() {
+        introductionButton_home.setOnAction(e -> {
+            stopArticulation(); //if speaking, stop
+            try {
+                showInstructions();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     /**
@@ -662,6 +929,17 @@ public class AdventureGameView {
 
     /**
      * This method handles the event related to the
+     * load button in homepage.
+     */
+    public void addLoad_HomeEvent() {
+        loadButton_home.setOnAction(e -> {
+            gridPane.requestFocus();
+            LoadView loadView = new LoadView(this);
+        });
+    }
+
+    /**
+     * This method handles the event related to the
      * easy button.
      */
     public void addEasyEvent() {
@@ -669,12 +947,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -685,12 +957,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -701,12 +967,6 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
-            try {
-                map = new Map(this);
-                map.generateMap();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
             stopArticulation();
             intiGame();
         });
@@ -724,11 +984,7 @@ public class AdventureGameView {
             gridPane.requestFocus();
             gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
-            try {
-                intiUI();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
+            returnHome();
         });
     }
 

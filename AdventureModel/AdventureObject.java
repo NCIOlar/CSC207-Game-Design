@@ -22,7 +22,7 @@ public class AdventureObject implements Serializable {
     /**
      * The location of the object.
      */
-    private Room location = null;
+    private Room location;
     // new attributes
     public String objectType;
     public int objectEffect;
