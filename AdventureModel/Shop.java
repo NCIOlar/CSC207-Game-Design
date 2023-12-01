@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class Shop {
 
-    public HashMap<AdventureObject, Integer> objectsForSale;
+    public HashMap<AdventureObject, Integer> objectsForSale = new HashMap<AdventureObject, Integer>();
     public boolean outOfStock;
     public String adventureName;
 

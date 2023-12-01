@@ -38,7 +38,15 @@ public class Room implements Serializable {
      */
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
 
+    /**
+     * The troll in the room, if available.
+     */
     public Troll troll;
+
+    /**
+     * The damage to the player of the room, if available.
+     */
+    public int damage;
 
     /**
      * A boolean to store if the room has been visited or not
@@ -58,6 +66,40 @@ public class Room implements Serializable {
         this.roomDescription = roomDescription;
         this.adventureName = adventureName;
         this.isVisited = false;
+    }
+
+    /**
+     * AdvGameRoom constructor.
+     *
+     * @param roomName: The name of the room.
+     * @param roomNumber: The number of the room.
+     * @param roomDescription: The description of the room.
+     * @param troll: The troll of the room
+     */
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, Troll troll){
+        this.roomName = roomName;
+        this.roomNumber = roomNumber;
+        this.roomDescription = roomDescription;
+        this.adventureName = adventureName;
+        this.isVisited = false;
+        this.troll = troll;
+    }
+
+    /**
+     * AdvGameRoom constructor.
+     *
+     * @param roomName: The name of the room.
+     * @param roomNumber: The number of the room.
+     * @param roomDescription: The description of the room.
+     * @param damage: The damage of the room
+     */
+    public Room(String roomName, int roomNumber, String roomDescription, String adventureName, int damage){
+        this.roomName = roomName;
+        this.roomNumber = roomNumber;
+        this.roomDescription = roomDescription;
+        this.adventureName = adventureName;
+        this.isVisited = false;
+        this.damage = damage;
     }
 
 
@@ -192,5 +234,22 @@ public class Room implements Serializable {
         return this.motionTable;
     }
 
+    /**
+     * Getter method for the troll attribute.
+     *
+     * @return: The Troll of the room, if available
+     */
+    public Troll getTroll(){
+        return this.troll;
+    }
+
+    /**
+     * Getter method for the damage attribute.
+     *
+     * @return: The damage of the room, if available
+     */
+    public int getDamage(){
+        return this.damage;
+    }
 
 }

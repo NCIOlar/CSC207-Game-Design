@@ -29,13 +29,17 @@ public class Setting {
     }
 
     public double increaseBrightness(){
-        brightness += 0.2;
-        return brightness;
+        if (brightness < 0.9) {
+            brightness += 0.1;
 
+        }
+        return brightness;
     }
 
     public double decreaseBrightness(){
-        brightness -= 0.2;
+        if (brightness > -0.9) {
+            brightness -= 0.1;
+        }
         return brightness;
 
 

@@ -17,11 +17,9 @@ public class Fighting_Troll implements Troll {
 
     public int health; // Amount of Hp it has
 
-    public int difficulty; // Difficulty is either 1 (easy), 2 (medium), 3 (hard)
-
-    public Fighting_Troll() {
-        Random rand = new Random();
-        Integer num = rand.nextInt(10);
+    public Fighting_Troll(int health, int damage) {
+        this.health = health;
+        this.damage = damage;
     }
 
     /**
@@ -43,16 +41,5 @@ public class Fighting_Troll implements Troll {
     public boolean playGame() {
         giveInstructions();
         return true;
-    }
-
-    /**
-     * Main method, use for debugging
-     *
-     * @param args: Input arguments
-     */
-
-    public static void main(String [] args) throws InterruptedException {
-        Fighting_Troll s = new Fighting_Troll();
-        boolean a = s.playGame();
     }
 }
