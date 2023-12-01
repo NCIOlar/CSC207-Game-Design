@@ -67,6 +67,8 @@ public class AdventureGameView {
     private MediaPlayer mediaPlayer; //to play audio
     private boolean mediaPlaying; //to know if the audio is playing
 
+    private String preMusic = "Games/Solar_Sailer.mp3";
+
     String helpText; //help text
 
     TextField inputTextField; //for user input
@@ -213,6 +215,7 @@ public class AdventureGameView {
         settingsButton.setId("Settings");
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingEvent();
 
         VBox Buttons = new VBox();
         Buttons.getChildren().addAll(introductionButton_home, easyButton_home, mediumButton_home, hardButton_home, loadButton_home);
@@ -260,6 +263,16 @@ public class AdventureGameView {
         gridPane.add(settingsButton, 2, 0);
 
         this.stage.getScene().setOnKeyPressed(null);
+
+
+        String path2 = "Games/Solar_Sailer.mp3";
+        if (!preMusic.equals(path2)) {
+            preMusic = path2;
+            mediaPlayer.dispose();
+            Media media = new Media(Paths.get(path2).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+        }
 
     }
 
@@ -447,10 +460,12 @@ public class AdventureGameView {
 
     public void addMenu(){
         menuButton.setOnAction(e -> {
-            gridPane.getChildren().clear();
-            gridPane.add( Buttons, 1, 1 );  // Add buttons
-            gridPane.add(settingsButton, 2, 0);
-            addSettingEvent();
+//            gridPane.getChildren().clear();
+//            gridPane.add( Buttons, 1, 1 );  // Add buttons
+//            gridPane.add(settingsButton, 2, 0);
+//            addSettingEvent();
+              gridPane.getChildren().clear();
+              returnHome();
         });
 
     }
@@ -568,28 +583,38 @@ public class AdventureGameView {
 
         }
         //finally, articulate the description
-        if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+        // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
         int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
         if(roomNum <= 8 || roomNum ==15){
-            mediaPlayer.dispose();
             String path2 = "Games/Sea_Of_Simulation.mp3";
-            Media media = new Media(Paths.get(path2).toUri().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(true);
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
         }
         else if (roomNum <= 14){
-            mediaPlayer.dispose();
             String path2 = "Games/Disc_Wars.mp3";
-            Media media = new Media(Paths.get(path2).toUri().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(true);
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
         }
         else{
-            mediaPlayer.dispose();
+
             String path2 = "Games/Flynn_Lives.mp3";
-            Media media = new Media(Paths.get(path2).toUri().toString());
-            mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(true);
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+            }
 
         }
     }
