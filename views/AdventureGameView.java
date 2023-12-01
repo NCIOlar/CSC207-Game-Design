@@ -713,7 +713,10 @@ public class AdventureGameView {
     }
 
     public void addShopEvent() {
-
+        shopButton.setOnAction(e -> {
+            gridPane.requestFocus();
+            showShop();
+        });
     }
 
     public void addHomeEvent() {
@@ -766,5 +769,11 @@ public class AdventureGameView {
             mediaPlayer.stop(); //shush!
             mediaPlaying = false;
         }
+    }
+    public void showShop() {
+        Image shopImage = new Image("Games/Shop.png");
+        BackgroundImage backgroundImage = new BackgroundImage(shopImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        this.gridPane.getChildren().clear();
+        this.gridPane.setBackground(new Background(backgroundImage));
     }
 }

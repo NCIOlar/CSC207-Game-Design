@@ -149,7 +149,18 @@ public class Player implements Serializable {
     }
 
     public boolean buyObject(AdventureObject object) {
-        if (this.funds >= object.getCost()) {
+        boolean outOfStock = true;
+        for (AdventureObject object1: this.shop.objectsForSale.keySet()) {
+            if (!(this.shop.objectsForSale.get(object1) == 0)) {
+                outOfStock = false;
+            }
+        }
+        if (outOfStock) {
+            this.shop.setOutOfStock();
+        }
+        if (shop.outOfStock) {
+            return false;
+        }else if (this.funds >= object.getCost()) {
             int updatedQuantity = this.shop.objectsForSale.get(object) - 1;
             this.shop.objectsForSale.put(object, updatedQuantity);
             this.inventory.add(object);
@@ -159,7 +170,35 @@ public class Player implements Serializable {
             return false;
         }
     }
-//    CODE THESE BELOW NOW ⛈️ 中国打野
-//    public boolean sellObject(AdventureObject object) {}
-//    public void useItem(AdventureObject object) {}
+//    public boolean sellObject(AdventureObject object) {
+//        if (!object.objectType.equals("Consumable")) {
+//            ;
+//        } else {
+//            this.inventory.remove(object);
+//
+//        }
+//    }
+    public void useItem(AdventureObject object) {
+        if (object.getName().equals("MEDKIT")) {
+            if ((this.health + object.getEffect()) >= 100) {
+                this.health = 100;
+                this.inventory.remove(object);
+            } else {
+                this.health += object.getEffect();
+                this.inventory.remove(object);
+            }
+        } else if (object.getName().equals("VEST")) {
+            this.defense += 10;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("MASK")) {
+            this.isImmune = true;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("STIM")) {
+            this.damage += 20;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("SKIP")) {
+            // NOT IMPLEMENTED YET
+            this.inventory.remove(object);
+        }
+    }
 }
