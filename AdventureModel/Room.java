@@ -120,6 +120,22 @@ public class Room implements Serializable {
     }
 
     /**
+     * Returns a comma delimited list of every
+     * move that is possible from the given room,
+     * e.g. "DOWN, UP, NORTH, SOUTH".
+     *
+     * @return delimited string of possible moves
+     */
+    public String getCommands() {
+        ArrayList<String> commandLst = new ArrayList<String>();
+        for (Passage passage : this.motionTable.passageTable) {
+            commandLst.add(passage.getDirection());
+        }
+        String commandStr = String.join(",", commandLst);
+        return commandStr;
+    }
+
+    /**
      * This method adds a game object to the room.
      *
      * @param object to be added to the room.

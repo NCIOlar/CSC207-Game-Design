@@ -9,7 +9,11 @@ import java.util.*;
 public class AdventureGame implements Serializable {
     private final String directoryName; //An attribute to store the Introductory text of the game.
     private final HashMap<Integer, Room> rooms; //A list of all the rooms in the game.
+
     public Player player; //The Player of the game.
+
+    private HashMap<String,String> synonyms = new HashMap<>(); //A HashMap to store synonyms of commands.
+    private final String[] actionVerbs = {"BAG","TAKE","DROP"}; //List of action verbs (other than motions) that exist in all games. Motion vary depending on the room and game.
 
     /**
      * Adventure Game Constructor
@@ -60,6 +64,29 @@ public class AdventureGame implements Serializable {
     }
 
     /**
+     * tokenize
+     * __________________________
+     *
+     * @param input string from the command line
+     * @return a string array of tokens that represents the command.
+     */
+    public String[] tokenize(String input){
+
+        input = input.toUpperCase();
+        String[] commandArray = input.split(" ");
+
+        int i = 0;
+        while (i < commandArray.length) {
+            if(this.synonyms.containsKey(commandArray[i])){
+                commandArray[i] = this.synonyms.get(commandArray[i]);
+            }
+            i++;
+        }
+        return commandArray;
+
+    }
+
+    /**
      * movePlayer
      * __________________________
      * Moves the player in the given direction, if possible.
@@ -91,6 +118,8 @@ public class AdventureGame implements Serializable {
                 if (this.player.getInventory().contains(entry.getKeyName())) {
                     chosen = entry; //we can make it through, given our stuff
                     break;
+                } else {
+                    this.player.requiredObj = entry.getKeyName();
                 }
             } else { chosen = entry; } //the passage is unlocked
         }
@@ -100,8 +129,62 @@ public class AdventureGame implements Serializable {
         int roomNumber = chosen.getDestinationRoom();
         Room room = this.rooms.get(roomNumber);
         this.player.setCurrentRoom(room);
+        if (this.player.getCurrentRoom().getDamage() < 0) {
+            this.player.health = 100;
+        } else if (this.player.getCurrentRoom().getDamage() > 0 && !this.player.isImmune) {
+            this.player.health -= this.player.getCurrentRoom().getDamage();
+        }
 
         return !this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDirection().equals("FORCED");
+    }
+
+    /**
+     * interpretAction
+     * interpret the user's action.
+     *
+     * @param command String representation of the command.
+     */
+    public String interpretAction(String command){
+
+        String[] inputArray = tokenize(command); //look up synonyms
+
+        PassageTable motionTable = this.player.getCurrentRoom().getMotionTable(); //where can we move?
+
+        if (motionTable.optionExists(inputArray[0])) {
+            movePlayer(inputArray[0]);
+            if (this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDestinationRoom() == 0) {
+                return "YOU WIN";
+            } else if (this.player.requiredObj != null) {
+                String returning = "INVALID COMMAND, YOU NEED " + this.player.requiredObj + " TO UNLOCK THE PATH";
+                this.player.requiredObj = null;
+                return returning;
+            } else if (this.player.health <= 0) {
+                return "YOU LOST";
+            } else {
+                return null;
+            }
+        } else if (Arrays.asList(this.actionVerbs).contains(inputArray[0])) {
+            if(inputArray[0].equals("QUIT")) { return "YOU LOST"; } //time to stop!
+            else if(inputArray[0].equals("TAKE") && inputArray.length < 2) return "THE TAKE COMMAND REQUIRES AN OBJECT";
+            else if(inputArray[0].equals("DROP") && inputArray.length < 2) return "THE DROP COMMAND REQUIRES AN OBJECT";
+            else if(inputArray[0].equals("TAKE") && inputArray.length == 2) {
+                if(this.player.getCurrentRoom().checkIfObjectInRoom(inputArray[1])) {
+                    this.player.takeObject(inputArray[1]);
+                    return "YOU HAVE TAKEN:\n " + inputArray[1];
+                } else {
+                    return "THIS OBJECT IS NOT HERE:\n " + inputArray[1];
+                }
+            }
+            else if(inputArray[0].equals("DROP") && inputArray.length == 2) {
+                if(this.player.checkIfObjectInInventory(inputArray[1])) {
+                    this.player.dropObject(inputArray[1]);
+                    return "YOU HAVE DROPPED:\n " + inputArray[1];
+                } else {
+                    return "THIS OBJECT IS NOT IN YOUR BAG:\n " + inputArray[1];
+                }
+            }
+        }
+        return "INVALID COMMAND.";
     }
 
 
@@ -134,4 +217,13 @@ public class AdventureGame implements Serializable {
         return this.rooms;
     }
 
+    /**
+     * getSynonyms
+     * __________________________
+     * Getter method for synonyms
+     * @return map of key value pairs (synonym to command)
+     */
+    public HashMap<String, String> getSynonyms() {
+        return this.synonyms;
+    }
 }
