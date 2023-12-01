@@ -23,6 +23,7 @@ import javafx.scene.AccessibleRole;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
@@ -197,6 +198,12 @@ public class AdventureGameView {
 
         Image image = new Image("Games/Cursor.png");  //pass in the image path
         gridPane.getScene().setCursor(new ImageCursor(image));
+
+
+        String path2 = "Games/Solar_Sailer.mp3";
+        Media media = new Media(Paths.get(path2).toUri().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setAutoPlay(true);
     }
 
     public void intiGame() {
@@ -416,6 +423,29 @@ public class AdventureGameView {
 
         //finally, articulate the description
         if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+        int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
+        if(roomNum <= 8 || roomNum ==15){
+            mediaPlayer.dispose();
+            String path2 = "Games/Sea_Of_Simulation.mp3";
+            Media media = new Media(Paths.get(path2).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+        }
+        else if (roomNum <= 14){
+            mediaPlayer.dispose();
+            String path2 = "Games/Disc_Wars.mp3";
+            Media media = new Media(Paths.get(path2).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+        }
+        else{
+            mediaPlayer.dispose();
+            String path2 = "Games/Flynn_Lives.mp3";
+            Media media = new Media(Paths.get(path2).toUri().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setAutoPlay(true);
+
+        }
     }
 
     /**
