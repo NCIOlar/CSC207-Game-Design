@@ -52,8 +52,9 @@ public class AdventureGameView {
     VBox Buttons;
 
     //Setting buttons
-    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
     Setting setting = new Setting(new GridPane());
+    VBox settingButtons = new VBox();
 
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
@@ -228,6 +229,12 @@ public class AdventureGameView {
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingEvent();
+        settingInGameButton = new Button("", settings_iv);
+        settingInGameButton.setId("SettingInGame");
+        customizeButton(settingInGameButton, 50, 50);
+        makeButtonAccessible(settingInGameButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingInGameEvent();
+
 
         VBox Buttons = new VBox();
         Buttons.getChildren().addAll(introductionButton_home, easyButton_home, mediumButton_home, hardButton_home, loadButton_home);
@@ -272,6 +279,17 @@ public class AdventureGameView {
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
 
+        //reset setting buttons
+        Image settings_icon = new Image("Games/Settings.png");
+        ImageView settings_iv =new ImageView(settings_icon);
+        settings_iv.setFitHeight(40);
+        settings_iv.setFitWidth(40);
+        settingsButton = new Button("", settings_iv);
+        settingsButton.setId("Settings");
+        customizeButton(settingsButton, 50, 50);
+        makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingEvent();
+
         //add all the widgets to the GridPane
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
@@ -298,7 +316,7 @@ public class AdventureGameView {
 
         gridPane.getChildren().clear();
         HBox topButtons2 = new HBox();
-        topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
+        topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingInGameButton, helpButton, saveButton, loadButton);
         topButtons2.setSpacing(10);
         topButtons2.setPrefWidth(400);
         topButtons2.setAlignment(Pos.CENTER);
@@ -449,13 +467,13 @@ public class AdventureGameView {
     public void showSettingMenu(){
         //update setting on current girdpane
 
-        gridPane.getChildren().clear(); // reset gridpane
-        // Buttons
-        menuButton = new Button("Menu");
-        menuButton.setId("menu");
-        customizeButton(menuButton, 200, 50);
-        makeButtonAccessible(menuButton, "menu", "menu", "menu");
-        addMenu();
+//        gridPane.getChildren().clear(); // reset gridpane
+//        // Buttons
+//        menuButton = new Button("Menu");
+//        menuButton.setId("menu");
+//        customizeButton(menuButton, 200, 50);
+//        makeButtonAccessible(menuButton, "menu", "menu", "menu");
+//        addMenu();
 
         increaseBrightnessButton = new Button("Increase Brightness");
         increaseBrightnessButton.setId("increaseBrightness");
@@ -469,8 +487,30 @@ public class AdventureGameView {
         makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
         addDecreaseBrightnessEvent();
 
-        VBox settingButtons = new VBox();
-        settingButtons.getChildren().addAll(menuButton, increaseBrightnessButton, decreaseBrightnessButton);
+        increaseContrastButton = new Button("Increase Contrast");
+        increaseContrastButton.setId("increaseContrast");
+        customizeButton(increaseContrastButton, 200, 50);
+        makeButtonAccessible(increaseContrastButton, "contrastButton", "change the contrast of the game", "Increase Contrast");
+        addIncreaseContrastEvent();
+
+        decreaseContrastButton = new Button("Decrease Contrast");
+        decreaseContrastButton.setId("decreaseContrast");
+        customizeButton(decreaseContrastButton, 200, 50);
+        makeButtonAccessible(decreaseContrastButton, "contrastButton", "change the contrast of the game", "Derease Contrast");
+        addDecreaseContrastEvent();
+
+        HBox brightness = new HBox();
+        brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
+        brightness.setSpacing(30);
+        brightness.setAlignment(Pos.CENTER);
+
+        HBox contrast = new HBox();
+        contrast.getChildren().addAll(increaseContrastButton, decreaseContrastButton);
+        contrast.setSpacing(30);
+        contrast.setAlignment(Pos.CENTER);
+
+        //settingButtons.getChildren().clear();
+        settingButtons.getChildren().addAll(brightness, contrast);
         settingButtons.setSpacing(30);
         settingButtons.setAlignment(Pos.CENTER);
 
@@ -480,9 +520,19 @@ public class AdventureGameView {
 
     public void addSettingEvent(){
         settingsButton.setOnAction(e -> {
+            gridPane.getChildren().clear(); // reset gridpane
+            settingButtons.getChildren().clear();//reset buttons
+            // Buttons
+            menuButton = new Button("Menu");
+            menuButton.setId("menu");
+            customizeButton(menuButton, 200, 50);
+            makeButtonAccessible(menuButton, "menu", "menu", "menu");
+            addMenu();
+            settingButtons.getChildren().add(menuButton);
+
+            //paint rest of thebuttons
             showSettingMenu();
         });
-
     }
 
     public void addMenu(){
@@ -498,27 +548,59 @@ public class AdventureGameView {
     }
     public void addIncreaseBrightnessEvent(){
         increaseBrightnessButton.setOnAction(e -> {
-            ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setBrightness(setting.increaseBrightness());
-            gridPane.setEffect(colorAdjust);
+            setting.increaseBrightness(this.gridPane);
         });
 
     }
 
     public void addDecreaseBrightnessEvent(){
         decreaseBrightnessButton.setOnAction(e -> {
-            ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setBrightness(setting.decreaseBrightness());
-            gridPane.setEffect(colorAdjust);
-
+              setting.decreaseBrightness(this.gridPane);
         });
 
     }
 
+    public void addIncreaseContrastEvent(){
+        increaseContrastButton.setOnAction(e -> {
+            setting.increaseContrast(this.gridPane);
+        });
+    }
 
+    public void addDecreaseContrastEvent(){
+        decreaseContrastButton.setOnAction(e -> {
+            setting.decreaseContrast(this.gridPane);
+        });
+    }
 
-    public void updatedSetting(ArrayList l){
+    public void showSettingInGame(){
 
+        showSettingMenu();
+    }
+
+    public void addSettingInGameEvent(){
+        settingInGameButton.setOnAction(e -> {
+            gridPane.getChildren().clear(); // reset gridpane
+            settingButtons.getChildren().clear();//reset buttons
+            //make button
+            // Buttons
+            gobackButton = new Button("Go Back");
+            gobackButton.setId("goback");
+            customizeButton(gobackButton, 200, 50);
+            makeButtonAccessible(gobackButton, "goback", "goback to game", "go back to game");
+            addGoback();
+            settingButtons.getChildren().add(gobackButton);
+
+            //paint rest of the buttons
+            showSettingInGame();
+        });
+    }
+
+    public void addGoback(){
+        gobackButton.setOnAction(e -> {
+            gridPane.getChildren().clear();
+            intiGame();
+            updateScene("");
+        });
     }
 
 
@@ -715,6 +797,7 @@ public class AdventureGameView {
             }
 
         }
+        map.generateMap();
     }
 
     /**
@@ -874,6 +957,7 @@ public class AdventureGameView {
             updateScene("");
             mapToggle = false;
         } else {
+            map.generateMap();
             gridPane.add(map.showMap(), 1, 1);
             mapToggle = true;
         }
@@ -1049,7 +1133,20 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
             intiGame();
         });
     }
@@ -1059,6 +1156,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1069,6 +1172,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1092,6 +1201,9 @@ public class AdventureGameView {
 
         });
     }
+
+
+
 
 
     /**
