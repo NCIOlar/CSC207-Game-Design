@@ -641,6 +641,7 @@ public class AdventureGameView {
             }
 
         }
+        map.generateMap();
     }
 
     /**
@@ -798,6 +799,7 @@ public class AdventureGameView {
             updateScene("");
             mapToggle = false;
         } else {
+            map.generateMap();
             gridPane.add(map.showMap(), 1, 1);
             mapToggle = true;
         }
@@ -973,6 +975,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -983,6 +991,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -993,6 +1007,12 @@ public class AdventureGameView {
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1016,6 +1036,9 @@ public class AdventureGameView {
             
         });
     }
+
+
+
 
 
     /**
