@@ -44,6 +44,7 @@ public class Map {
     }
 
     public void generateMap(){
+        map.getChildren().clear();
         for (int i = 0; i < blueprint.size(); i++) {
             for (int j = 0; j < blueprint.get(i).length; j++) {
                 String room = blueprint.get(i)[j];
