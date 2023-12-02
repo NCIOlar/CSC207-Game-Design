@@ -1,6 +1,8 @@
 package Trolls;
 
 
+import AdventureModel.Player;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -22,5 +24,14 @@ public interface Troll extends Serializable {
      *
      * @return true if player wins the game, else false
      */
-    public boolean playGame();
+    public void playRound(Player player);
+
+    /**
+     * getInstructions
+     * _________________________
+     * Receive instructions of the troll
+     *
+     * @return Instructions of the troll
+     */
+    public String getInstructions();
 }
