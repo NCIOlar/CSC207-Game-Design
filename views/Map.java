@@ -49,35 +49,49 @@ public class Map {
                     GridPane.setColumnIndex(blackBox, j);
                     map.getChildren().add(blackBox);
                 }else if (room.equals("|")) {
-                    if(checkSurroundings(i, j)){
-                        String passageImage = game.getDirectoryName() + "/room-images/passage.png";
-                        Image passageImageFile = new Image(passageImage);
-                        ImageView passage = new ImageView(passageImageFile);
-                        passage.setFitHeight(100);
-                        passage.setFitWidth(100);
-                        GridPane.setRowIndex(passage, i);
-                        GridPane.setColumnIndex(passage, j);
-                        map.getChildren().add(passage);
-                    }else{
-                        Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
-                        GridPane.setRowIndex(blackBox, i);
-                        GridPane.setColumnIndex(blackBox, j);
-                        map.getChildren().add(blackBox);
-                    }
+                    String passageImage = game.getDirectoryName() + "/room-images/passage.png";
+                    Image passageImageFile = new Image(passageImage);
+                    ImageView passage = new ImageView(passageImageFile);
+                    passage.setFitHeight(100);
+                    passage.setFitWidth(100);
+                    GridPane.setRowIndex(passage, i);
+                    GridPane.setColumnIndex(passage, j);
+                    map.getChildren().add(passage);
+//                    if(checkSurroundings(i, j)){
+//                        String passageImage = game.getDirectoryName() + "/room-images/passage.png";
+//                        Image passageImageFile = new Image(passageImage);
+//                        ImageView passage = new ImageView(passageImageFile);
+//                        passage.setFitHeight(100);
+//                        passage.setFitWidth(100);
+//                        GridPane.setRowIndex(passage, i);
+//                        GridPane.setColumnIndex(passage, j);
+//                        map.getChildren().add(passage);
+//                    }else{
+//                        Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
+//                        GridPane.setRowIndex(blackBox, i);
+//                        GridPane.setColumnIndex(blackBox, j);
+//                        map.getChildren().add(blackBox);
+//                    }
                 } else {
-                    if(rooms.get(Integer.parseInt(room)).getVisited()) {
-                        ImageView roomImage = getImage(Integer.parseInt(room));
-                        roomImage.setFitHeight(100);
-                        roomImage.setFitWidth(100);
-                        GridPane.setRowIndex(roomImage, i);
-                        GridPane.setColumnIndex(roomImage, j);
-                        map.getChildren().add(roomImage);
-                    }else{
-                        Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
-                        GridPane.setRowIndex(blackBox, i);
-                        GridPane.setColumnIndex(blackBox, j);
-                        map.getChildren().add(blackBox);
-                    }
+                    ImageView roomImage = getImage(Integer.parseInt(room));
+                    roomImage.setFitHeight(100);
+                    roomImage.setFitWidth(100);
+                    GridPane.setRowIndex(roomImage, i);
+                    GridPane.setColumnIndex(roomImage, j);
+                    map.getChildren().add(roomImage);
+//                    if(rooms.get(Integer.parseInt(room)).getVisited()) {
+//                        ImageView roomImage = getImage(Integer.parseInt(room));
+//                        roomImage.setFitHeight(100);
+//                        roomImage.setFitWidth(100);
+//                        GridPane.setRowIndex(roomImage, i);
+//                        GridPane.setColumnIndex(roomImage, j);
+//                        map.getChildren().add(roomImage);
+//                    }else{
+//                        Rectangle blackBox = new Rectangle(100, 100, Color.BLACK);
+//                        GridPane.setRowIndex(blackBox, i);
+//                        GridPane.setColumnIndex(blackBox, j);
+//                        map.getChildren().add(blackBox);
+//                    }
                 }
             }
         }
