@@ -1,9 +1,8 @@
 package AdventureModel;
 
-import AdventureModel.Trolls.Troll;
+import Trolls.Troll;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**

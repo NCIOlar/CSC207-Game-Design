@@ -138,6 +138,7 @@ public class AdventureGame implements Serializable {
         return !this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDirection().equals("FORCED");
     }
 
+
     /**
      * interpretAction
      * interpret the user's action.
@@ -154,12 +155,12 @@ public class AdventureGame implements Serializable {
             movePlayer(inputArray[0]);
             if (this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDestinationRoom() == 0) {
                 return "YOU WIN";
+            } else if (this.player.health <= 0) {
+                return "YOU LOST";
             } else if (this.player.requiredObj != null) {
                 String returning = "INVALID COMMAND, YOU NEED " + this.player.requiredObj + " TO UNLOCK THE PATH";
                 this.player.requiredObj = null;
                 return returning;
-            } else if (this.player.health <= 0) {
-                return "YOU LOST";
             } else {
                 return null;
             }

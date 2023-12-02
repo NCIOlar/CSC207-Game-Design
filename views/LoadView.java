@@ -126,22 +126,13 @@ public class LoadView {
         try {
             AdventureGame game = loadGame(selected);
             adventureGameView.stopArticulation();
+            adventureGameView.stopMusic();
             this.adventureGameView = new AdventureGameView(adventureGameView.stage);
             this.adventureGameView.model = game;
             this.adventureGameView.intiGame();
             selectGameLabel.setText(selected);
-        } catch (IOException e) {
-            adventureGameView.stopArticulation();
-            AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
-            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
-            this.adventureGameView.model = game;
-            selectGameLabel.setText("Error! A new game has been loaded");
-        } catch (ClassNotFoundException e) {
-            adventureGameView.stopArticulation();
-            AdventureGame game = new AdventureGame(adventureGameView.model.getDirectoryName().substring(6));
-            this.adventureGameView = new AdventureGameView(adventureGameView.stage);
-            this.adventureGameView.model = game;
-            selectGameLabel.setText("Error! A new game has been loaded");
+        } catch (Exception e) {
+            selectGameLabel.setText("Error! The game cannot be successfully loaded");
         }
     }
 
