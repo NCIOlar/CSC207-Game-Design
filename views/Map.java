@@ -157,7 +157,7 @@ public class Map {
 
     private boolean checkRight(int row, int column){
         try{
-            int right = Integer.parseInt(blueprint.get(row - 1)[column + 1]);
+            int right = Integer.parseInt(blueprint.get(row)[column + 1]);
             return rooms.get(right).getVisited();
         }catch(Exception h){
             return false;
