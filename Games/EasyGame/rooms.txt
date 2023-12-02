@@ -14,7 +14,7 @@ LEFT       3
 RIGHT      5
 
 3
-Theatre/FIGHT/70/3
+Theatre/FIGHT/70/6
 You are at a theatre. Maybe not the best time for a movie.
 -----
 LEFT       4
@@ -55,7 +55,7 @@ This is a dead end. You observe the beautiful blue planet that you cannot return
 RIGHT      7
 
 9
-Engine Room/GAME/ENGINE
+Engine Room/FIGHT/70/5
 This is the engine room. I wonder if there are any hints for the password. 
 -----
 FORWARD    10/BATTERY
@@ -77,7 +77,7 @@ FORWARD    13
 RIGHT      10
 
 12
-Equipment Room/GAME/EQUIPMENT
+Equipment Room
 You are in the equipment room. Scientists normally prepare equipment for labs here.
 -----
 BACKWARD   10

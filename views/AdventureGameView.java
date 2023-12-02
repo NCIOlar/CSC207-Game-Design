@@ -2,6 +2,7 @@ package views;
 
 import AdventureModel.AdventureGame;
 import AdventureModel.AdventureObject;
+import Trolls.Fighting_Troll;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -31,6 +32,7 @@ import java.io.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.util.*;
 
 /**
@@ -73,6 +75,7 @@ public class AdventureGameView {
 
     private String preMusic = "Games/Solar_Sailer.mp3";
 
+    public EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
     String helpText; //help text
 
     TextField inputTextField; //for user input
@@ -211,6 +214,12 @@ public class AdventureGameView {
         makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
         addHardEvent();
 
+        roomDescLabel.setPrefWidth(600);
+        roomDescLabel.setPrefHeight(150);
+        roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
+        roomDescLabel.setWrapText(true);
+        roomDescLabel.setStyle("-fx-text-fill: BLACK");
+
         Image settings_icon = new Image("Games/Settings.png");
         ImageView settings_iv =new ImageView(settings_icon);
         settings_iv.setFitHeight(40);
@@ -285,7 +294,7 @@ public class AdventureGameView {
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
 
-        this.stage.getScene().setOnKeyPressed(null);
+        this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
 
 
         String path2 = "Games/Solar_Sailer.mp3";
@@ -337,7 +346,7 @@ public class AdventureGameView {
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
-        EventHandler<KeyEvent> eventhandler = new EventHandler<KeyEvent>() {
+        eventhandler = new EventHandler<KeyEvent>() {
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.W) {
                     submitEvent("W");
@@ -414,8 +423,10 @@ public class AdventureGameView {
             updateScene("");
             updateItems();
         } else if (output.equals("YOU WIN")) {
-            updateScene("");
+            updateScene("YOU WIN");
             updateItems();
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
             PauseTransition pause = new PauseTransition(Duration.seconds(10));
             pause.setOnFinished(event -> {
                 returnHome();
@@ -423,8 +434,10 @@ public class AdventureGameView {
             });
             pause.play();
         } else if (output.equals("YOU LOST")) {
-            updateScene("");
+            updateScene("YOU DIED! GAME OVER!");
             updateItems();
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
             PauseTransition pause = new PauseTransition(Duration.seconds(3));
             pause.setOnFinished(event -> {
                 returnHome();
@@ -433,6 +446,7 @@ public class AdventureGameView {
             pause.play();
         } else {
             updateScene(output);
+            updateItems();
         }
     }
 
@@ -637,24 +651,6 @@ public class AdventureGameView {
      */
     public void updateScene(String textToDisplay) {
 
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
-        Image roomImageFile = getRoomImage(); //get the image of the current room
-        formatText(textToDisplay); //format the text to display
-        roomDescLabel.setPrefWidth(600);
-        roomDescLabel.setPrefHeight(150);
-        roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
-        roomDescLabel.setWrapText(true);
-        roomDescLabel.setStyle("-fx-text-fill: BLACK");
-        VBox roomPane = new VBox(roomDescLabel);
-        roomPane.setPadding(new Insets(10));
-        roomPane.setAlignment(Pos.BOTTOM_CENTER);
-        roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
-
-        gridPane.add(roomPane, 1, 2);
-        stage.sizeToScene();
-        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-        gridPane.setBackground(new Background(background));
-
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
         Label playerHealth = new Label("❤️: " + model.player.health);
         playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
@@ -683,8 +679,86 @@ public class AdventureGameView {
         player.setSpacing(5);
         gridPane.add(player, 0, 2);
 
-        if (this.model.player.getCurrentRoom().troll != null) {
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+        Image roomImageFile = getRoomImage(); //get the image of the current room
+        formatText(textToDisplay); //format the text to display
+        VBox roomPane = new VBox(roomDescLabel);
+        roomPane.setPadding(new Insets(10));
+        roomPane.setAlignment(Pos.BOTTOM_CENTER);
+        roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
+        gridPane.add(roomPane, 1, 2);
+        if (model.player.getCurrentRoom().troll != null && textToDisplay.equals(model.player.getCurrentRoom().troll.getInstructions())) {
+            if (this.model.player.getCurrentRoom().troll instanceof Fighting_Troll) {
+                this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+                Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
+                ImageView zombieImageView = new ImageView(zombieImage);
+                zombieImageView.setFitHeight(300);
+                zombieImageView.setFitWidth(300);
+                if (this.model.player.health > 0 && ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth() > 0) {
+                    gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+                    Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth());
+                    zombieHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
+                    zombieHealth.setFont(new Font("Arial", 24));
+                    zombieHealth.setAlignment(Pos.CENTER);
+                    Label zombieDamage = new Label("🔪: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getDamage());
+                    zombieDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
+                    zombieDamage.setFont(new Font("Arial", 24));
+                    zombieDamage.setAlignment(Pos.CENTER);
+                    VBox zombie;
+                    if (((Fighting_Troll) this.model.player.getCurrentRoom().troll).round > 0) {
+                        Label zombieRound = new Label("ROUND " + ((Fighting_Troll) this.model.player.getCurrentRoom().troll).round);
+                        zombieRound.setStyle("-fx-text-fill: WHITE; -fx-background: transparent; -fx-background-color: transparent");
+                        zombieRound.setFont(new Font("Arial", 32));
+                        zombieRound.setAlignment(Pos.CENTER);
+                        zombie = new VBox(zombieRound, zombieImageView, zombieHealth, zombieDamage);
+                    } else {
+                        zombie = new VBox(zombieImageView, zombieHealth, zombieDamage);
+                    }
+                    zombie.setStyle("-fx-background: transparent; -fx-background-color: transparent");
+                    zombie.setPadding(new Insets(20, 20, 20, 20));
+                    zombie.setSpacing(5);
+                    zombie.setAlignment(Pos.CENTER);
+                    gridPane.add(zombie, 1, 1);
+                    gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+                    model.player.getCurrentRoom().troll.playRound(model.player);
+                    if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() <= 0) {
+                        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                        pause.setOnFinished(event -> {
+                            this.stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+                            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+                            formatText("You beat the troll");
+                            HBox topButtons2 = new HBox();
+                            topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
+                            topButtons2.setSpacing(10);
+                            topButtons2.setPrefWidth(400);
+                            topButtons2.setAlignment(Pos.CENTER);
+                            gridPane.add(topButtons2, 1, 0);
+                        });
+                        pause.play(); // method require revision
+                    } else if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() > 0) {
+                        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                        pause.setOnFinished(event -> {
+                            updateScene(model.player.getCurrentRoom().troll.getInstructions());
+                        });
+                        pause.play(); // method require revision
+                    }
+
+                }
+            }
         }
+        if (roomDescLabel.getText().equals("You beat the troll")) {
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
+            roomPane = new VBox(roomDescLabel);
+            roomPane.setPadding(new Insets(10));
+            roomPane.setAlignment(Pos.BOTTOM_CENTER);
+            roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
+            gridPane.add(roomPane, 1, 2);
+        }
+        stage.sizeToScene();
+        BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+        gridPane.setBackground(new Background(background));
+
         //finally, articulate the description
         // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
         int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
@@ -735,13 +809,15 @@ public class AdventureGameView {
      * @param textToDisplay the text to be formatted for display.
      */
     private void formatText(String textToDisplay) {
-        if (textToDisplay == null || textToDisplay.isBlank()) {
+        if (textToDisplay == null || textToDisplay.isBlank() || textToDisplay.equals("YOU WIN")) {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription() + "\n";
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (objectString != null && !objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
             else roomDescLabel.setText(roomDesc);
-        } else roomDescLabel.setText(textToDisplay);
-        roomDescLabel.setStyle("-fx-text-fill: white;");
+        } else {
+            roomDescLabel.setText(textToDisplay);
+        }
+        roomDescLabel.setStyle("-fx-text-fill: BLACK;");
         roomDescLabel.setFont(new Font("Arial", 16));
         roomDescLabel.setAlignment(Pos.CENTER);
     }
@@ -1122,7 +1198,7 @@ public class AdventureGameView {
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
             showMap();
-            
+
         });
     }
 
@@ -1165,9 +1241,9 @@ public class AdventureGameView {
      * (useful when loading a new game)
      */
     public void stopMusic() {
-        if (audioPlaying) {
-            audioPlayer.stop(); //shush!
-            audioPlaying = false;
+        if (mediaPlaying) {
+            mediaPlayer.stop(); //shush!
+            mediaPlaying = false;
         }
     }
 }
