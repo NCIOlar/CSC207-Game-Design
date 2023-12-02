@@ -947,6 +947,13 @@ public class AdventureGameView {
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
             intiGame();
         });
     }
