@@ -4,5 +4,6 @@ out/
 *.iml
 *.log
 *.class
+*.idea
 .DS_store
 .DS_Store
