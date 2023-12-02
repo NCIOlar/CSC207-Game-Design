@@ -31,7 +31,7 @@ import java.io.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Class AdventureGameView.
@@ -64,8 +64,11 @@ public class AdventureGameView {
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
 
-    private MediaPlayer mediaPlayer; //to play audio
-    private boolean mediaPlaying; //to know if the audio is playing
+    private MediaPlayer mediaPlayer; //to play music
+    private boolean mediaPlaying; //to know if the music is playing
+
+    private MediaPlayer audioPlayer; //to play audio
+    private boolean audioPlaying; //to know if the audio is playing
 
     private String preMusic = "Games/Solar_Sailer.mp3";
 
@@ -241,6 +244,7 @@ public class AdventureGameView {
         Media media = new Media(Paths.get(path2).toUri().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(true);
+        mediaPlaying = true;
     }
 
     /**
@@ -248,6 +252,7 @@ public class AdventureGameView {
      */
     public void returnHome() {
 
+        gridPane.getChildren().clear();
         String roomImage = "/Games/Homepage.png";
         Image roomImageFile = new Image(roomImage);
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
@@ -272,12 +277,17 @@ public class AdventureGameView {
             Media media = new Media(Paths.get(path2).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setAutoPlay(true);
+            mediaPlaying = true;
         }
 
     }
 
+    /**
+     * Initialises the Game when player chooses the difficulty
+     */
     public void intiGame() {
 
+        gridPane.getChildren().clear();
         HBox topButtons2 = new HBox();
         topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
         topButtons2.setSpacing(10);
@@ -382,7 +392,7 @@ public class AdventureGameView {
         //try to move!
         String output = this.model.interpretAction(text); //process the command!
 
-        if (output == null || (!output.equals("YOU LOST") && !output.equals("YOU WIN"))) {
+        if (output == null) {
             updateScene("");
             updateItems();
         } else if (output.equals("YOU WIN")) {
@@ -393,6 +403,7 @@ public class AdventureGameView {
                 returnHome();
                 this.model = null;
             });
+            pause.play();
         } else if (output.equals("YOU LOST")) {
             updateScene("");
             updateItems();
@@ -402,6 +413,8 @@ public class AdventureGameView {
                 this.model = null;
             });
             pause.play();
+        } else {
+            updateScene(output);
         }
     }
 
@@ -563,24 +576,32 @@ public class AdventureGameView {
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
         Label playerHealth = new Label("❤️: " + model.player.health);
         playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
-        playerHealth.setFont(new Font("Arial", 32));
+        playerHealth.setFont(new Font("Arial", 24));
         playerHealth.setAlignment(Pos.CENTER);
         Label playerDamage = new Label("🔪: " + model.player.damage);
         playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
-        playerDamage.setFont(new Font("Arial", 32));
+        playerDamage.setFont(new Font("Arial", 24));
         playerDamage.setAlignment(Pos.CENTER);
         Label playerDefense = new Label("🛡️: " + model.player.defense);
         playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
-        playerDefense.setFont(new Font("Arial", 32));
+        playerDefense.setFont(new Font("Arial", 24));
         playerDefense.setAlignment(Pos.CENTER);
-        VBox player = new VBox(playerHealth, playerDefense, playerDamage);
+        Label playerPoison;
+        if (this.model.player.isImmune) {
+            playerPoison = new Label("Immune: ✅");
+        } else {
+            playerPoison = new Label("Immune: ❌");
+        }
+        playerPoison.setStyle("-fx-text-fill: BLUE; -fx-background: transparent; -fx-background-color: transparent");
+        playerPoison.setFont(new Font("Arial", 24));
+        playerPoison.setAlignment(Pos.CENTER);
+        VBox player = new VBox(playerHealth, playerDefense, playerDamage, playerPoison);
         player.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
         player.setPadding(new Insets(20, 20, 20, 20));
-        player.setSpacing(10);
+        player.setSpacing(5);
         gridPane.add(player, 0, 2);
 
         if (this.model.player.getCurrentRoom().troll != null) {
-
         }
         //finally, articulate the description
         // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
@@ -593,6 +614,7 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
         }
         else if (roomNum <= 14){
@@ -603,6 +625,7 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
         }
         else{
@@ -614,6 +637,7 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
 
         }
@@ -709,10 +733,12 @@ public class AdventureGameView {
                         objectsInRoom.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInInventory.getChildren().add(objectButton);
                         model.player.takeObject(objectName);
+                        gridPane.requestFocus();
                     } else if (objectsInInventory.getChildren().contains(objectButton)) {
                         objectsInInventory.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInRoom.getChildren().add(objectButton);
                         model.player.dropObject(objectName);
+                        gridPane.requestFocus();
                     }
                 }
             };
@@ -742,10 +768,12 @@ public class AdventureGameView {
                         objectsInRoom.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInInventory.getChildren().add(objectButton);
                         model.player.takeObject(object.getName());
+                        gridPane.requestFocus();
                     } else if (objectsInInventory.getChildren().contains(objectButton)) {
                         objectsInInventory.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInRoom.getChildren().add(objectButton);
                         model.player.dropObject(object.getName());
+                        gridPane.requestFocus();
                     }
                 }
             };
@@ -762,7 +790,6 @@ public class AdventureGameView {
         scO.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
-
     }
 
     public void showMap(){
@@ -985,7 +1012,6 @@ public class AdventureGameView {
     public void addHomeEvent() {
         homepageButton.setOnAction(e -> {
             gridPane.requestFocus();
-            gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
             returnHome();
         });
@@ -1010,12 +1036,11 @@ public class AdventureGameView {
         if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
         else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
         musicFile = musicFile.replace(" ","-");
-
         Media sound = new Media(new File(musicFile).toURI().toString());
 
-        mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
-        mediaPlaying = true;
+        audioPlayer = new MediaPlayer(sound);
+        audioPlayer.play();
+        audioPlaying = true;
 
     }
 
@@ -1024,9 +1049,20 @@ public class AdventureGameView {
      * (useful when transitioning to a new room or loading a new game)
      */
     public void stopArticulation() {
-        if (mediaPlaying) {
-            mediaPlayer.stop(); //shush!
-            mediaPlaying = false;
+        if (audioPlaying) {
+            audioPlayer.stop(); //shush!
+            audioPlaying = false;
+        }
+    }
+
+    /**
+     * This method stops music
+     * (useful when loading a new game)
+     */
+    public void stopMusic() {
+        if (audioPlaying) {
+            audioPlayer.stop(); //shush!
+            audioPlaying = false;
         }
     }
 }

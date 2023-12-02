@@ -1,13 +1,12 @@
 package AdventureModel;
 
-import AdventureModel.Trolls.Fighting_Troll;
-import AdventureModel.Trolls.Gaming_Troll;
-import AdventureModel.Trolls.Troll;
+import Trolls.Fighting_Troll;
+import Trolls.Gaming_Troll;
+import Trolls.Troll;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Class AdventureLoader. Loads an adventure from files.
