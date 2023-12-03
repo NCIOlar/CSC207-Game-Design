@@ -51,7 +51,8 @@ public class AdventureGameView {
     VBox Buttons;
 
     //Setting buttons
-    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton,
+            decreaseContrastButton, settingInGameButton, increaseVolumeButton, decreaseVolumeButton;
     Setting setting = new Setting(new GridPane());
     VBox settingButtons = new VBox();
 
@@ -259,6 +260,8 @@ public class AdventureGameView {
         Media media = new Media(Paths.get(path2).toUri().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(true);
+        Setting.setVolume(mediaPlayer);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlaying = true;
     }
 
@@ -304,6 +307,8 @@ public class AdventureGameView {
             Media media = new Media(Paths.get(path2).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setAutoPlay(true);
+            Setting.setVolume(mediaPlayer);
+            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
             mediaPlaying = true;
         }
 
@@ -499,6 +504,18 @@ public class AdventureGameView {
         makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
         addDecreaseContrastEvent();
 
+        increaseVolumeButton = new Button("Increase Volume");
+        increaseVolumeButton.setId("increaseVolume");
+        customizeButton(increaseVolumeButton, 200, 50);
+        makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
+        addIncreaseVolumeEvent();
+
+        decreaseVolumeButton = new Button("Decrease Volume");
+        decreaseVolumeButton.setId("decreaseVolume");
+        customizeButton(decreaseVolumeButton, 200, 50);
+        makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
+        addDecreaseVolumeEvent();
+
         HBox brightness = new HBox();
         brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
         brightness.setSpacing(30);
@@ -509,8 +526,13 @@ public class AdventureGameView {
         contrast.setSpacing(30);
         contrast.setAlignment(Pos.CENTER);
 
+        HBox volume = new HBox();
+        volume.getChildren().addAll(increaseVolumeButton, decreaseVolumeButton);
+        volume.setSpacing(30);
+        volume.setAlignment(Pos.CENTER);
+
         //settingButtons.getChildren().clear();
-        settingButtons.getChildren().addAll(brightness, contrast);
+        settingButtons.getChildren().addAll(brightness, contrast, volume);
         settingButtons.setSpacing(30);
         settingButtons.setAlignment(Pos.CENTER);
 
@@ -545,7 +567,7 @@ public class AdventureGameView {
             gridPane.requestFocus();
             stopArticulation();
             gridPane.getChildren().clear();
-              returnHome();
+            returnHome();
         });
 
     }
@@ -576,8 +598,19 @@ public class AdventureGameView {
     }
 
     public void showSettingInGame(){
-
         showSettingMenu();
+    }
+
+    public void addIncreaseVolumeEvent(){
+        increaseVolumeButton.setOnAction(e -> {
+            Setting.increaseVolume(this.mediaPlayer);
+        });
+    }
+
+    public void addDecreaseVolumeEvent(){
+        decreaseVolumeButton.setOnAction(e -> {
+            Setting.decreaseVolume(this.mediaPlayer);
+        });
     }
 
     public void addSettingInGameEvent(){
@@ -773,6 +806,8 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                Setting.setVolume(mediaPlayer);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlaying = true;
             }
         }
@@ -784,6 +819,8 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                Setting.setVolume(mediaPlayer);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlaying = true;
             }
         }
@@ -796,6 +833,8 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                Setting.setVolume(mediaPlayer);
+                mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
                 mediaPlaying = true;
             }
 
