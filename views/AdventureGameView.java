@@ -680,7 +680,6 @@ public class AdventureGameView {
         gridPane.add(player, 0, 2);
 
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
         VBox roomPane = new VBox(roomDescLabel);
@@ -689,6 +688,7 @@ public class AdventureGameView {
         roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
         gridPane.add(roomPane, 1, 2);
         if (model.player.getCurrentRoom().troll != null && textToDisplay.equals(model.player.getCurrentRoom().troll.getInstructions())) {
+            mapToggle = false; // Fixes syncing issue on map
             if (this.model.player.getCurrentRoom().troll instanceof Fighting_Troll) {
                 this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
                 Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
@@ -798,6 +798,7 @@ public class AdventureGameView {
 
         }
         map.generateMap();
+
     }
 
     /**
@@ -1135,17 +1136,12 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            map.generateMap();
-            stopArticulation();
-            try {
-                map = new Map(this);
                 map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
+            stopArticulation();
+
 
             intiGame();
         });
@@ -1158,10 +1154,10 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
+                map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1174,10 +1170,10 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
+                map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            map.generateMap();
             stopArticulation();
             intiGame();
         });
