@@ -170,6 +170,9 @@ public class AdventureGameView {
         customizeButton(mapButton, 65, 50);
         makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
         addMapEvent();
+        if(this.model != null){
+            map = new Map(this);
+        }
 
         shopButton = new Button("Shop");
         shopButton.setId("Shop");
@@ -312,7 +315,7 @@ public class AdventureGameView {
     /**
      * Initialises the Game when player chooses the difficulty
      */
-    public void intiGame() {
+    public void intiGame() throws IOException {
 
         gridPane.getChildren().clear();
         HBox topButtons2 = new HBox();
@@ -343,6 +346,10 @@ public class AdventureGameView {
         gridPane.add( topButtons2, 1, 0);  // Add buttons
         gridPane.add( objLabel, 0, 0);  // Add buttons
 
+        // This piece of code initializes map on load
+        if(this.model != null){
+            map = new Map(this);
+        }
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
@@ -598,7 +605,11 @@ public class AdventureGameView {
     public void addGoback(){
         gobackButton.setOnAction(e -> {
             gridPane.getChildren().clear();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             updateScene("");
         });
     }
@@ -1143,7 +1154,11 @@ public class AdventureGameView {
             stopArticulation();
 
 
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
@@ -1159,7 +1174,11 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
             stopArticulation();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
@@ -1175,7 +1194,11 @@ public class AdventureGameView {
                 throw new RuntimeException(ex);
             }
             stopArticulation();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
