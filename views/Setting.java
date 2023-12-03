@@ -23,6 +23,8 @@ import javafx.scene.AccessibleRole;
 public class Setting {
     private double brightness = 0;
     private double contrast = 0;
+
+    public static double volume = 0.5;
     GridPane p;
 
     public Setting(GridPane p){
@@ -64,6 +66,25 @@ public class Setting {
             p.setEffect(colorAdjust);
         }
     }
+
+    public static void setVolume(MediaPlayer m){
+        m.setVolume(volume);
+    }
+
+    public static void increaseVolume(MediaPlayer m){
+        if(volume < 1){
+            volume += 0.1;
+            m.setVolume(volume);
+        }
+    }
+    public static void decreaseVolume(MediaPlayer m){
+        if(volume > 0){
+            volume -= 0.1;
+            m.setVolume(volume);
+        }
+    }
+
+
 
 
 
