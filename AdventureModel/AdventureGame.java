@@ -131,10 +131,12 @@ public class AdventureGame implements Serializable {
         int roomNumber = chosen.getDestinationRoom();
         Room room = this.rooms.get(roomNumber);
         this.player.setCurrentRoom(room);
-        if (this.player.getCurrentRoom().getDamage() < 0) {
-            this.player.health = 100;
-        } else if (this.player.getCurrentRoom().getDamage() > 0 && !this.player.isImmune) {
-            this.player.health -= this.player.getCurrentRoom().getDamage();
+        if (this.player.getCurrentRoom() instanceof DamageRoom) {
+            if (((DamageRoom) this.player.getCurrentRoom()).getDamage() < 0) {
+                this.player.health = 100;
+            } else if (((DamageRoom) this.player.getCurrentRoom()).getDamage() > 0 && !this.player.isImmune) {
+                this.player.health -= ((DamageRoom) this.player.getCurrentRoom()).getDamage();
+            }
         }
 
         return !this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDirection().equals("FORCED");
@@ -156,12 +158,15 @@ public class AdventureGame implements Serializable {
 
         if (motionTable.optionExists(inputArray[0])) {
             movePlayer(inputArray[0]);
-            if (this.player.getCurrentRoom().troll != null && this.player.getCurrentRoom().troll instanceof Fighting_Troll) {
-                if (((Fighting_Troll) this.player.getCurrentRoom().troll).getHealth() > 0) {
-                    String instructions = this.player.getCurrentRoom().troll.getInstructions();
-                    return instructions;
+            if (this.player.getCurrentRoom() instanceof TrollRoom) {
+                if (((TrollRoom) this.player.getCurrentRoom()).troll instanceof Fighting_Troll) {
+                    if (((Fighting_Troll) ((TrollRoom) this.player.getCurrentRoom()).troll).getHealth() > 0) {
+                        String instructions = ((TrollRoom) this.player.getCurrentRoom()).troll.getInstructions();
+                        return instructions;
+                    }
                 }
             }
+
             if (this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDestinationRoom() == 0) {
                 return "YOU WIN";
             } else if (this.player.health <= 0) {

@@ -1,7 +1,6 @@
 package views;
 
-import AdventureModel.AdventureGame;
-import AdventureModel.AdventureObject;
+import AdventureModel.*;
 import Trolls.Fighting_Troll;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -692,26 +691,26 @@ public class AdventureGameView {
         roomPane.setAlignment(Pos.BOTTOM_CENTER);
         roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
         gridPane.add(roomPane, 1, 2);
-        if (model.player.getCurrentRoom().troll != null && textToDisplay.equals(model.player.getCurrentRoom().troll.getInstructions())) {
-            if (this.model.player.getCurrentRoom().troll instanceof Fighting_Troll) {
+        if (model.player.getCurrentRoom() instanceof TrollRoom && textToDisplay.equals(((TrollRoom) model.player.getCurrentRoom()).troll.getInstructions())) {
+            if (((TrollRoom) model.player.getCurrentRoom()).troll instanceof Fighting_Troll) {
                 this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
                 Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
                 ImageView zombieImageView = new ImageView(zombieImage);
                 zombieImageView.setFitHeight(300);
                 zombieImageView.setFitWidth(300);
-                if (this.model.player.health > 0 && ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth() > 0) {
+                if (this.model.player.health > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() > 0) {
                     gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
-                    Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth());
+                    Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth());
                     zombieHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
                     zombieHealth.setFont(new Font("Arial", 24));
                     zombieHealth.setAlignment(Pos.CENTER);
-                    Label zombieDamage = new Label("🔪: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getDamage());
+                    Label zombieDamage = new Label("🔪: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getDamage());
                     zombieDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
                     zombieDamage.setFont(new Font("Arial", 24));
                     zombieDamage.setAlignment(Pos.CENTER);
                     VBox zombie;
-                    if (((Fighting_Troll) this.model.player.getCurrentRoom().troll).round > 0) {
-                        Label zombieRound = new Label("ROUND " + ((Fighting_Troll) this.model.player.getCurrentRoom().troll).round);
+                    if (((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).round > 0) {
+                        Label zombieRound = new Label("ROUND " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).round);
                         zombieRound.setStyle("-fx-text-fill: WHITE; -fx-background: transparent; -fx-background-color: transparent");
                         zombieRound.setFont(new Font("Arial", 32));
                         zombieRound.setAlignment(Pos.CENTER);
@@ -725,8 +724,8 @@ public class AdventureGameView {
                     zombie.setAlignment(Pos.CENTER);
                     gridPane.add(zombie, 1, 1);
                     gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
-                    model.player.getCurrentRoom().troll.playRound(model.player);
-                    if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() <= 0) {
+                    ((TrollRoom) model.player.getCurrentRoom()).troll.playRound(model.player);
+                    if (this.model.player.getHealth() > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() <= 0) {
                         PauseTransition pause = new PauseTransition(Duration.seconds(2));
                         pause.setOnFinished(event -> {
                             this.stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
@@ -740,10 +739,10 @@ public class AdventureGameView {
                             gridPane.add(topButtons2, 1, 0);
                         });
                         pause.play(); // method require revision
-                    } else if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() > 0) {
+                    } else if (this.model.player.getHealth() > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() > 0) {
                         PauseTransition pause = new PauseTransition(Duration.seconds(2));
                         pause.setOnFinished(event -> {
-                            updateScene(model.player.getCurrentRoom().troll.getInstructions());
+                            updateScene(((TrollRoom) model.player.getCurrentRoom()).troll.getInstructions());
                         });
                         pause.play(); // method require revision
                     }
@@ -910,7 +909,7 @@ public class AdventureGameView {
             objectsInInventory.getChildren().add(objectButton);
         }
 
-        ArrayList<AdventureObject> objectInRoom = this.model.player.getCurrentRoom().objectsInRoom;
+        ArrayList<AdventureObject> objectInRoom = this.model.player.getCurrentRoom().getObjectsinRoom();
         for (AdventureObject object : objectInRoom) {
             String objectImage = this.model.getDirectoryName() + separator + "objectImages" + separator + object.getName() + ".png";
             Image objectImageFile = new Image(objectImage);
