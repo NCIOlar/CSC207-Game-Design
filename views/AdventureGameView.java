@@ -170,9 +170,6 @@ public class AdventureGameView {
         customizeButton(mapButton, 65, 50);
         makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
         addMapEvent();
-        if(this.model != null){
-            map = new Map(this);
-        }
 
         shopButton = new Button("Shop");
         shopButton.setId("Shop");
