@@ -1,6 +1,6 @@
 package AdventureModel;
 
-import AdventureModel.Trolls.Troll;
+import AdventureModel.Trolls.*;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;

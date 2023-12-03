@@ -55,7 +55,7 @@ public class AdventureGameView {
     Setting setting = new Setting(new GridPane());
 
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
-            easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
+            easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton, backButton; //buttons
     Boolean mapToggle = false;
     Map map;
 
@@ -69,6 +69,7 @@ public class AdventureGameView {
     private boolean mediaPlaying; //to know if the audio is playing
 
     private String preMusic = "Games/Solar_Sailer.mp3";
+    private BorderPane shopPane = new BorderPane();
 
     String helpText; //help text
 
@@ -85,6 +86,7 @@ public class AdventureGameView {
         this.stage = stage;
         intiUI();
     }
+
 
     /**
      * Initialize the UI (load the first homepage)
@@ -170,6 +172,12 @@ public class AdventureGameView {
         customizeButton(shopButton, 65, 50);
         makeButtonAccessible(shopButton, "Shop Button", "This button pops up a shop containing goods.", "This button pops up a shop containing goods. Click it to buy equipments that you need when playing!");
         addShopEvent();
+
+        backButton = new Button("Back");
+        backButton.setId("back");
+        customizeButton(backButton, 65, 50);
+        makeButtonAccessible(backButton, "Back Button", "returns to game from shop", "returns to game from shop");
+        addReturnEvent();
 
         homepageButton = new Button("Home");
         homepageButton.setId("Home");
@@ -454,6 +462,11 @@ public class AdventureGameView {
 
     public void addSettingEvent(){
         settingsButton.setOnAction(e -> {
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             showSettingMenu();
         });
 
@@ -465,6 +478,10 @@ public class AdventureGameView {
 //            gridPane.add( Buttons, 1, 1 );  // Add buttons
 //            gridPane.add(settingsButton, 2, 0);
 //            addSettingEvent();
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
               gridPane.getChildren().clear();
               returnHome();
         });
@@ -881,6 +898,11 @@ public class AdventureGameView {
      */
     public void addHelpEvent() {
         helpButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             stopArticulation(); //if speaking, stop
             try {
                 showHelp();
@@ -896,6 +918,11 @@ public class AdventureGameView {
      */
     public void addIntroduction_HomeEvent() {
         introductionButton_home.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             stopArticulation(); //if speaking, stop
             try {
                 showInstructions();
@@ -911,6 +938,11 @@ public class AdventureGameView {
      */
     public void addSaveEvent() {
         saveButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             SaveView saveView = new SaveView(this);
         });
@@ -922,6 +954,11 @@ public class AdventureGameView {
      */
     public void addLoadEvent() {
         loadButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             LoadView loadView = new LoadView(this);
         });
@@ -933,6 +970,11 @@ public class AdventureGameView {
      */
     public void addLoad_HomeEvent() {
         loadButton_home.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+            
             gridPane.requestFocus();
             LoadView loadView = new LoadView(this);
         });
@@ -944,6 +986,11 @@ public class AdventureGameView {
      */
     public void addEasyEvent() {
         easyButton_home.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
             gridPane.getChildren().removeIf(node -> true);
@@ -954,6 +1001,11 @@ public class AdventureGameView {
 
     public void addMediumEvent() {
         mediumButton_home.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
             gridPane.getChildren().removeIf(node -> true);
@@ -964,6 +1016,11 @@ public class AdventureGameView {
 
     public void addHardEvent() {
         hardButton_home.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
             gridPane.getChildren().removeIf(node -> true);
@@ -972,8 +1029,14 @@ public class AdventureGameView {
         });
     }
 
+    // Shop interface when button is clicked
     public void addShopEvent() {
         shopButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             showShop();
         });
@@ -981,6 +1044,11 @@ public class AdventureGameView {
 
     public void addHomeEvent() {
         homepageButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             gridPane.requestFocus();
             gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
@@ -990,11 +1058,31 @@ public class AdventureGameView {
 
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
+
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             showMap();
             
         });
     }
 
+    // Returns back to game screen when exiting shop
+    public void addReturnEvent() {
+        backButton.setOnAction(e -> {
+            String soundFile = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
+
+            gridPane.getChildren().clear();
+            updateScene("");
+            updateItems();
+        });
+    }
 
     /**
      * This method articulates Room Descriptions
@@ -1026,10 +1114,16 @@ public class AdventureGameView {
             mediaPlaying = false;
         }
     }
+    /*
+    * This method implements the interface of Shop, then sends to addShopEvent()
+    *
+    */
     public void showShop() {
         Image shopImage = new Image("Games/Shop.png");
         BackgroundImage backgroundImage = new BackgroundImage(shopImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-        this.gridPane.getChildren().clear();
-        this.gridPane.setBackground(new Background(backgroundImage));
+        BorderPane shopPane = new BorderPane();
+        shopPane.setBackground(new Background(backgroundImage));
+        gridPane.add(backButton, 2, 0);
+
     }
 }

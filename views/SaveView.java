@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -60,14 +62,28 @@ public class SaveView {
         saveGameButton.setPrefSize(200, 50);
         saveGameButton.setFont(new Font(16));
         AdventureGameView.makeButtonAccessible(saveGameButton, "save game", "This is a button to save the game", "Use this button to save the current game.");
-        saveGameButton.setOnAction(e -> saveGame());
+        saveGameButton.setOnAction(e -> {
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
+            saveGame();
+        });
 
         closeWindowButton = new Button("Close Window");
         closeWindowButton.setId("closeWindowButton"); // DO NOT MODIFY ID
         closeWindowButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
-        closeWindowButton.setOnAction(e -> dialog.close());
+        closeWindowButton.setOnAction(e -> {
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
+            dialog.close();
+        });
         AdventureGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the save game window", "Use this button to close the save game window.");
 
         VBox saveGameBox = new VBox(10, saveGameLabel, saveFileNameTextField, saveGameButton, closeWindowButton);
