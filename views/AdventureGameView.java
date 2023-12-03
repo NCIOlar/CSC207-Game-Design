@@ -1052,14 +1052,16 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method creates an effect when a button is hovered over.
+     */
     private void addHoverEvent(Button button) {
         button.setOnMouseEntered(event -> {
-
-            button.setPrefSize(button.getWidth() * 1.05, button.getHeight() * 1.05);
+            button.setStyle("-fx-background-color: #7698ef; -fx-text-fill: #000000;"); // Change button colour
         });
 
         button.setOnMouseExited(event -> {
-            button.setPrefSize(button.getWidth() / 1.05, button.getHeight() / 1.05);
+            button.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         });
     }
 
