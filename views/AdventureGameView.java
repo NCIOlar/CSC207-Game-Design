@@ -152,30 +152,35 @@ public class AdventureGameView {
         customizeButton(saveButton, 65, 50);
         makeButtonAccessible(saveButton, "Save Button", "This button saves the game.", "This button saves the game. Click it in order to save your current progress, so you can play more later.");
         addSaveEvent();
+        addHoverEvent(saveButton);
 
         loadButton = new Button("Load");
         loadButton.setId("Load");
         customizeButton(loadButton, 65, 50);
         makeButtonAccessible(loadButton, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoadEvent();
+        addHoverEvent(loadButton);
 
         helpButton = new Button("Help");
         helpButton.setId("Help");
         customizeButton(helpButton, 100, 50);
         makeButtonAccessible(helpButton, "Help Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addHelpEvent();
+        addHoverEvent(helpButton);
 
         mapButton = new Button("Map");
         mapButton.setId("Map");
         customizeButton(mapButton, 65, 50);
         makeButtonAccessible(mapButton, "Map Button", "This button pops up a map of the game.", "This button pops up a map of the game. Click it to navigate where you are!");
         addMapEvent();
+        addHoverEvent(mapButton);
 
         shopButton = new Button("Shop");
         shopButton.setId("Shop");
         customizeButton(shopButton, 65, 50);
         makeButtonAccessible(shopButton, "Shop Button", "This button pops up a shop containing goods.", "This button pops up a shop containing goods. Click it to buy equipments that you need when playing!");
         addShopEvent();
+        addHoverEvent(shopButton);
 
         homepageButton = new Button("Home");
         homepageButton.setId("Home");
@@ -183,36 +188,42 @@ public class AdventureGameView {
         makeButtonAccessible(homepageButton, "Home Button", "This button exits the current game and directs to the homepage.", "This button exits the current game and directs to the homepage. Click it if you want to exit the game!");
         homepageButton.setAlignment(Pos.CENTER);
         addHomeEvent();
+        addHoverEvent(homepageButton);
 
         loadButton_home = new Button("Load Game");
         loadButton_home.setId("Load Game");
         customizeButton(loadButton_home, 150, 50);
         makeButtonAccessible(loadButton_home, "Load Button", "This button loads a game from a file.", "This button loads the game from a file. Click it in order to load a game that you saved at a prior date.");
         addLoad_HomeEvent();
+        addHoverEvent(loadButton_home);
 
         introductionButton_home = new Button("Introduction");
         introductionButton_home.setId("Introduction");
         customizeButton(introductionButton_home, 150, 50);
         makeButtonAccessible(introductionButton_home, "Introduction Button", "This button gives game instructions.", "This button gives instructions on the game controls. Click it to learn how to play.");
         addIntroduction_HomeEvent();
+        addHoverEvent(introductionButton_home);
 
         easyButton_home = new Button("Easy");
         easyButton_home.setId("Easy");
         customizeButton(easyButton_home, 150, 50);
         makeButtonAccessible(easyButton_home, "Easy Button", "This button initializes game with easy mode.", "This button initializes game with easy mode. Click it to be able to play.");
         addEasyEvent();
+        addHoverEvent(easyButton_home);
 
         mediumButton_home = new Button("Medium");
         mediumButton_home.setId("Medium");
         customizeButton(mediumButton_home, 150, 50);
         makeButtonAccessible(mediumButton_home, "Medium Button", "This button initializes game with medium mode.", "This button initializes game with medium mode. Click it to be able to play.");
         addMediumEvent();
+        addHoverEvent(mediumButton_home);
 
         hardButton_home = new Button("Hard");
         hardButton_home.setId("Hard");
         customizeButton(hardButton_home, 150, 50);
         makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
         addHardEvent();
+        addHoverEvent(hardButton_home);
 
         roomDescLabel.setPrefWidth(600);
         roomDescLabel.setPrefHeight(150);
@@ -472,25 +483,28 @@ public class AdventureGameView {
     public void showSettingMenu(){
         //update setting on current girdpane
 
-//        gridPane.getChildren().clear(); // reset gridpane
-//        // Buttons
-//        menuButton = new Button("Menu");
-//        menuButton.setId("menu");
-//        customizeButton(menuButton, 200, 50);
-//        makeButtonAccessible(menuButton, "menu", "menu", "menu");
-//        addMenu();
+        gridPane.getChildren().clear(); // reset gridpane
+        // Buttons
+        menuButton = new Button("Menu");
+        menuButton.setId("menu");
+        customizeButton(menuButton, 200, 50);
+        makeButtonAccessible(menuButton, "menu", "menu", "menu");
+        addMenu();
+        addHoverEvent(menuButton);
 
         increaseBrightnessButton = new Button("Increase Brightness");
         increaseBrightnessButton.setId("Increase Brightness");
         customizeButton(increaseBrightnessButton, 200, 50);
         makeButtonAccessible(increaseBrightnessButton, "Increase Brightness", "This button increases brightness.", "This button increases brightness, press it to increase the brightness of the scene");
         addIncreaseBrightnessEvent();
+        addHoverEvent(increaseBrightnessButton);
 
         decreaseBrightnessButton = new Button("Decrease Brightness");
         decreaseBrightnessButton.setId("Decrease Brightness");
         customizeButton(decreaseBrightnessButton, 200, 50);
         makeButtonAccessible(decreaseBrightnessButton, "Decrease Brightness", "This button decreases brightness", "This button decreases brightness, press it to decrease the brightness of the scene");
         addDecreaseBrightnessEvent();
+        addHoverEvent(decreaseBrightnessButton);
 
         increaseContrastButton = new Button("Increase Contrast");
         increaseContrastButton.setId("increaseContrast");
@@ -1244,9 +1258,18 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method creates an effect when a button is hovered over.
+     */
+    private void addHoverEvent(Button button) {
+        button.setOnMouseEntered(event -> {
+            button.setStyle("-fx-background-color: #7698ef; -fx-text-fill: #000000;"); // Change button colour
+        });
 
-
-
+        button.setOnMouseExited(event -> {
+            button.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
+        });
+    }
 
     /**
      * This method articulates Room Descriptions
