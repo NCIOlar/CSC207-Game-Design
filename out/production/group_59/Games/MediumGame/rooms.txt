@@ -1,0 +1,133 @@
+1
+Living Quarters
+You are at your living quarters. There seems to be claw marks on your door.
+-----
+FORWARD    2
+
+2
+Greenhouse
+You are at the greenhouse. A self sustaining potato farm solves the food issue.
+-----
+FORWARD    6/POTATO
+BACKWARD   1
+LEFT       3
+RIGHT      4
+
+3
+Theatre/FIGHT/70/3
+You are at a theatre. Maybe not the best time for a movie.
+-----
+LEFT       4
+RIGHT      2
+
+4
+Storage Room
+This is a storage room. Hope no one left anything valuable!
+-----
+RIGHT      3
+
+5
+Electrical Room
+You are in an electrical room. Don't get electrocuted! 
+-----
+LEFT       2
+
+6
+Cockpit
+You are in the cockpit. Autopilot is such a lifesaver with the pilots gone.
+-----
+BACKWARD   2
+LEFT       7
+RIGHT      15
+
+7
+Corridor
+You are in a corridor.
+-----
+FORWARD    9
+LEFT       8
+RIGHT      6
+
+8
+Dead End
+This is a dead end. You observe the beautiful blue planet that you cannot return to.
+-----
+RIGHT      7
+
+9
+Engine Room/GAME/ENGINE
+This is the engine room. I wonder if there are any hints for the password. 
+-----
+FORWARD    10/BATTERY
+BACKWARD   7
+
+10
+Security Room
+You are in the security room. You view the horrors that occurred during your slumber.
+-----
+FORWARD    12
+BACKWARD   9
+LEFT       11
+
+11
+Bio Lab/FIGHT/80/4
+You are in the bio Lab. You reminisce upon the amazing breakthroughs you made here.
+-----
+FORWARD    13
+RIGHT      10
+
+12
+Equipment Room/GAME/EQUIPMENT
+You are in the equipment room. Scientists normally prepare equipment for labs here.
+-----
+BACKWARD   10
+LEFT       13
+
+13
+Chemistry Lab/DAMAGE/3
+You are in the chemistry lab. It is a lot more quiet without the failed reactions.
+-----
+BACKWARD   11
+LEFT       14
+RIGHT      12
+
+14
+Cryo Chamber
+This is the cryonic chamber that stores the vaccine. It is the "Last Hope" for humanity.
+-----
+RIGHT      13
+
+15
+Map Room
+The map room displays a map of the observable universe!
+-----
+FORWARD    16/KEYCARD
+LEFT       6
+
+16
+Storage Room
+Just an ordinary storage room
+-----
+FORWARD    17
+BACKWARD   15
+RIGHT      18
+
+17
+Kitchen/FIGHT/60/5
+A kitchen, a place where we indulge in intestellar cuisine.
+-----
+BACKWARD   16
+RIGHT      19/VACCINE
+
+18
+Corridor/GAME/CORRIDOR
+You are in a corridor.
+-----
+FORWARD    19/VACCINE
+LEFT       16
+
+19
+Escape Pod
+You have collected the vaccine and successfully saved millions of people from the virus. Congratulations.
+-----
+FORCED     0

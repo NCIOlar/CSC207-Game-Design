@@ -1,0 +1,23 @@
+POTATO
+A scrumptious raw potato.
+2
+
+BATTERY
+A battery that can power anything.
+5
+
+MONEY
+Some money ($10)
+4
+
+MONEY
+Some money ($10)
+16
+
+KEYCARD
+A keycard for some door.
+10
+
+VACCINE
+Vaccine for the Scourge bioweapon virus. Humanity's "Last Hope".
+14

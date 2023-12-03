@@ -268,6 +268,10 @@ public class AdventureGameView {
      */
     public void returnHome() {
 
+        if (this.model != null) {
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+        }
+
         gridPane.getChildren().clear();
         String roomImage = "/Games/Homepage.png";
         Image roomImageFile = new Image(roomImage);
@@ -293,9 +297,6 @@ public class AdventureGameView {
         //add all the widgets to the GridPane
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
-
-        this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
-
 
         String path2 = "Games/Solar_Sailer.mp3";
         if (!preMusic.equals(path2)) {
@@ -476,27 +477,27 @@ public class AdventureGameView {
 //        addMenu();
 
         increaseBrightnessButton = new Button("Increase Brightness");
-        increaseBrightnessButton.setId("increaseBrightness");
+        increaseBrightnessButton.setId("Increase Brightness");
         customizeButton(increaseBrightnessButton, 200, 50);
-        makeButtonAccessible(increaseBrightnessButton, "increaseBrightness", "This button increase birghtness.", "This button increase birghtness");
+        makeButtonAccessible(increaseBrightnessButton, "Increase Brightness", "This button increases brightness.", "This button increases brightness, press it to increase the brightness of the scene");
         addIncreaseBrightnessEvent();
 
         decreaseBrightnessButton = new Button("Decrease Brightness");
-        decreaseBrightnessButton.setId("decreaseBrightness");
+        decreaseBrightnessButton.setId("Decrease Brightness");
         customizeButton(decreaseBrightnessButton, 200, 50);
-        makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
+        makeButtonAccessible(decreaseBrightnessButton, "Decrease Brightness", "This button decreases brightness", "This button decreases brightness, press it to decrease the brightness of the scene");
         addDecreaseBrightnessEvent();
 
         increaseContrastButton = new Button("Increase Contrast");
         increaseContrastButton.setId("increaseContrast");
         customizeButton(increaseContrastButton, 200, 50);
-        makeButtonAccessible(increaseContrastButton, "contrastButton", "change the contrast of the game", "Increase Contrast");
+        makeButtonAccessible(increaseContrastButton, "Increase Contrast", "This button increases contrast", "This button increases contrast, press it to increase the contrast of the scene");
         addIncreaseContrastEvent();
 
         decreaseContrastButton = new Button("Decrease Contrast");
         decreaseContrastButton.setId("decreaseContrast");
         customizeButton(decreaseContrastButton, 200, 50);
-        makeButtonAccessible(decreaseContrastButton, "contrastButton", "change the contrast of the game", "Derease Contrast");
+        makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
         addDecreaseContrastEvent();
 
         HBox brightness = new HBox();
@@ -523,11 +524,11 @@ public class AdventureGameView {
             gridPane.getChildren().clear(); // reset gridpane
             settingButtons.getChildren().clear();//reset buttons
             // Buttons
-            menuButton = new Button("Menu");
-            menuButton.setId("menu");
+            menuButton = new Button("Home");
+            menuButton.setId("Home");
             customizeButton(menuButton, 200, 50);
-            makeButtonAccessible(menuButton, "menu", "menu", "menu");
-            addMenu();
+            makeButtonAccessible(menuButton, "Home", "This button goes back to the homepage", "This button goes back to the homepage, click it to go back to the homepage");
+            addMenuEvent();
             settingButtons.getChildren().add(menuButton);
 
             //paint rest of thebuttons
@@ -535,13 +536,16 @@ public class AdventureGameView {
         });
     }
 
-    public void addMenu(){
+
+    public void addMenuEvent(){
         menuButton.setOnAction(e -> {
-//            gridPane.getChildren().clear();
-//            gridPane.add( Buttons, 1, 1 );  // Add buttons
-//            gridPane.add(settingsButton, 2, 0);
-//            addSettingEvent();
-              gridPane.getChildren().clear();
+//          gridPane.getChildren().clear();
+//          gridPane.add( Buttons, 1, 1 );  // Add buttons
+//          gridPane.add(settingsButton, 2, 0);
+//          addSettingEvent();
+            gridPane.requestFocus();
+            stopArticulation();
+            gridPane.getChildren().clear();
               returnHome();
         });
 
@@ -583,10 +587,10 @@ public class AdventureGameView {
             settingButtons.getChildren().clear();//reset buttons
             //make button
             // Buttons
-            gobackButton = new Button("Go Back");
-            gobackButton.setId("goback");
+            gobackButton = new Button("Resume Game");
+            gobackButton.setId("Resume Game");
             customizeButton(gobackButton, 200, 50);
-            makeButtonAccessible(gobackButton, "goback", "goback to game", "go back to game");
+            makeButtonAccessible(gobackButton, "Resume Game", "This button resumes the game", "This button resumes the game, press it to continue the game");
             addGoback();
             settingButtons.getChildren().add(gobackButton);
 
@@ -729,7 +733,7 @@ public class AdventureGameView {
                             gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
                             formatText("You beat the troll");
                             HBox topButtons2 = new HBox();
-                            topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
+                            topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingInGameButton, helpButton, saveButton, loadButton);
                             topButtons2.setSpacing(10);
                             topButtons2.setPrefWidth(400);
                             topButtons2.setAlignment(Pos.CENTER);
