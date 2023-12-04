@@ -46,25 +46,28 @@ import java.util.*;
  */
 public class AdventureGameView {
 
-    public AdventureGame model; //model of the game
-    public Stage stage; //stage on which all is rendered
-    public VBox Buttons;
+    AdventureGame model; //model of the game
+    Stage stage; //stage on which all is rendered
+    VBox Buttons;
 
     //Setting buttons
-    public Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
-    public Setting setting = new Setting(new GridPane());
-    public VBox settingButtons = new VBox();
+    //Setting buttons
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton,
+            decreaseContrastButton, settingInGameButton, increaseVolumeButton, decreaseVolumeButton;
+    Setting setting = new Setting(new GridPane());
+    VBox settingButtons = new VBox();
 
-    public Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
+
+    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
-    public Boolean mapToggle = false;
-    public Map map;
+    Boolean mapToggle = false;
+    Map map;
 
-    public GridPane gridPane = new GridPane(); //to hold images and buttons
-    public Label roomDescLabel = new Label(); //to hold room description and/or instructions
-    public VBox objectsInRoom = new VBox(); //to hold room items
-    public VBox objectsInInventory = new VBox(); //to hold inventory items
-    public ImageView roomImageView; //to hold room image
+    GridPane gridPane = new GridPane(); //to hold images and buttons
+    Label roomDescLabel = new Label(); //to hold room description and/or instructions
+    VBox objectsInRoom = new VBox(); //to hold room items
+    VBox objectsInInventory = new VBox(); //to hold inventory items
+    ImageView roomImageView; //to hold room image
 
     private MediaPlayer mediaPlayer; //to play music
     private boolean mediaPlaying; //to know if the music is playing
@@ -74,12 +77,12 @@ public class AdventureGameView {
 
     private String preMusic = "Games/Solar_Sailer.mp3";
 
-    public EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
-    public String helpText; //help text
+    EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
+    String helpText; //help text
 
-    public TextField inputTextField; //for user input
+    TextField inputTextField; //for user input
 
-    public Boolean helpToggle = false; //is help on display?
+    Boolean helpToggle = false; //is help on display?
 
     /**
      * Adventure Game View Constructor
@@ -382,8 +385,6 @@ public class AdventureGameView {
                     submitEvent("A");
                 } else if (keyEvent.getCode() == KeyCode.D) {
                     submitEvent("D");
-                } else if (keyEvent.getCode() == KeyCode.E) {
-                    submitEvent("E");
                 }
             }
         };
@@ -437,9 +438,6 @@ public class AdventureGameView {
         if (text.equalsIgnoreCase("COMMANDS") || text.equalsIgnoreCase("C")) {
             showCommands(); //this is new!  We did not have this command in A1
             return;
-        } else if (text.equalsIgnoreCase("BAG") || text.equalsIgnoreCase("E")) {
-            //IMPLEMENT BAG FUNCTION HERE!
-            return;
         }
 
         //try to move!
@@ -479,14 +477,11 @@ public class AdventureGameView {
     public void showSettingMenu(){
         //update setting on current girdpane
 
+        if (model != null) {
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+        }
+
         gridPane.getChildren().clear(); // reset gridpane
-        // Buttons
-        menuButton = new Button("Menu");
-        menuButton.setId("menu");
-        customizeButton(menuButton, 200, 50);
-        makeButtonAccessible(menuButton, "menu", "menu", "menu");
-        addMenu();
-        addHoverEvent(menuButton);
 
         increaseBrightnessButton = new Button("Increase Brightness");
         increaseBrightnessButton.setId("Increase Brightness");
@@ -544,7 +539,7 @@ public class AdventureGameView {
         //settingButtons.getChildren().clear();
         settingButtons.getChildren().addAll(brightness, contrast, volume);
         settingButtons.setSpacing(30);
-        settingButtons.setAlignment(Pos.CENTER);
+        settingButtons.setAlignment(Pos.BOTTOM_CENTER);
 
         gridPane.add(settingButtons, 1 ,1);
 
@@ -1150,6 +1145,9 @@ public class AdventureGameView {
      */
     public void showHelp() throws IOException {
         if (helpToggle) {
+            if (model != null) {
+                this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+            }
             gridPane.getChildren().removeIf(node -> true);
             helpToggle = false;
             intiGame();
