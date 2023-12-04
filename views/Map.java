@@ -38,7 +38,6 @@ public class Map {
                 BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT)));
         createBlueprint();
-        this.game.player.getCurrentRoom().visit();
     }
 
 

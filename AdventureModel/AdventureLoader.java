@@ -15,6 +15,8 @@ public class AdventureLoader {
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
 
+    private RoomFactory roomFactory; //the roomFactory that constructs the room
+
     /**
      * Adventure Loader Constructor
      * __________________________
@@ -25,6 +27,7 @@ public class AdventureLoader {
     public AdventureLoader(AdventureGame game, String directoryName) {
         this.game = game;
         this.adventureName = directoryName;
+        this.roomFactory = new RoomFactory();
     }
 
      /**
@@ -71,11 +74,13 @@ public class AdventureLoader {
             String roomName = roomSettings[0];
             if (roomSettings.length == 4 && roomSettings[1].equals("FIGHT")) {
                 Troll troll = new Fighting_Troll(Integer.parseInt(roomSettings[2]), Integer.parseInt(roomSettings[3]));
-                room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
+
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, troll);
+
             } else if (roomSettings.length == 3 && roomSettings[1].equals("DAMAGE")) {
-                room = new Room(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
             } else {
-                room = new Room(roomName, roomNumber, roomDescription, adventureName);
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName);
             }
 
             // now we make the motion table

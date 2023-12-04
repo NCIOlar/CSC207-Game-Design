@@ -54,7 +54,9 @@ public class Fighting_Troll implements Troll {
      */
     public void playRound(Player player) {
         getDamage(player);
-        giveDamage(player);
+        if (health > 0) {
+            giveDamage(player);
+        }
         round += 1;
     }
 

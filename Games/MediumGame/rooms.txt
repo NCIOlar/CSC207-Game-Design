@@ -6,22 +6,22 @@ FORWARD    2
 
 2
 Greenhouse
-You are at the greenhouse. A self sustaining potato farm solves the food issue.
+You are at the greenhouse. A self-sustaining potato farm solves the food issue.
 -----
 FORWARD    6/POTATO
 BACKWARD   1
 LEFT       3
-RIGHT      4
+RIGHT      5
 
 3
-Theatre/FIGHT/70/3
+Theatre/FIGHT/70/15
 You are at a theatre. Maybe not the best time for a movie.
 -----
 LEFT       4
 RIGHT      2
 
 4
-Storage Room
+Storage Room 1
 This is a storage room. Hope no one left anything valuable!
 -----
 RIGHT      3
@@ -33,7 +33,7 @@ You are in an electrical room. Don't get electrocuted!
 LEFT       2
 
 6
-Cockpit
+Cockpit/DAMAGE/-3
 You are in the cockpit. Autopilot is such a lifesaver with the pilots gone.
 -----
 BACKWARD   2
@@ -41,7 +41,7 @@ LEFT       7
 RIGHT      15
 
 7
-Corridor
+Corridor 1
 You are in a corridor.
 -----
 FORWARD    9
@@ -55,8 +55,8 @@ This is a dead end. You observe the beautiful blue planet that you cannot return
 RIGHT      7
 
 9
-Engine Room/GAME/ENGINE
-This is the engine room. I wonder if there are any hints for the password. 
+Engine Room/FIGHT/90/10
+This is the engine room. You need batteries to power up the engine.
 -----
 FORWARD    10/BATTERY
 BACKWARD   7
@@ -70,22 +70,22 @@ BACKWARD   9
 LEFT       11
 
 11
-Bio Lab/FIGHT/80/4
+Bio Lab/FIGHT/70/9
 You are in the bio Lab. You reminisce upon the amazing breakthroughs you made here.
 -----
 FORWARD    13
 RIGHT      10
 
 12
-Equipment Room/GAME/EQUIPMENT
+Equipment Room
 You are in the equipment room. Scientists normally prepare equipment for labs here.
 -----
 BACKWARD   10
 LEFT       13
 
 13
-Chemistry Lab/DAMAGE/3
-You are in the chemistry lab. It is a lot more quiet without the failed reactions.
+Chemistry Lab/DAMAGE/12
+You are in the chemistry lab. It seems there are some poisonous gas leaks. Don't come to this room too often.
 -----
 BACKWARD   11
 LEFT       14
@@ -105,7 +105,7 @@ FORWARD    16/KEYCARD
 LEFT       6
 
 16
-Storage Room
+Storage Room 2
 Just an ordinary storage room
 -----
 FORWARD    17
@@ -113,14 +113,14 @@ BACKWARD   15
 RIGHT      18
 
 17
-Kitchen/FIGHT/60/5
+Kitchen/FIGHT/60/20
 A kitchen, a place where we indulge in intestellar cuisine.
 -----
 BACKWARD   16
 RIGHT      19/VACCINE
 
 18
-Corridor/GAME/CORRIDOR
+Corridor 2/DAMAGE/17
 You are in a corridor.
 -----
 FORWARD    19/VACCINE
