@@ -1,22 +1,24 @@
-The Globe has 
-To play this game you must move between different rooms and interact with objects by pressing the button correspond to the objects
+Welcome to Last Hope
 
-Some commands are motion commands.  These will move you from room to room. Motion commands include:
+2069, the superpowers of the world are locked in a stalement. 
+With war breaking out at any time, top scientists gather together to develop
+a bioweapon. To the dismay of humanity, an enemy espionage leaks the hostile bioweapon
+into the water ways. Within days, most of the population are infected. The International Defense Agency
+sends the remaining scientists into the International Space Station to develop a vaccine as a last resort.
+All seems to be going perfectly, you are getting along with the other scientists, utilizing the vast resources
+and the combined scientific prowess, the final vaccine was finished after hours and hours of tests. Tired
+after a long days of testing, you store the vaccine in a cryogenic chamber and 
+return to your living quarters to get some rest. 
+Unknowingly, one of the scientists had contracted the virusfrom back on Earth. You wake up to a sea of dead silence. 
+Seeing the bodies of your fellow colleagues all around you,
+you realize you are the last hope for humanity.
 
-UP, DOWN, EAST, WEST, NORTH, SOUTH
+You must reach the vaccine for the bioweapon before the infected reach you or succumbing to the effects 
+of the hazardous gases.
 
-Not all motions are possible in every room. In addition, some rooms may have "special" or "secret" motion commands.
+SmartShopExpress, your artificial intelligence companion is here to vend you supplies that may aid you
+on your journey for a price.
 
-There are other action commands in the game. These include:
+To move, use the "WASD" keys to move North, West, South, East, respectively.
 
-COMMANDS: this will print the moves that are legal in a given room.
-HELP: this will display instructions
-INVENTORY: this will print your current inventory.
-LOOK: this will print the description for the current room.
-TAKE <object>: this will take an object from a room and place it in your inventory. Replace <object> with the name of the object to take.  The object must be present in the room in order to take it.
-DROP <object>: this will drop an object in your inventory. Replace <object> with the name of the object to drop. The object must be in your inventory to drop it.
-
-Some paths may be blocked.  To unblock a path you may need a specific object to be in your inventory.
-
-The game is over when your player reaches the VICTORY room, or when your player DIES.
-
+We hope you enjoy your adventure! - Group 59

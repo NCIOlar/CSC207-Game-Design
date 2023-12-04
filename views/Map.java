@@ -1,151 +1,174 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package views;
 
 import AdventureModel.AdventureGame;
+import AdventureModel.Passage;
 import AdventureModel.Room;
+import javafx.geometry.Pos;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
+
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class Map {
-    AdventureGame game;
+
+    AdventureGame game; // This is the AdventureGame
     HashMap<Integer, Room> rooms;
     GridPane map;
     ArrayList<Integer> isGenerated;
-    ArrayList<String[]> blueprint = new ArrayList();
+
+    ArrayList<String[]> blueprint = new ArrayList<>();
+
 
     public Map(AdventureGameView game) throws IOException {
         this.game = game.model;
-        this.rooms = game.model.getRooms();
-        this.map = new GridPane();
-        this.isGenerated = new ArrayList(Collections.nCopies(10, 0));
-        this.createBlueprint();
+        rooms = game.model.getRooms();
+        map = new GridPane();
+        Image mapBackground = new Image(this.game.getDirectoryName() + "/mapBackground.png");
+
+        map.setBackground(new Background(new BackgroundImage(mapBackground,BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT)));
+        isGenerated = new ArrayList<>(Collections.nCopies(10, 0));
+        createBlueprint();
         this.game.player.getCurrentRoom().visit();
     }
 
-    public void generateMap() {
-        for(int i = 0; i < this.blueprint.size(); ++i) {
-            for(int j = 0; j < ((String[])this.blueprint.get(i)).length; ++j) {
-                String room = ((String[])this.blueprint.get(i))[j];
-                Rectangle blackBox;
-                if (room.equals("-")) {
-                    blackBox = new Rectangle(100.0, 100.0, Color.BLACK);
+    public void generateMap(){
+        map.getChildren().clear();
+        for (int i = 0; i < blueprint.size(); i++) {
+            for (int j = 0; j < blueprint.get(i).length; j++) {
+                String room = blueprint.get(i)[j];
+                if(room.equals("-")){
+                    Rectangle blackBox = new Rectangle(50, 50, Color.BLACK);
                     GridPane.setRowIndex(blackBox, i);
                     GridPane.setColumnIndex(blackBox, j);
-                    this.map.getChildren().add(blackBox);
-                } else if (room.equals("|")) {
-                    if (this.checkSurroundings(i, j)) {
-                        String passageImage = this.game.getDirectoryName() + "/room-images/passage.png";
+                    blackBox.setVisible(false);
+                    map.getChildren().add(blackBox);
+                }else if (room.equals("|")) {
+                    if(checkSurroundings(i, j)){
+                        String passageImage = game.getDirectoryName() + "/room-images/passage.png";
                         Image passageImageFile = new Image(passageImage);
                         ImageView passage = new ImageView(passageImageFile);
-                        passage.setFitHeight(100.0);
-                        passage.setFitWidth(100.0);
+                        passage.setFitHeight(50);
+                        passage.setFitWidth(50);
                         GridPane.setRowIndex(passage, i);
                         GridPane.setColumnIndex(passage, j);
-                        this.map.getChildren().add(passage);
-                    } else {
-                        blackBox = new Rectangle(100.0, 100.0, Color.BLACK);
+                        map.getChildren().add(passage);
+                    }else{
+                        Rectangle blackBox = new Rectangle(50, 50, Color.BLACK);
                         GridPane.setRowIndex(blackBox, i);
                         GridPane.setColumnIndex(blackBox, j);
-                        this.map.getChildren().add(blackBox);
+                        blackBox.setVisible(false);
+                        map.getChildren().add(blackBox);
                     }
-                } else if (((Room)this.rooms.get(Integer.parseInt(room))).getVisited()) {
-                    ImageView roomImage = this.getImage(Integer.parseInt(room));
-                    roomImage.setFitHeight(100.0);
-                    roomImage.setFitWidth(100.0);
-                    GridPane.setRowIndex(roomImage, i);
-                    GridPane.setColumnIndex(roomImage, j);
-                    this.map.getChildren().add(roomImage);
                 } else {
-                    blackBox = new Rectangle(100.0, 100.0, Color.BLACK);
-                    GridPane.setRowIndex(blackBox, i);
-                    GridPane.setColumnIndex(blackBox, j);
-                    this.map.getChildren().add(blackBox);
+                    if(rooms.get(Integer.parseInt(room)).getVisited()) {
+                        if(game.player.getCurrentRoom().getRoomNumber() == Integer.parseInt(room)){
+                            ImageView roomImage = getImage(room + "a");
+                            roomImage.setFitHeight(50);
+                            roomImage.setFitWidth(50);
+                            GridPane.setRowIndex(roomImage, i);
+                            GridPane.setColumnIndex(roomImage, j);
+                            map.getChildren().add(roomImage);
+                        }else{
+                            ImageView roomImage = getImage(room);
+                            roomImage.setFitHeight(50);
+                            roomImage.setFitWidth(50);
+                            GridPane.setRowIndex(roomImage, i);
+                            GridPane.setColumnIndex(roomImage, j);
+                            map.getChildren().add(roomImage);
+                        }
+                    }else{
+                        Rectangle blackBox = new Rectangle(50, 50, Color.BLACK);
+                        GridPane.setRowIndex(blackBox, i);
+                        GridPane.setColumnIndex(blackBox, j);
+                        blackBox.setVisible(false);
+                        map.getChildren().add(blackBox);
+                    }
                 }
             }
         }
-
     }
 
-    public void createBlueprint() throws IOException {
-        String roomFileName = this.game.getDirectoryName() + "/mapLayout.txt";
-        BufferedReader buff = new BufferedReader(new FileReader(roomFileName));
 
-        while(buff.ready()) {
-            this.blueprint.add(buff.readLine().split(" "));
+    public void createBlueprint() throws IOException {
+        String roomFileName = game.getDirectoryName() + "/mapLayout.txt";
+        BufferedReader buff = new BufferedReader(new FileReader(roomFileName));
+        while(buff.ready()){
+            blueprint.add(buff.readLine().split(" "));
         }
 
     }
 
-    private ImageView getImage(int roomNumber) {
-        String var10000 = this.game.getDirectoryName();
-        String roomImage = var10000 + "/room-images/" + roomNumber + ".png";
+    private ImageView getImage(String roomNumber){
+        String roomImage = game.getDirectoryName() + "/room-images/" + roomNumber + ".png";
         Image roomImageFile = new Image(roomImage);
         return new ImageView(roomImageFile);
     }
 
-    private boolean checkSurroundings(int row, int column) {
-        if (this.checkUp(row, column)) {
+    private boolean checkSurroundings(int row, int column){
+        if(checkUp(row, column)){
             return true;
-        } else if (this.checkDown(row, column)) {
+        } else if (checkDown(row, column)) {
             return true;
-        } else if (this.checkLeft(row, column)) {
+        } else if (checkLeft(row, column)) {
             return true;
-        } else {
-            return this.checkRight(row, column);
+        } else if (checkRight(row, column)) {
+            return true;
         }
+        return false;
     }
 
-    private boolean checkUp(int row, int column) {
-        try {
-            int top = Integer.parseInt(((String[])this.blueprint.get(row + 1))[column]);
-            return ((Room)this.rooms.get(top)).getVisited();
-        } catch (Exception var4) {
+    private boolean checkUp(int row, int column){
+        try{
+            int top = Integer.parseInt(blueprint.get(row + 1)[column]);
+            return rooms.get(top).getVisited();
+        }catch(Exception e){
             return false;
         }
     }
 
-    private boolean checkDown(int row, int column) {
-        try {
-            int bot = Integer.parseInt(((String[])this.blueprint.get(row - 1))[column]);
-            return ((Room)this.rooms.get(bot)).getVisited();
-        } catch (Exception var4) {
+    private boolean checkDown(int row, int column){
+        try{
+            int bot = Integer.parseInt(blueprint.get(row - 1)[column]);
+            return rooms.get(bot).getVisited();
+        }catch(Exception e){
             return false;
         }
     }
 
-    private boolean checkLeft(int row, int column) {
-        try {
-            int left = Integer.parseInt(((String[])this.blueprint.get(row))[column - 1]);
-            return ((Room)this.rooms.get(left)).getVisited();
-        } catch (Exception var4) {
+    private boolean checkLeft(int row, int column){
+        try{
+            int left = Integer.parseInt(blueprint.get(row)[column - 1]);
+            return rooms.get(left).getVisited();
+        }catch(Exception e){
             return false;
         }
     }
 
-    private boolean checkRight(int row, int column) {
-        try {
-            int right = Integer.parseInt(((String[])this.blueprint.get(row - 1))[column + 1]);
-            return ((Room)this.rooms.get(right)).getVisited();
-        } catch (Exception var4) {
+    private boolean checkRight(int row, int column){
+        try{
+            int right = Integer.parseInt(blueprint.get(row)[column + 1]);
+            return rooms.get(right).getVisited();
+        }catch(Exception h){
             return false;
         }
     }
 
-    public Pane showMap() {
-        return this.map;
+    public Pane showMap(){
+
+        return map;
     }
+
 }
+

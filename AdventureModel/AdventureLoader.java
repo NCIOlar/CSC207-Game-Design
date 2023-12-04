@@ -1,13 +1,11 @@
 package AdventureModel;
 
-import AdventureModel.Trolls.Fighting_Troll;
-import AdventureModel.Trolls.Gaming_Troll;
-import AdventureModel.Trolls.Troll;
+import Trolls.Fighting_Troll;
+import Trolls.Troll;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * Class AdventureLoader. Loads an adventure from files.
@@ -73,9 +71,6 @@ public class AdventureLoader {
             String roomName = roomSettings[0];
             if (roomSettings.length == 4 && roomSettings[1].equals("FIGHT")) {
                 Troll troll = new Fighting_Troll(Integer.parseInt(roomSettings[2]), Integer.parseInt(roomSettings[3]));
-                room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
-            } else if (roomSettings.length == 3 && roomSettings[1].equals("GAMES")) {
-                Troll troll = new Gaming_Troll(roomSettings[2]);
                 room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
             } else if (roomSettings.length == 3 && roomSettings[1].equals("DAMAGE")) {
                 room = new Room(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));

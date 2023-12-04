@@ -1,6 +1,7 @@
 package AdventureModel;
 
 import jdk.jshell.spi.ExecutionControl;
+import AdventureModel.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -99,6 +100,7 @@ public class Player implements Serializable {
      */
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
+        this.currentRoom.visit();
     }
 
     /**
@@ -134,37 +136,62 @@ public class Player implements Serializable {
     }
 
     // new methods
+    /**
+     *
+     * @return player name
+     */
     public String getName() {
         return this.name;
     }
+    /**
+     *
+     * @return player health
+     */
     public int getHealth() {
         return this.health;
     }
+    /**
+     *
+     * @return player damage
+     */
     public int getDamage() {
         return this.damage;
     }
+    /**
+     *
+     * @return player defense
+     */
     public int getDefense() {
         return this.defense;
     }
+    /**
+     *
+     * @return player funds
+     */
     public int getFunds() {
         return this.funds;
     }
 
-    public boolean buyObject(AdventureObject object) {
+    /**
+     *
+     * @param object to be bought
+     * @return if the object was successfully purchased
+     */
+    public boolean buyObject(AdventureObject object, Shop shop) {
         boolean outOfStock = true;
-        for (AdventureObject object1: this.shop.objectsForSale.keySet()) {
-            if (!(this.shop.objectsForSale.get(object1) == 0)) {
+        for (AdventureObject object1: shop.objectsForSale.keySet()) {
+            if (!(shop.objectsForSale.get(object1) == 0)) {
                 outOfStock = false;
             }
         }
         if (outOfStock) {
-            this.shop.setOutOfStock();
+            shop.setOutOfStock();
         }
         if (shop.outOfStock) {
             return false;
         }else if (this.funds >= object.getCost()) {
-            int updatedQuantity = this.shop.objectsForSale.get(object) - 1;
-            this.shop.objectsForSale.put(object, updatedQuantity);
+            int updatedQuantity = shop.objectsForSale.get(object) - 1;
+            shop.objectsForSale.put(object, updatedQuantity);
             this.inventory.add(object);
             this.funds -= object.getCost();
             return true;
@@ -172,14 +199,11 @@ public class Player implements Serializable {
             return false;
         }
     }
-//    public boolean sellObject(AdventureObject object) {
-//        if (!object.objectType.equals("Consumable")) {
-//            ;
-//        } else {
-//            this.inventory.remove(object);
-//
-//        }
-//    }
+
+    /**
+     *
+     * @param object to be used from player inventory and have its effects applied
+     */
     public void useItem(AdventureObject object) {
         if (object.getName().equals("MEDKIT")) {
             if ((this.health + object.getEffect()) >= 100) {
@@ -199,7 +223,6 @@ public class Player implements Serializable {
             this.damage += 20;
             this.inventory.remove(object);
         } else if (object.getName().equals("SKIP")) {
-            // NOT IMPLEMENTED YET
             this.inventory.remove(object);
         }
     }

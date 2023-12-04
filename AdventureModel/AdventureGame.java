@@ -1,5 +1,7 @@
 package AdventureModel;
 
+import Trolls.Fighting_Troll;
+
 import java.io.*;
 import java.util.*;
 
@@ -138,6 +140,7 @@ public class AdventureGame implements Serializable {
         return !this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDirection().equals("FORCED");
     }
 
+
     /**
      * interpretAction
      * interpret the user's action.
@@ -150,16 +153,23 @@ public class AdventureGame implements Serializable {
 
         PassageTable motionTable = this.player.getCurrentRoom().getMotionTable(); //where can we move?
 
+
         if (motionTable.optionExists(inputArray[0])) {
             movePlayer(inputArray[0]);
+            if (this.player.getCurrentRoom().troll != null && this.player.getCurrentRoom().troll instanceof Fighting_Troll) {
+                if (((Fighting_Troll) this.player.getCurrentRoom().troll).getHealth() > 0) {
+                    String instructions = this.player.getCurrentRoom().troll.getInstructions();
+                    return instructions;
+                }
+            }
             if (this.player.getCurrentRoom().getMotionTable().getDirection().get(0).getDestinationRoom() == 0) {
                 return "YOU WIN";
+            } else if (this.player.health <= 0) {
+                return "YOU LOST";
             } else if (this.player.requiredObj != null) {
                 String returning = "INVALID COMMAND, YOU NEED " + this.player.requiredObj + " TO UNLOCK THE PATH";
                 this.player.requiredObj = null;
                 return returning;
-            } else if (this.player.health <= 0) {
-                return "YOU LOST";
             } else {
                 return null;
             }

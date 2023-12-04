@@ -1,8 +1,8 @@
 package views;
 
-import AdventureModel.AdventureGame;
-import AdventureModel.AdventureObject;
+import AdventureModel.*;
 import views.Map;
+import Trolls.Fighting_Troll;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -32,7 +32,8 @@ import java.io.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.security.Key;
+import java.util.*;
 
 /**
  * Class AdventureGameView.
@@ -49,28 +50,36 @@ public class AdventureGameView {
     AdventureGame model; //model of the game
     Stage stage; //stage on which all is rendered
     VBox Buttons;
+    String adventureName;
 
+    AdventureLoader loader;
     //Setting buttons
-    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton;
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
     Setting setting = new Setting(new GridPane());
+    VBox settingButtons = new VBox();
 
     Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
-            easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton, backButton; //buttons
+            easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton, backButton,
+            buyVestButton, buyStimButton, buyMedkitButton, buyMaskButton, buySkipButton; //buttons
     Boolean mapToggle = false;
     Map map;
-
+    Shop shop;
     GridPane gridPane = new GridPane(); //to hold images and buttons
     Label roomDescLabel = new Label(); //to hold room description and/or instructions
     VBox objectsInRoom = new VBox(); //to hold room items
     VBox objectsInInventory = new VBox(); //to hold inventory items
     ImageView roomImageView; //to hold room image
 
-    private MediaPlayer mediaPlayer; //to play audio
-    private boolean mediaPlaying; //to know if the audio is playing
+    private MediaPlayer mediaPlayer; //to play music
+    private boolean mediaPlaying; //to know if the music is playing
+
+    private MediaPlayer audioPlayer; //to play audio
+    private boolean audioPlaying; //to know if the audio is playing
 
     private String preMusic = "Games/Solar_Sailer.mp3";
     private BorderPane shopPane = new BorderPane();
 
+    public EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
     String helpText; //help text
 
     TextField inputTextField; //for user input
@@ -216,6 +225,12 @@ public class AdventureGameView {
         makeButtonAccessible(hardButton_home, "Hard Button", "This button initializes game with hard mode.", "This button initializes game with hard mode. Click it to be able to play.");
         addHardEvent();
 
+        roomDescLabel.setPrefWidth(600);
+        roomDescLabel.setPrefHeight(150);
+        roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
+        roomDescLabel.setWrapText(true);
+        roomDescLabel.setStyle("-fx-text-fill: BLACK");
+
         Image settings_icon = new Image("Games/Settings.png");
         ImageView settings_iv =new ImageView(settings_icon);
         settings_iv.setFitHeight(40);
@@ -225,6 +240,12 @@ public class AdventureGameView {
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingEvent();
+        settingInGameButton = new Button("", settings_iv);
+        settingInGameButton.setId("SettingInGame");
+        customizeButton(settingInGameButton, 50, 50);
+        makeButtonAccessible(settingInGameButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingInGameEvent();
+
 
         VBox Buttons = new VBox();
         Buttons.getChildren().addAll(introductionButton_home, easyButton_home, mediumButton_home, hardButton_home, loadButton_home);
@@ -250,6 +271,7 @@ public class AdventureGameView {
         Media media = new Media(Paths.get(path2).toUri().toString());
         mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(true);
+        mediaPlaying = true;
     }
 
     /**
@@ -257,6 +279,11 @@ public class AdventureGameView {
      */
     public void returnHome() {
 
+        if (this.model != null) {
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+        }
+
+        gridPane.getChildren().clear();
         String roomImage = "/Games/Homepage.png";
         Image roomImageFile = new Image(roomImage);
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
@@ -267,12 +294,20 @@ public class AdventureGameView {
         Buttons.setSpacing(30);
         Buttons.setAlignment(Pos.BOTTOM_CENTER);
 
+        //reset setting buttons
+        Image settings_icon = new Image("Games/Settings.png");
+        ImageView settings_iv =new ImageView(settings_icon);
+        settings_iv.setFitHeight(40);
+        settings_iv.setFitWidth(40);
+        settingsButton = new Button("", settings_iv);
+        settingsButton.setId("Settings");
+        customizeButton(settingsButton, 50, 50);
+        makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
+        addSettingEvent();
+
         //add all the widgets to the GridPane
         gridPane.add( Buttons, 1, 1 );  // Add buttons
         gridPane.add(settingsButton, 2, 0);
-
-        this.stage.getScene().setOnKeyPressed(null);
-
 
         String path2 = "Games/Solar_Sailer.mp3";
         if (!preMusic.equals(path2)) {
@@ -281,14 +316,19 @@ public class AdventureGameView {
             Media media = new Media(Paths.get(path2).toUri().toString());
             mediaPlayer = new MediaPlayer(media);
             mediaPlayer.setAutoPlay(true);
+            mediaPlaying = true;
         }
 
     }
 
+    /**
+     * Initialises the Game when player chooses the difficulty
+     */
     public void intiGame() {
 
+        gridPane.getChildren().clear();
         HBox topButtons2 = new HBox();
-        topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingsButton, helpButton, saveButton, loadButton);
+        topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingInGameButton, helpButton, saveButton, loadButton);
         topButtons2.setSpacing(10);
         topButtons2.setPrefWidth(400);
         topButtons2.setAlignment(Pos.CENTER);
@@ -318,7 +358,7 @@ public class AdventureGameView {
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
-        EventHandler<KeyEvent> eventhandler = new EventHandler<KeyEvent>() {
+        eventhandler = new EventHandler<KeyEvent>() {
             public void handle(KeyEvent keyEvent) {
                 if (keyEvent.getCode() == KeyCode.W) {
                     submitEvent("W");
@@ -391,26 +431,34 @@ public class AdventureGameView {
         //try to move!
         String output = this.model.interpretAction(text); //process the command!
 
-        if (output == null || (!output.equals("YOU LOST") && !output.equals("YOU WIN"))) {
+        if (output == null) {
             updateScene("");
             updateItems();
         } else if (output.equals("YOU WIN")) {
-            updateScene("");
+            updateScene("YOU WIN");
             updateItems();
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
             PauseTransition pause = new PauseTransition(Duration.seconds(10));
             pause.setOnFinished(event -> {
                 returnHome();
                 this.model = null;
             });
+            pause.play();
         } else if (output.equals("YOU LOST")) {
-            updateScene("");
+            updateScene("YOU DIED! GAME OVER!");
             updateItems();
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
             PauseTransition pause = new PauseTransition(Duration.seconds(3));
             pause.setOnFinished(event -> {
                 returnHome();
                 this.model = null;
             });
             pause.play();
+        } else {
+            updateScene(output);
+            updateItems();
         }
     }
 
@@ -431,28 +479,50 @@ public class AdventureGameView {
     public void showSettingMenu(){
         //update setting on current girdpane
 
-        gridPane.getChildren().clear(); // reset gridpane
-        // Buttons
-        menuButton = new Button("Menu");
-        menuButton.setId("menu");
-        customizeButton(menuButton, 200, 50);
-        makeButtonAccessible(menuButton, "menu", "menu", "menu");
-        addMenu();
+//        gridPane.getChildren().clear(); // reset gridpane
+//        // Buttons
+//        menuButton = new Button("Menu");
+//        menuButton.setId("menu");
+//        customizeButton(menuButton, 200, 50);
+//        makeButtonAccessible(menuButton, "menu", "menu", "menu");
+//        addMenu();
 
         increaseBrightnessButton = new Button("Increase Brightness");
-        increaseBrightnessButton.setId("increaseBrightness");
+        increaseBrightnessButton.setId("Increase Brightness");
         customizeButton(increaseBrightnessButton, 200, 50);
-        makeButtonAccessible(increaseBrightnessButton, "increaseBrightness", "This button increase birghtness.", "This button increase birghtness");
+        makeButtonAccessible(increaseBrightnessButton, "Increase Brightness", "This button increases brightness.", "This button increases brightness, press it to increase the brightness of the scene");
         addIncreaseBrightnessEvent();
 
         decreaseBrightnessButton = new Button("Decrease Brightness");
-        decreaseBrightnessButton.setId("decreaseBrightness");
+        decreaseBrightnessButton.setId("Decrease Brightness");
         customizeButton(decreaseBrightnessButton, 200, 50);
-        makeButtonAccessible(decreaseBrightnessButton, "decreaseBrightness", "decreaseBrightness", "decreaseBrightness");
+        makeButtonAccessible(decreaseBrightnessButton, "Decrease Brightness", "This button decreases brightness", "This button decreases brightness, press it to decrease the brightness of the scene");
         addDecreaseBrightnessEvent();
 
-        VBox settingButtons = new VBox();
-        settingButtons.getChildren().addAll(menuButton, increaseBrightnessButton, decreaseBrightnessButton);
+        increaseContrastButton = new Button("Increase Contrast");
+        increaseContrastButton.setId("increaseContrast");
+        customizeButton(increaseContrastButton, 200, 50);
+        makeButtonAccessible(increaseContrastButton, "Increase Contrast", "This button increases contrast", "This button increases contrast, press it to increase the contrast of the scene");
+        addIncreaseContrastEvent();
+
+        decreaseContrastButton = new Button("Decrease Contrast");
+        decreaseContrastButton.setId("decreaseContrast");
+        customizeButton(decreaseContrastButton, 200, 50);
+        makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
+        addDecreaseContrastEvent();
+
+        HBox brightness = new HBox();
+        brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
+        brightness.setSpacing(30);
+        brightness.setAlignment(Pos.CENTER);
+
+        HBox contrast = new HBox();
+        contrast.getChildren().addAll(increaseContrastButton, decreaseContrastButton);
+        contrast.setSpacing(30);
+        contrast.setAlignment(Pos.CENTER);
+
+        //settingButtons.getChildren().clear();
+        settingButtons.getChildren().addAll(brightness, contrast);
         settingButtons.setSpacing(30);
         settingButtons.setAlignment(Pos.CENTER);
 
@@ -467,12 +537,23 @@ public class AdventureGameView {
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
 
+            gridPane.getChildren().clear(); // reset gridpane
+            settingButtons.getChildren().clear();//reset buttons
+            // Buttons
+            menuButton = new Button("Home");
+            menuButton.setId("Home");
+            customizeButton(menuButton, 200, 50);
+            makeButtonAccessible(menuButton, "Home", "This button goes back to the homepage", "This button goes back to the homepage, click it to go back to the homepage");
+            addMenuEvent();
+            settingButtons.getChildren().add(menuButton);
+
+            //paint rest of thebuttons
             showSettingMenu();
         });
-
     }
 
-    public void addMenu(){
+
+    public void addMenuEvent(){
         menuButton.setOnAction(e -> {
 //            gridPane.getChildren().clear();
 //            gridPane.add( Buttons, 1, 1 );  // Add buttons
@@ -482,34 +563,72 @@ public class AdventureGameView {
             Media sound = new Media(new File(hitNormal).toURI().toString());
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
-              gridPane.getChildren().clear();
+//          gridPane.getChildren().clear();
+//          gridPane.add( Buttons, 1, 1 );  // Add buttons
+//          gridPane.add(settingsButton, 2, 0);
+//          addSettingEvent();
+            gridPane.requestFocus();
+            stopArticulation();
+            gridPane.getChildren().clear();
               returnHome();
         });
 
     }
     public void addIncreaseBrightnessEvent(){
         increaseBrightnessButton.setOnAction(e -> {
-            ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setBrightness(setting.increaseBrightness());
-            gridPane.setEffect(colorAdjust);
+            setting.increaseBrightness(this.gridPane);
         });
 
     }
 
     public void addDecreaseBrightnessEvent(){
         decreaseBrightnessButton.setOnAction(e -> {
-            ColorAdjust colorAdjust = new ColorAdjust();
-            colorAdjust.setBrightness(setting.decreaseBrightness());
-            gridPane.setEffect(colorAdjust);
-
+              setting.decreaseBrightness(this.gridPane);
         });
 
     }
 
+    public void addIncreaseContrastEvent(){
+        increaseContrastButton.setOnAction(e -> {
+            setting.increaseContrast(this.gridPane);
+        });
+    }
 
+    public void addDecreaseContrastEvent(){
+        decreaseContrastButton.setOnAction(e -> {
+            setting.decreaseContrast(this.gridPane);
+        });
+    }
 
-    public void updatedSetting(ArrayList l){
+    public void showSettingInGame(){
 
+        showSettingMenu();
+    }
+
+    public void addSettingInGameEvent(){
+        settingInGameButton.setOnAction(e -> {
+            gridPane.getChildren().clear(); // reset gridpane
+            settingButtons.getChildren().clear();//reset buttons
+            //make button
+            // Buttons
+            gobackButton = new Button("Resume Game");
+            gobackButton.setId("Resume Game");
+            customizeButton(gobackButton, 200, 50);
+            makeButtonAccessible(gobackButton, "Resume Game", "This button resumes the game", "This button resumes the game, press it to continue the game");
+            addGoback();
+            settingButtons.getChildren().add(gobackButton);
+
+            //paint rest of the buttons
+            showSettingInGame();
+        });
+    }
+
+    public void addGoback(){
+        gobackButton.setOnAction(e -> {
+            gridPane.getChildren().clear();
+            intiGame();
+            updateScene("");
+        });
     }
 
 
@@ -560,46 +679,114 @@ public class AdventureGameView {
      */
     public void updateScene(String textToDisplay) {
 
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
+        Label playerHealth = new Label("❤️: " + model.player.health);
+        playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
+        playerHealth.setFont(new Font("Arial", 24));
+        playerHealth.setAlignment(Pos.CENTER);
+        Label playerDamage = new Label("🔪: " + model.player.damage);
+        playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
+        playerDamage.setFont(new Font("Arial", 24));
+        playerDamage.setAlignment(Pos.CENTER);
+        Label playerDefense = new Label("🛡️: " + model.player.defense);
+        playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
+        playerDefense.setFont(new Font("Arial", 24));
+        playerDefense.setAlignment(Pos.CENTER);
+        Label playerPoison;
+        if (this.model.player.isImmune) {
+            playerPoison = new Label("Immune: ✅");
+        } else {
+            playerPoison = new Label("Immune: ❌");
+        }
+        playerPoison.setStyle("-fx-text-fill: BLUE; -fx-background: transparent; -fx-background-color: transparent");
+        playerPoison.setFont(new Font("Arial", 24));
+        playerPoison.setAlignment(Pos.CENTER);
+        VBox player = new VBox(playerHealth, playerDefense, playerDamage, playerPoison);
+        player.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
+        player.setPadding(new Insets(20, 20, 20, 20));
+        player.setSpacing(5);
+        gridPane.add(player, 0, 2);
+
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
-        roomDescLabel.setPrefWidth(600);
-        roomDescLabel.setPrefHeight(150);
-        roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
-        roomDescLabel.setWrapText(true);
-        roomDescLabel.setStyle("-fx-text-fill: BLACK");
         VBox roomPane = new VBox(roomDescLabel);
         roomPane.setPadding(new Insets(10));
         roomPane.setAlignment(Pos.BOTTOM_CENTER);
         roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
-
         gridPane.add(roomPane, 1, 2);
+        if (model.player.getCurrentRoom().troll != null && textToDisplay.equals(model.player.getCurrentRoom().troll.getInstructions())) {
+            if (this.model.player.getCurrentRoom().troll instanceof Fighting_Troll) {
+                this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+                Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
+                ImageView zombieImageView = new ImageView(zombieImage);
+                zombieImageView.setFitHeight(300);
+                zombieImageView.setFitWidth(300);
+                if (this.model.player.health > 0 && ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth() > 0) {
+                    gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+                    Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getHealth());
+                    zombieHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
+                    zombieHealth.setFont(new Font("Arial", 24));
+                    zombieHealth.setAlignment(Pos.CENTER);
+                    Label zombieDamage = new Label("🔪: " + ((Fighting_Troll) model.player.getCurrentRoom().troll).getDamage());
+                    zombieDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
+                    zombieDamage.setFont(new Font("Arial", 24));
+                    zombieDamage.setAlignment(Pos.CENTER);
+                    VBox zombie;
+                    if (((Fighting_Troll) this.model.player.getCurrentRoom().troll).round > 0) {
+                        Label zombieRound = new Label("ROUND " + ((Fighting_Troll) this.model.player.getCurrentRoom().troll).round);
+                        zombieRound.setStyle("-fx-text-fill: WHITE; -fx-background: transparent; -fx-background-color: transparent");
+                        zombieRound.setFont(new Font("Arial", 32));
+                        zombieRound.setAlignment(Pos.CENTER);
+                        zombie = new VBox(zombieRound, zombieImageView, zombieHealth, zombieDamage);
+                    } else {
+                        zombie = new VBox(zombieImageView, zombieHealth, zombieDamage);
+                    }
+                    zombie.setStyle("-fx-background: transparent; -fx-background-color: transparent");
+                    zombie.setPadding(new Insets(20, 20, 20, 20));
+                    zombie.setSpacing(5);
+                    zombie.setAlignment(Pos.CENTER);
+                    gridPane.add(zombie, 1, 1);
+                    gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+                    model.player.getCurrentRoom().troll.playRound(model.player);
+                    if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() <= 0) {
+                        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                        pause.setOnFinished(event -> {
+                            this.stage.getScene().addEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+                            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+                            formatText("You beat the infected scientist");
+                            HBox topButtons2 = new HBox();
+                            topButtons2.getChildren().addAll(mapButton, shopButton, homepageButton, settingInGameButton, helpButton, saveButton, loadButton);
+                            topButtons2.setSpacing(10);
+                            topButtons2.setPrefWidth(400);
+                            topButtons2.setAlignment(Pos.CENTER);
+                            gridPane.add(topButtons2, 1, 0);
+                        });
+                        pause.play(); // method require revision
+                    } else if (this.model.player.getHealth() > 0 && ((Fighting_Troll) this.model.player.getCurrentRoom().troll).getHealth() > 0) {
+                        PauseTransition pause = new PauseTransition(Duration.seconds(2));
+                        pause.setOnFinished(event -> {
+                            updateScene(model.player.getCurrentRoom().troll.getInstructions());
+                        });
+                        pause.play(); // method require revision
+                    }
+
+                }
+            }
+        }
+        if (roomDescLabel.getText().equals("You beat the infected scientist")) {
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
+            roomPane = new VBox(roomDescLabel);
+            roomPane.setPadding(new Insets(10));
+            roomPane.setAlignment(Pos.BOTTOM_CENTER);
+            roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
+            gridPane.add(roomPane, 1, 2);
+        }
         stage.sizeToScene();
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
 
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
-        Label playerHealth = new Label("❤️: " + model.player.health);
-        playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
-        playerHealth.setFont(new Font("Arial", 32));
-        playerHealth.setAlignment(Pos.CENTER);
-        Label playerDamage = new Label("🔪: " + model.player.damage);
-        playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
-        playerDamage.setFont(new Font("Arial", 32));
-        playerDamage.setAlignment(Pos.CENTER);
-        Label playerDefense = new Label("🛡️: " + model.player.defense);
-        playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
-        playerDefense.setFont(new Font("Arial", 32));
-        playerDefense.setAlignment(Pos.CENTER);
-        VBox player = new VBox(playerHealth, playerDefense, playerDamage);
-        player.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color: rgba(255,255,255,0.3)");
-        player.setPadding(new Insets(20, 20, 20, 20));
-        player.setSpacing(10);
-        gridPane.add(player, 0, 2);
-
-        if (this.model.player.getCurrentRoom().troll != null) {
-
-        }
         //finally, articulate the description
         // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
         int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
@@ -611,6 +798,7 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
         }
         else if (roomNum <= 14){
@@ -621,6 +809,7 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
         }
         else{
@@ -632,9 +821,11 @@ public class AdventureGameView {
                 Media media = new Media(Paths.get(path2).toUri().toString());
                 mediaPlayer = new MediaPlayer(media);
                 mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
             }
 
         }
+        map.generateMap();
     }
 
     /**
@@ -646,13 +837,15 @@ public class AdventureGameView {
      * @param textToDisplay the text to be formatted for display.
      */
     private void formatText(String textToDisplay) {
-        if (textToDisplay == null || textToDisplay.isBlank()) {
+        if (textToDisplay == null || textToDisplay.isBlank() || textToDisplay.equals("YOU WIN")) {
             String roomDesc = this.model.getPlayer().getCurrentRoom().getRoomDescription() + "\n";
             String objectString = this.model.getPlayer().getCurrentRoom().getObjectString();
             if (objectString != null && !objectString.isEmpty()) roomDescLabel.setText(roomDesc + "\n\nObjects in this room:\n" + objectString);
             else roomDescLabel.setText(roomDesc);
-        } else roomDescLabel.setText(textToDisplay);
-        roomDescLabel.setStyle("-fx-text-fill: white;");
+        } else {
+            roomDescLabel.setText(textToDisplay);
+        }
+        roomDescLabel.setStyle("-fx-text-fill: BLACK;");
         roomDescLabel.setFont(new Font("Arial", 16));
         roomDescLabel.setAlignment(Pos.CENTER);
     }
@@ -727,10 +920,12 @@ public class AdventureGameView {
                         objectsInRoom.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInInventory.getChildren().add(objectButton);
                         model.player.takeObject(objectName);
+                        gridPane.requestFocus();
                     } else if (objectsInInventory.getChildren().contains(objectButton)) {
                         objectsInInventory.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInRoom.getChildren().add(objectButton);
                         model.player.dropObject(objectName);
+                        gridPane.requestFocus();
                     }
                 }
             };
@@ -760,10 +955,17 @@ public class AdventureGameView {
                         objectsInRoom.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInInventory.getChildren().add(objectButton);
                         model.player.takeObject(object.getName());
+                        gridPane.requestFocus();
                     } else if (objectsInInventory.getChildren().contains(objectButton)) {
                         objectsInInventory.getChildren().removeIf(node -> node.equals(objectButton));
                         objectsInRoom.getChildren().add(objectButton);
-                        model.player.dropObject(object.getName());
+                        if (object.getType().equals("Consumable")) {
+                            model.player.useItem(object);
+                            gridPane.requestFocus();
+                        } else {
+                            model.player.dropObject(object.getName());
+                            gridPane.requestFocus();
+                        }
                     }
                 }
             };
@@ -780,7 +982,6 @@ public class AdventureGameView {
         scO.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
-
     }
 
     public void showMap(){
@@ -789,6 +990,7 @@ public class AdventureGameView {
             updateScene("");
             mapToggle = false;
         } else {
+            map.generateMap();
             gridPane.add(map.showMap(), 1, 1);
             mapToggle = true;
         }
@@ -990,11 +1192,26 @@ public class AdventureGameView {
             Media sound = new Media(new File(soundFile).toURI().toString());
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
+            adventureName = "EasyGame";
 
             gridPane.requestFocus();
             this.model = new AdventureGame("EasyGame");
+            shop = new Shop(adventureName);
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
+            try {
+                map = new Map(this);
+                map.generateMap();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
             intiGame();
         });
     }
@@ -1005,10 +1222,18 @@ public class AdventureGameView {
             Media sound = new Media(new File(soundFile).toURI().toString());
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
+            adventureName = "MediumGame";
 
             gridPane.requestFocus();
             this.model = new AdventureGame("MediumGame");
+            shop = new Shop(adventureName);
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1020,10 +1245,18 @@ public class AdventureGameView {
             Media sound = new Media(new File(soundFile).toURI().toString());
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
+            adventureName = "HardGame";
 
             gridPane.requestFocus();
             this.model = new AdventureGame("HardGame");
+            shop = new Shop(adventureName);
             gridPane.getChildren().removeIf(node -> true);
+            try {
+                map = new Map(this);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            map.generateMap();
             stopArticulation();
             intiGame();
         });
@@ -1050,7 +1283,6 @@ public class AdventureGameView {
             mediaPlayer2.play();
 
             gridPane.requestFocus();
-            gridPane.getChildren().removeIf(node -> true);
             stopArticulation();
             returnHome();
         });
@@ -1065,11 +1297,14 @@ public class AdventureGameView {
             mediaPlayer2.play();
 
             showMap();
-            
+
         });
     }
 
-    // Returns back to game screen when exiting shop
+    /**
+     *
+     * Returns back to game screen when exiting shop
+     */
     public void addReturnEvent() {
         backButton.setOnAction(e -> {
             String soundFile = ("Games/BUTTON.mp3");
@@ -1077,13 +1312,128 @@ public class AdventureGameView {
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
             mediaPlayer2.play();
 
-
             gridPane.getChildren().clear();
             updateScene("");
             updateItems();
+            intiGame();
         });
     }
 
+    /**
+     * This methods handles the event of player purchasing a vest in shop
+     */
+    public void addBuyVestEvent() {
+        buyVestButton.setOnAction(e -> {
+            String soundFile = ("Games/BUY.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer3 = new MediaPlayer(sound);
+            String soundFile2 = ("Games/BUZZER.mp3");
+            Media sound2 = new Media(new File(soundFile2).toURI().toString());
+            MediaPlayer mediaPlayer4 = new MediaPlayer(sound2);
+
+            for (AdventureObject object: shop.objectsForSale.keySet()) {
+                if (object.getName().equals("VEST")) {
+                    if (model.player.buyObject(object, shop)) {
+                        mediaPlayer3.play();
+                    } else {
+                        mediaPlayer4.play();
+                    }
+                }
+            }
+        });
+    }
+    /**
+     * This methods handles the event of player purchasing a stim in shop
+     */
+    public void addBuyStimEvent() {
+        buyStimButton.setOnAction(e -> {
+            String soundFile = ("Games/BUY.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer3 = new MediaPlayer(sound);
+            String soundFile2 = ("Games/BUZZER.mp3");
+            Media sound2 = new Media(new File(soundFile2).toURI().toString());
+            MediaPlayer mediaPlayer4 = new MediaPlayer(sound2);
+
+            for (AdventureObject object: shop.objectsForSale.keySet()) {
+                if (object.getName().equals("STIM")) {
+                    if (model.player.buyObject(object, shop)) {
+                        mediaPlayer3.play();
+                    } else {
+                        mediaPlayer4.play();
+                    }
+                }
+            }
+        });
+    }
+    /**
+     * This methods handles the event of player purchasing a medkit in shop
+     */
+    public void addBuyMedkitEvent() {
+        buyMedkitButton.setOnAction(e -> {
+            String soundFile = ("Games/BUY.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer3 = new MediaPlayer(sound);
+            String soundFile2 = ("Games/BUZZER.mp3");
+            Media sound2 = new Media(new File(soundFile2).toURI().toString());
+            MediaPlayer mediaPlayer4 = new MediaPlayer(sound2);
+
+            for (AdventureObject object: shop.objectsForSale.keySet()) {
+                if (object.getName().equals("MEDKIT")) {
+                    if (model.player.buyObject(object, shop)) {
+                        mediaPlayer3.play();
+                    } else {
+                        mediaPlayer4.play();
+                    }
+                }
+            }
+        });
+    }
+    /**
+     * This methods handles the event of player purchasing a mask in shop
+     */
+    public void addBuyMaskEvent() {
+        buyMaskButton.setOnAction(e -> {
+            String soundFile = ("Games/BUY.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer3 = new MediaPlayer(sound);
+            String soundFile2 = ("Games/BUZZER.mp3");
+            Media sound2 = new Media(new File(soundFile2).toURI().toString());
+            MediaPlayer mediaPlayer4 = new MediaPlayer(sound2);
+
+            for (AdventureObject object: shop.objectsForSale.keySet()) {
+                if (object.getName().equals("MASK")) {
+                    if (model.player.buyObject(object, shop)) {
+                        mediaPlayer3.play();
+                    } else {
+                        mediaPlayer4.play();
+                    }
+                }
+            }
+        });
+    }
+    /**
+     * This methods handles the event of player purchasing a skip in shop
+     */
+    public void addBuySkipEvent() {
+        buySkipButton.setOnAction(e -> {
+            String soundFile = ("Games/BUY.mp3");
+            Media sound = new Media(new File(soundFile).toURI().toString());
+            MediaPlayer mediaPlayer3 = new MediaPlayer(sound);
+            String soundFile2 = ("Games/BUZZER.mp3");
+            Media sound2 = new Media(new File(soundFile2).toURI().toString());
+            MediaPlayer mediaPlayer4 = new MediaPlayer(sound2);
+
+            for (AdventureObject object: shop.objectsForSale.keySet()) {
+                if (object.getName().equals("SKIP")) {
+                    if (model.player.buyObject(object, shop)) {
+                        mediaPlayer3.play();
+                    } else {
+                        mediaPlayer4.play();
+                    }
+                }
+            }
+        });
+    }
     /**
      * This method articulates Room Descriptions
      */
@@ -1095,12 +1445,11 @@ public class AdventureGameView {
         if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
         else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
         musicFile = musicFile.replace(" ","-");
-
         Media sound = new Media(new File(musicFile).toURI().toString());
 
-        mediaPlayer = new MediaPlayer(sound);
-        mediaPlayer.play();
-        mediaPlaying = true;
+        audioPlayer = new MediaPlayer(sound);
+        audioPlayer.play();
+        audioPlaying = true;
 
     }
 
@@ -1109,12 +1458,23 @@ public class AdventureGameView {
      * (useful when transitioning to a new room or loading a new game)
      */
     public void stopArticulation() {
+        if (audioPlaying) {
+            audioPlayer.stop(); //shush!
+            audioPlaying = false;
+        }
+    }
+
+    /**
+     * This method stops music
+     * (useful when loading a new game)
+     */
+    public void stopMusic() {
         if (mediaPlaying) {
             mediaPlayer.stop(); //shush!
             mediaPlaying = false;
         }
     }
-    /*
+    /**
     * This method implements the interface of Shop, then sends to addShopEvent()
     *
     */
@@ -1122,8 +1482,173 @@ public class AdventureGameView {
         Image shopImage = new Image("Games/Shop.png");
         BackgroundImage backgroundImage = new BackgroundImage(shopImage, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         BorderPane shopPane = new BorderPane();
-        shopPane.setBackground(new Background(backgroundImage));
+        gridPane.getChildren().clear();
+        gridPane.setBackground(new Background(backgroundImage));
         gridPane.add(backButton, 2, 0);
 
+
+        Image vest = new Image("Games/EasyGame/objectImages/VEST.png");
+        ImageView vest_iv = new ImageView(vest);
+        vest_iv.setFitHeight(150);
+        vest_iv.setFitWidth(150);
+        buyVestButton = new Button("Buy Vest", vest_iv);
+        addBuyVestEvent();
+        buyVestButton.setId("Buy Vest");
+        buyVestButton.setContentDisplay(ContentDisplay.TOP);
+        customizeButton(buyVestButton, 150, 150);
+        makeButtonAccessible(buyVestButton, "Buy Vest Button", "This button allows the player to purchase a vest", "This button allows the player to purchase a vest");
+        buyVestButton.setTooltip(new Tooltip("A bulletproof vest crafted from durable kevlar.\nThis gives the player 10 defense when consumed."));
+        VBox vestV = new VBox();
+        Button vestQuant = new Button();
+        customizeButton(vestQuant, 150, 50);
+        Button vestPrice = new Button("$10");
+        customizeButton(vestPrice, 150, 50);
+        buyVestButton.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        vestQuant.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        vestPrice.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        for (AdventureObject object: shop.objectsForSale.keySet()) {
+            if (object.getName().equals("VEST")) {
+                vestQuant.setText(shop.objectsForSale.get(object).toString() + " left");
+            }
+        }
+        vestV.getChildren().addAll(vestPrice, buyVestButton, vestQuant);
+        vestV.setAlignment(Pos.CENTER);
+        vestV.setSpacing(30);
+
+        Image stim = new Image("Games/EasyGame/objectImages/STIM.png");
+        ImageView stim_iv = new ImageView(stim);
+        stim_iv.setFitHeight(150);
+        stim_iv.setFitWidth(150);
+        buyStimButton = new Button("Buy Stim", stim_iv);
+        addBuyStimEvent();
+        buyStimButton.setId("Buy Stim");
+        buyStimButton.setContentDisplay(ContentDisplay.TOP);
+        customizeButton(buyStimButton, 150, 150);
+        makeButtonAccessible(buyStimButton, "Buy Stim Button", "This button allows the player to purchase a stimulant", "This button allows the player to purchase a stimulant");
+        buyStimButton.setTooltip(new Tooltip("A slender syringe containing a potent cocktail of stimulants.\nThis increases player's damage by 20 when consumed"));
+        VBox stimV = new VBox();
+        Button stimQuant = new Button();
+        customizeButton(stimQuant, 150, 50);
+        Button stimPrice = new Button("$10");
+        customizeButton(stimPrice, 150, 50);
+        buyStimButton.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        stimQuant.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        stimPrice.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        for (AdventureObject object: shop.objectsForSale.keySet()) {
+            if (object.getName().equals("STIM")) {
+                stimQuant.setText(shop.objectsForSale.get(object).toString() + " left");
+            }
+        }
+        stimV.getChildren().addAll(stimPrice, buyStimButton, stimQuant);
+        stimV.setAlignment(Pos.CENTER);
+        stimV.setSpacing(30);
+
+        Image med = new Image("Games/EasyGame/objectImages/MEDKIT.png");
+        ImageView med_iv = new ImageView(med);
+        med_iv.setFitHeight(150);
+        med_iv.setFitWidth(150);
+        buyMedkitButton = new Button("Buy Medkit", med_iv);
+        addBuyMedkitEvent();
+        buyMedkitButton.setId("Buy Medkit");
+        buyMedkitButton.setContentDisplay(ContentDisplay.TOP);
+        customizeButton(buyMedkitButton, 150, 150);
+        makeButtonAccessible(buyMedkitButton, "Buy Medkit Button", "This button allows the player to purchase a medkit", "This button allows the player to purchase a medkit");
+        buyMedkitButton.setTooltip(new Tooltip("A state-of-the-art medical kit equipped with advanced healing technology.\nThis heals the player for 20HP when consumed."));
+        VBox medV = new VBox();
+        Button medQuant = new Button();
+        customizeButton(medQuant, 150, 50);
+        Button medPrice = new Button("$5");
+        customizeButton(medPrice, 150, 50);
+        buyMedkitButton.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        medQuant.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        medPrice.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        for (AdventureObject object: shop.objectsForSale.keySet()) {
+            if (object.getName().equals("MEDKIT")) {
+                medQuant.setText(shop.objectsForSale.get(object).toString() + " left");
+            }
+        }
+        medV.getChildren().addAll(medPrice, buyMedkitButton, medQuant);
+        medV.setAlignment(Pos.CENTER);
+        medV.setSpacing(30);
+
+        Image mask = new Image("Games/EasyGame/objectImages/MASK.png");
+        ImageView mask_iv = new ImageView(mask);
+        mask_iv.setFitHeight(150);
+        mask_iv.setFitWidth(150);
+        buyMaskButton = new Button("Buy Mask", mask_iv);
+        addBuyMaskEvent();
+        buyMaskButton.setId("Buy Mask");
+        buyMaskButton.setContentDisplay(ContentDisplay.TOP);
+        customizeButton(buyMaskButton, 150, 150);
+        makeButtonAccessible(buyMaskButton, "Buy Mask Button", "This button allows the player to purchase a gas mask", "This button allows the player to purchase a gas mask");
+        buyMaskButton.setTooltip(new Tooltip("A gas mask blocks off noxious fumes. Perfect for exploring hazardous environments.\nThis makes the player immune to toxic gas when consumed."));
+        VBox maskV = new VBox();
+        Button maskQuant = new Button();
+        customizeButton(maskQuant, 150, 50);
+        Button maskPrice = new Button("$10");
+        customizeButton(maskPrice, 150, 50);
+        buyMaskButton.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        maskQuant.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        maskPrice.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        for (AdventureObject object: shop.objectsForSale.keySet()) {
+            if (object.getName().equals("MASK")) {
+                maskQuant.setText(shop.objectsForSale.get(object).toString() + " left");
+            }
+        }
+        maskV.getChildren().addAll(maskPrice, buyMaskButton, maskQuant);
+        maskV.setAlignment(Pos.CENTER);
+        maskV.setSpacing(30);
+
+        Image skip = new Image("Games/EasyGame/objectImages/SKIP.png");
+        ImageView skip_iv = new ImageView(skip);
+        skip_iv.setFitHeight(150);
+        skip_iv.setFitWidth(150);
+        buySkipButton = new Button("Buy Skip", skip_iv);
+        addBuySkipEvent();
+        buySkipButton.setId("Buy Skip");
+        customizeButton(buySkipButton, 150, 150);
+        makeButtonAccessible(buySkipButton, "Buy Skip Button", "This button allows the player to purchase a skip", "This button allows the player to purchase a skip");
+        buySkipButton.setTooltip(new Tooltip("The Glock. One shot, one kill.\nThis item skips the current fight when consumed."));
+        VBox skipV = new VBox();
+        Button skipQuant = new Button();
+        customizeButton(skipQuant, 150, 50);
+        Button skipPrice = new Button("$10");
+        customizeButton(skipPrice, 150, 50);
+        buySkipButton.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        skipQuant.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        skipPrice.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        for (AdventureObject object: shop.objectsForSale.keySet()) {
+            if (object.getName().equals("SKIP")) {
+                skipQuant.setText(shop.objectsForSale.get(object).toString() + " left");
+            }
+        }
+        skipV.getChildren().addAll(skipPrice, buySkipButton, skipQuant);
+        skipV.setAlignment(Pos.CENTER);
+        skipV.setSpacing(30);
+
+        HBox forSale = new HBox();
+        if (adventureName.equals("EasyGame")) {
+            forSale.getChildren().addAll(vestV, stimV, medV);
+        } else if (adventureName.equals("MediumGame")) {
+            forSale.getChildren().addAll(vestV, stimV, medV, maskV);
+        } else {
+            forSale.getChildren().addAll(vestV, stimV, medV, maskV, skipV);
+        }
+        forSale.setSpacing(30);
+        forSale.setAlignment(Pos.CENTER);
+        gridPane.add(forSale, 1, 1);
+
+        Button funds = new Button("Funds: $" + Integer.toString(model.player.getFunds()));
+        customizeButton(funds, 200, 50);
+        funds.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+        gridPane.add(funds, 1, 2);
+//        ImageView robot = new ImageView(new Image("Games/ROBOT.png"));
+//        robot.setFitWidth(200);
+//        robot.setFitHeight(200);
+//        Button helper = new Button("Welcome to the shop!\nHere, you can spend any loose change you find around the ship\nto buy equipment that will aid your journey.", robot);
+//        customizeButton(helper, 450, 250);
+//        helper.setStyle("-fx-background-color: #0e90ed; -fx-text-fill: #ffffff;");
+//        helper.setContentDisplay(ContentDisplay.RIGHT);
+//        gridPane.add(helper, 2, 2);
     }
 }
