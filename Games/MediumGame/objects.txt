@@ -12,6 +12,10 @@ Some money ($10)
 
 MONEY
 Some money ($10)
+12
+
+MONEY
+Some money ($10)
 16
 
 KEYCARD

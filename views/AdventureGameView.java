@@ -46,26 +46,25 @@ import java.util.*;
  */
 public class AdventureGameView {
 
-    AdventureGame model; //model of the game
-    Stage stage; //stage on which all is rendered
-    VBox Buttons;
+    public AdventureGame model; //model of the game
+    public Stage stage; //stage on which all is rendered
+    public VBox Buttons;
 
     //Setting buttons
-    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton,
-            decreaseContrastButton, settingInGameButton, increaseVolumeButton, decreaseVolumeButton;
-    Setting setting = new Setting(new GridPane());
-    VBox settingButtons = new VBox();
+    public Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
+    public Setting setting = new Setting(new GridPane());
+    public VBox settingButtons = new VBox();
 
-    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
+    public Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
-    Boolean mapToggle = false;
-    Map map;
+    public Boolean mapToggle = false;
+    public Map map;
 
-    GridPane gridPane = new GridPane(); //to hold images and buttons
-    Label roomDescLabel = new Label(); //to hold room description and/or instructions
-    VBox objectsInRoom = new VBox(); //to hold room items
-    VBox objectsInInventory = new VBox(); //to hold inventory items
-    ImageView roomImageView; //to hold room image
+    public GridPane gridPane = new GridPane(); //to hold images and buttons
+    public Label roomDescLabel = new Label(); //to hold room description and/or instructions
+    public VBox objectsInRoom = new VBox(); //to hold room items
+    public VBox objectsInInventory = new VBox(); //to hold inventory items
+    public ImageView roomImageView; //to hold room image
 
     private MediaPlayer mediaPlayer; //to play music
     private boolean mediaPlaying; //to know if the music is playing
@@ -76,11 +75,11 @@ public class AdventureGameView {
     private String preMusic = "Games/Solar_Sailer.mp3";
 
     public EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
-    String helpText; //help text
+    public String helpText; //help text
 
-    TextField inputTextField; //for user input
+    public TextField inputTextField; //for user input
 
-    Boolean helpToggle = false; //is help on display?
+    public Boolean helpToggle = false; //is help on display?
 
     /**
      * Adventure Game View Constructor
@@ -100,6 +99,9 @@ public class AdventureGameView {
         // setting up the stage
         this.stage.setTitle("Last Hope");
 
+        //Inventory + Room items
+        objectsInInventory.setSpacing(10);
+        objectsInInventory.setAlignment(Pos.TOP_CENTER);
         objectsInRoom.setSpacing(10);
         objectsInRoom.setAlignment(Pos.TOP_CENTER);
 
@@ -277,7 +279,7 @@ public class AdventureGameView {
     }
 
     /**
-     * Return to the homepage (after pressing home button when playing game)
+     * Return to the homepage (after pressing home button when not in the homepage)
      */
     public void returnHome() {
 
@@ -350,14 +352,22 @@ public class AdventureGameView {
         textEntry.setAlignment(Pos.CENTER);
         gridPane.add( textEntry, 2, 2, 3, 1);
 
+        //labels for inventory and room items
         Label objLabel =  new Label("Objects in Room");
         objLabel.setStyle("-fx-text-fill: WHITE;");
         objLabel.setFont(new Font("Arial", 16));
         objLabel.setAlignment(Pos.BOTTOM_RIGHT);
 
+        Label invLabel =  new Label("Your Inventory");
+        invLabel.setAlignment(Pos.CENTER);
+        invLabel.setStyle("-fx-text-fill: white;");
+        invLabel.setFont(new Font("Arial", 16));
+        objLabel.setAlignment(Pos.BOTTOM_RIGHT);
+
         //add all the widgets to the GridPane
         gridPane.add( topButtons2, 1, 0);  // Add buttons
         gridPane.add( objLabel, 0, 0);  // Add buttons
+        gridPane.add( invLabel, 2, 0 );  // Add label
 
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
@@ -439,27 +449,13 @@ public class AdventureGameView {
             updateScene("");
             updateItems();
         } else if (output.equals("YOU WIN")) {
+            stopArticulation();
             updateScene("YOU WIN");
             updateItems();
-            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
-            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
-            PauseTransition pause = new PauseTransition(Duration.seconds(10));
-            pause.setOnFinished(event -> {
-                returnHome();
-                this.model = null;
-            });
-            pause.play();
         } else if (output.equals("YOU LOST")) {
+            stopArticulation();
             updateScene("YOU DIED! GAME OVER!");
             updateItems();
-            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
-            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
-            PauseTransition pause = new PauseTransition(Duration.seconds(3));
-            pause.setOnFinished(event -> {
-                returnHome();
-                this.model = null;
-            });
-            pause.play();
         } else {
             updateScene(output);
             updateItems();
@@ -691,12 +687,13 @@ public class AdventureGameView {
      * updateScene
      * __________________________
      *
-     * Show the current room, and print some text below it.
-     * If the input parameter is not null, it will be displayed
-     * below the image.
-     * Otherwise, the current room description will be dispplayed
-     * below the image.
-     *
+     * Show the current room, and print some text below it. Update Music, Audio
+     * and player stats as well.
+     * If troll is in the room, will show all the round fighting with troll
+     * The priority of the display messages would be Win/Lose/Invalid command messages
+     * > Troll play messages > Room descriptions
+     * If more than one messages is possible at the same time, the one with higher priority
+     * would be presented.
      * @param textToDisplay the text to display below the image.
      */
     public void updateScene(String textToDisplay) {
@@ -740,6 +737,15 @@ public class AdventureGameView {
         gridPane.add(roomPane, 1, 2);
         if (model.player.getCurrentRoom() instanceof TrollRoom && textToDisplay.equals(((TrollRoom) model.player.getCurrentRoom()).troll.getInstructions())) {
             if (((TrollRoom) model.player.getCurrentRoom()).troll instanceof Fighting_Troll) {
+                String musicFile;
+                String adventureName = this.model.getDirectoryName();
+                musicFile = "./" + adventureName + "/sounds/Fight.mp3" ;
+                Media sound = new Media(new File(musicFile).toURI().toString());
+                if (!audioPlaying) {
+                    audioPlayer = new MediaPlayer(sound);
+                    audioPlayer.play();
+                    audioPlaying = true;
+                }
                 this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
                 Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
                 ImageView zombieImageView = new ImageView(zombieImage);
@@ -792,11 +798,14 @@ public class AdventureGameView {
                             updateScene(((TrollRoom) model.player.getCurrentRoom()).troll.getInstructions());
                         });
                         pause.play(); // method require revision
+                    } else {
+                        updateScene("YOU DIED! GAME OVER!");
                     }
 
                 }
             }
         }
+
         if (roomDescLabel.getText().equals("You beat the troll")) {
             gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
             roomPane = new VBox(roomDescLabel);
@@ -805,14 +814,53 @@ public class AdventureGameView {
             roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
             gridPane.add(roomPane, 1, 2);
         }
+
         stage.sizeToScene();
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
 
         //finally, articulate the description
-        // if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+        if (textToDisplay == null || textToDisplay.isBlank()) articulateRoomDescription();
+
+        model.player.getCurrentRoom().visit();
         int roomNum = this.model.player.getCurrentRoom().getRoomNumber();
-        if(roomNum <= 8 || roomNum ==15){
+        if (textToDisplay.equals("YOU WIN")) {
+            String path2 = "Games/Victory.mp3";
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
+            }
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+                returnHome();
+                this.model = null;
+            });
+            pause.play();
+        } else if (roomDescLabel.getText().equals("YOU DIED! GAME OVER!")) {
+            String path2 = "Games/Game_Over.mp3";
+            if (!preMusic.equals(path2)) {
+                preMusic = path2;
+                mediaPlayer.dispose();
+                Media media = new Media(Paths.get(path2).toUri().toString());
+                mediaPlayer = new MediaPlayer(media);
+                mediaPlayer.setAutoPlay(true);
+                mediaPlaying = true;
+            }
+            gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+            PauseTransition pause = new PauseTransition(Duration.seconds(10));
+            pause.setOnFinished(event -> {
+                returnHome();
+                this.model = null;
+            });
+            pause.play();
+        } else if(roomNum <= 8 || roomNum ==15){
             String path2 = "Games/Sea_Of_Simulation.mp3";
             if (!preMusic.equals(path2)) {
                 preMusic = path2;
@@ -838,7 +886,7 @@ public class AdventureGameView {
                 mediaPlaying = true;
             }
         }
-        else{
+        else if (roomNum <= 19 && roomNum >= 16){
 
             String path2 = "Games/Flynn_Lives.mp3";
             if (!preMusic.equals(path2)) {
@@ -872,6 +920,18 @@ public class AdventureGameView {
             else roomDescLabel.setText(roomDesc);
         } else {
             roomDescLabel.setText(textToDisplay);
+        }
+        if (roomDescLabel.getText().equals("You beat the infected scientist")) {
+            String musicFile;
+            stopArticulation();
+            String adventureName = this.model.getDirectoryName();
+            musicFile = "./" + adventureName + "/sounds/Win.mp3" ;
+            Media sound = new Media(new File(musicFile).toURI().toString());
+            if (!audioPlaying) {
+                audioPlayer = new MediaPlayer(sound);
+                audioPlayer.play();
+                audioPlaying = true;
+            }
         }
         roomDescLabel.setStyle("-fx-text-fill: BLACK;");
         roomDescLabel.setFont(new Font("Arial", 16));
@@ -1005,6 +1065,15 @@ public class AdventureGameView {
         scO.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
         scO.setFitToWidth(true);
         gridPane.add(scO,0,1);
+
+        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 2 && GridPane.getRowIndex(node) == 1);
+        ScrollPane scI = new ScrollPane(objectsInInventory);
+        scI.setPadding(new Insets(10));
+        scI.setMaxHeight(600);
+        scI.setMaxWidth(150);
+        scI.setStyle("-fx-background: rgba(255,255,255,0.3); -fx-background-color:transparent;");
+        scI.setFitToWidth(true);
+        gridPane.add(scI,2,1);
     }
 
     public void showMap(){
@@ -1047,16 +1116,16 @@ public class AdventureGameView {
         }
         Label helpLabel = new Label(text);
         helpLabel.setStyle("-fx-text-fill: white;");
-        helpLabel.setFont(new Font("Arial", 16));
+        helpLabel.setFont(new Font("Arial", 15));
         helpLabel.setAlignment(Pos.CENTER);
-        helpLabel.setPrefWidth(500);
-        helpLabel.setPrefHeight(500);
+        helpLabel.setPrefWidth(600);
+        helpLabel.setPrefHeight(600);
         helpLabel.setTextOverrun(OverrunStyle.CLIP);
         helpLabel.setWrapText(true);
         VBox helpBox = new VBox(helpLabel);
         helpBox.setPadding(new Insets(10));
         helpBox.setAlignment(Pos.TOP_CENTER);
-        helpBox.setStyle("-fx-background-color: rgba(0,0,0, 0.3);");
+        helpBox.setStyle("-fx-background-color: rgba(0,0,0, 0.7);");
         helpLabel.setText(helpText);
         gridPane.add(helpBox, 1, 1);
         HBox lowButtons = new HBox();
@@ -1097,16 +1166,16 @@ public class AdventureGameView {
             }
             Label helpLabel = new Label(text);
             helpLabel.setStyle("-fx-text-fill: white;");
-            helpLabel.setFont(new Font("Arial", 16));
+            helpLabel.setFont(new Font("Arial", 15));
             helpLabel.setAlignment(Pos.CENTER);
-            helpLabel.setPrefWidth(500);
-            helpLabel.setPrefHeight(500);
+            helpLabel.setPrefWidth(600);
+            helpLabel.setPrefHeight(600);
             helpLabel.setTextOverrun(OverrunStyle.CLIP);
             helpLabel.setWrapText(true);
             VBox helpBox = new VBox(helpLabel);
             helpBox.setPadding(new Insets(10));
             helpBox.setAlignment(Pos.TOP_CENTER);
-            helpBox.setStyle("-fx-background-color: rgba(0,0,0,0.3);");
+            helpBox.setStyle("-fx-background-color: rgba(0,0,0,0.5);");
             helpLabel.setText(helpText);
             gridPane.add(helpBox, 1, 1);
             HBox lowButtons = new HBox();

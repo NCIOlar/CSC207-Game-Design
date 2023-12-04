@@ -40,7 +40,6 @@ public class Map {
                 BackgroundSize.DEFAULT)));
         isGenerated = new ArrayList<>(Collections.nCopies(10, 0));
         createBlueprint();
-        this.game.player.getCurrentRoom().visit();
     }
 
     public void generateMap(){
