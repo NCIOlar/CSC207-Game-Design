@@ -1,5 +1,6 @@
 package views;
 
+
 import AdventureModel.*;
 import Trolls.Fighting_Troll;
 import javafx.animation.PauseTransition;
@@ -236,6 +237,12 @@ public class AdventureGameView {
         roomDescLabel.setWrapText(true);
         roomDescLabel.setStyle("-fx-text-fill: BLACK");
 
+        roomDescLabel.setPrefWidth(600);
+        roomDescLabel.setPrefHeight(150);
+        roomDescLabel.setTextOverrun(OverrunStyle.CLIP);
+        roomDescLabel.setWrapText(true);
+        roomDescLabel.setStyle("-fx-text-fill: BLACK");
+
         Image settings_icon = new Image("Games/Settings.png");
         ImageView settings_iv =new ImageView(settings_icon);
         settings_iv.setFitHeight(40);
@@ -333,7 +340,7 @@ public class AdventureGameView {
     /**
      * Initialises the Game when player chooses the difficulty
      */
-    public void intiGame() {
+    public void intiGame() throws IOException {
 
         gridPane.getChildren().clear();
         HBox topButtons2 = new HBox();
@@ -372,6 +379,10 @@ public class AdventureGameView {
         gridPane.add( objLabel, 0, 0);  // Add buttons
         gridPane.add( invLabel, 2, 0 );  // Add label
 
+        // This piece of code initializes map on load
+        if(this.model != null){
+            map = new Map(this);
+        }
         updateScene(""); //method displays an image and whatever text is supplied
         updateItems(); //update items shows inventory and objects in rooms
 
@@ -639,7 +650,11 @@ public class AdventureGameView {
     public void addGoback(){
         gobackButton.setOnAction(e -> {
             gridPane.getChildren().clear();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
             updateScene("");
         });
     }
@@ -722,7 +737,7 @@ public class AdventureGameView {
         gridPane.add(player, 0, 2);
 
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 2);
-        gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
+
         Image roomImageFile = getRoomImage(); //get the image of the current room
         formatText(textToDisplay); //format the text to display
         VBox roomPane = new VBox(roomDescLabel);
@@ -730,7 +745,9 @@ public class AdventureGameView {
         roomPane.setAlignment(Pos.BOTTOM_CENTER);
         roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
         gridPane.add(roomPane, 1, 2);
+
         if (model.player.getCurrentRoom() instanceof TrollRoom && textToDisplay.equals(((TrollRoom) model.player.getCurrentRoom()).troll.getInstructions())) {
+            mapToggle = false; // Fixes syncing issue on map
             if (((TrollRoom) model.player.getCurrentRoom()).troll instanceof Fighting_Troll) {
                 String musicFile;
                 String adventureName = this.model.getDirectoryName();
@@ -741,11 +758,13 @@ public class AdventureGameView {
                     audioPlayer.play();
                     audioPlaying = true;
                 }
+
                 this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
                 Image zombieImage = new Image("Games/Zombie.png"); //get the image of the zombie
                 ImageView zombieImageView = new ImageView(zombieImage);
                 zombieImageView.setFitHeight(300);
                 zombieImageView.setFitWidth(300);
+
                 if (this.model.player.health > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() > 0) {
                     gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
                     Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth());
@@ -753,12 +772,15 @@ public class AdventureGameView {
                     zombieHealth.setFont(new Font("Arial", 24));
                     zombieHealth.setAlignment(Pos.CENTER);
                     Label zombieDamage = new Label("🔪: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getDamage());
+
                     zombieDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
                     zombieDamage.setFont(new Font("Arial", 24));
                     zombieDamage.setAlignment(Pos.CENTER);
                     VBox zombie;
+
                     if (((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).round > 0) {
                         Label zombieRound = new Label("ROUND " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).round);
+
                         zombieRound.setStyle("-fx-text-fill: WHITE; -fx-background: transparent; -fx-background-color: transparent");
                         zombieRound.setFont(new Font("Arial", 32));
                         zombieRound.setAlignment(Pos.CENTER);
@@ -772,6 +794,7 @@ public class AdventureGameView {
                     zombie.setAlignment(Pos.CENTER);
                     gridPane.add(zombie, 1, 1);
                     gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 0);
+
                     ((TrollRoom) model.player.getCurrentRoom()).troll.playRound(model.player);
                     if (this.model.player.getHealth() > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() <= 0) {
                         PauseTransition pause = new PauseTransition(Duration.seconds(2));
@@ -809,7 +832,6 @@ public class AdventureGameView {
             roomPane.setStyle("-fx-background-color: rgba(255,255,255,0.3)");
             gridPane.add(roomPane, 1, 2);
         }
-
         stage.sizeToScene();
         BackgroundImage background = new BackgroundImage(roomImageFile, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
         gridPane.setBackground(new Background(background));
@@ -897,6 +919,7 @@ public class AdventureGameView {
 
         }
         map.generateMap();
+
     }
 
     /**
@@ -1258,19 +1281,18 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            map.generateMap();
-            stopArticulation();
-            try {
-                map = new Map(this);
                 map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
+            stopArticulation();
 
-            intiGame();
+
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
@@ -1281,12 +1303,16 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
+                map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            map.generateMap();
             stopArticulation();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
@@ -1297,12 +1323,16 @@ public class AdventureGameView {
             gridPane.getChildren().removeIf(node -> true);
             try {
                 map = new Map(this);
+                map.generateMap();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            map.generateMap();
             stopArticulation();
-            intiGame();
+            try {
+                intiGame();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
