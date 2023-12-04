@@ -286,6 +286,7 @@ public class AdventureGameView {
         Setting.setVolume(mediaPlayer);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlaying = true;
+
     }
 
     /**
