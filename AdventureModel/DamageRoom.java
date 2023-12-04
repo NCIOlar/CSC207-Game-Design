@@ -45,6 +45,13 @@ public class DamageRoom implements Room {
     public int damage;
 
     /**
+     * A boolean to store if the room has been visited or not for articulation
+     * it will change when loading the game. Evne the room is visited, articulation
+     * will articulate long audio
+     */
+    public boolean isVisitedNormal;
+
+    /**
      * AdvGameRoom constructor.
      *
      * @param roomName: The name of the room.
@@ -128,6 +135,7 @@ public class DamageRoom implements Room {
      */
     public void visit(){
         isVisited = true;
+        isVisitedNormal = true;
     }
 
     /**
@@ -171,7 +179,6 @@ public class DamageRoom implements Room {
         return this.roomName;
     }
 
-
     /**
      * Getter method for the visit attribute.
      *
@@ -181,6 +188,23 @@ public class DamageRoom implements Room {
         return this.isVisited;
     }
 
+    /**
+     * Getter method for the isvisitNormal attribute.
+     *
+     * @return: visit status of the room
+     */
+    public boolean getVisitedNormal(){
+        return this.isVisitedNormal;
+    }
+
+
+    /**
+     * Reset the room isvisited attribute to false
+     *
+     */
+    public void resetVisited() {
+        isVisitedNormal = false;
+    }
 
     /**
      * Getter method for the motionTable attribute.
