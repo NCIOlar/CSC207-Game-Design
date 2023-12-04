@@ -21,8 +21,8 @@ import javafx.event.EventHandler; //you will need this too!
 import javafx.scene.AccessibleRole;
 
 public class Setting {
-    private double brightness = 0;
-    private double contrast = 0;
+    public double brightness = 0;
+    public double contrast = 0;
 
     public static double volume = 0.5;
     GridPane p;
