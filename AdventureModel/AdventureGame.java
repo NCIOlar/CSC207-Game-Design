@@ -172,9 +172,23 @@ public class AdventureGame implements Serializable {
             } else if (this.player.health <= 0) {
                 return "YOU LOST";
             } else if (this.player.requiredObj != null) {
-                String returning = "INVALID COMMAND, YOU NEED " + this.player.requiredObj + " TO UNLOCK THE PATH";
-                this.player.requiredObj = null;
-                return returning;
+                if (this.player.requiredObj.equals("POTATO")) {
+                    String returning = "INVALID COMMAND, YOU ARE STARVING, YOU NEED " + this.player.requiredObj + " TO GO TO THE NEXT ROOM";
+                    this.player.requiredObj = null;
+                    return returning;
+                } else if (this.player.requiredObj.equals("BATTERY")) {
+                    String returning = "INVALID COMMAND, YOU ARE STARVING, YOU NEED " + this.player.requiredObj + " TO POWER UP THE ELECTRICAL DOOR TO GO TO THE NEXT ROOM";
+                    this.player.requiredObj = null;
+                    return returning;
+                } else if (this.player.requiredObj.equals("KEYS")) {
+                    String returning = "INVALID COMMAND, YOU ARE STARVING, YOU NEED " + this.player.requiredObj + " TO UNLOCK THE DOOR TO GO TO THE NEXT ROOM";
+                    this.player.requiredObj = null;
+                    return returning;
+                } else {
+                    String returning = "INVALID COMMAND, YOU ARE STARVING, YOU NEED " + this.player.requiredObj + " TO GO TO THE NEXT ROOM";
+                    this.player.requiredObj = null;
+                    return returning;
+                }
             } else {
                 return null;
             }

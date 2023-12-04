@@ -99,7 +99,6 @@ public class Player implements Serializable {
      */
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
-        this.currentRoom.visit();
     }
 
     /**

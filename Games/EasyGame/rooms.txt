@@ -6,7 +6,7 @@ FORWARD    2
 
 2
 Greenhouse
-You are at the greenhouse. A self sustaining potato farm solves the food issue.
+You are at the greenhouse. A self-sustaining potato farm solves the food issue.
 -----
 FORWARD    6/POTATO
 BACKWARD   1
@@ -21,7 +21,7 @@ LEFT       4
 RIGHT      2
 
 4
-Storage Room
+Storage Room 1
 This is a storage room. Hope no one left anything valuable!
 -----
 RIGHT      3
@@ -41,7 +41,7 @@ LEFT       7
 RIGHT      15
 
 7
-Corridor
+Corridor 1
 You are in a corridor.
 -----
 FORWARD    9
@@ -56,7 +56,7 @@ RIGHT      7
 
 9
 Engine Room/FIGHT/70/5
-This is the engine room. I wonder if there are any hints for the password. 
+This is the engine room. You need batteries to power up the engine.
 -----
 FORWARD    10/BATTERY
 BACKWARD   7
@@ -85,7 +85,7 @@ LEFT       13
 
 13
 Chemistry Lab/DAMAGE/3
-You are in the chemistry lab. It is a lot more quiet without the failed reactions.
+You are in the chemistry lab. It seems there are some poisonous gas leaks. Don't come to this room too often.
 -----
 BACKWARD   11
 LEFT       14
@@ -105,7 +105,7 @@ FORWARD    16/KEYCARD
 LEFT       6
 
 16
-Storage Room
+Storage Room 2
 Just an ordinary storage room
 -----
 FORWARD    17
@@ -120,7 +120,7 @@ BACKWARD   16
 RIGHT      19/VACCINE
 
 18
-Corridor/GAME/CORRIDOR
+Corridor 2/DAMAGE/10
 You are in a corridor.
 -----
 FORWARD    19/VACCINE
