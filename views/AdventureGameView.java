@@ -252,11 +252,13 @@ public class AdventureGameView {
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingEvent();
+        addHoverEvent(settingsButton);
         settingInGameButton = new Button("", settings_iv);
         settingInGameButton.setId("SettingInGame");
         customizeButton(settingInGameButton, 50, 50);
         makeButtonAccessible(settingInGameButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingInGameEvent();
+        addHoverEvent(settingInGameButton);
 
 
         VBox Buttons = new VBox();
@@ -514,24 +516,28 @@ public class AdventureGameView {
         customizeButton(increaseContrastButton, 200, 50);
         makeButtonAccessible(increaseContrastButton, "Increase Contrast", "This button increases contrast", "This button increases contrast, press it to increase the contrast of the scene");
         addIncreaseContrastEvent();
+        addHoverEvent(increaseContrastButton);
 
         decreaseContrastButton = new Button("Decrease Contrast");
         decreaseContrastButton.setId("decreaseContrast");
         customizeButton(decreaseContrastButton, 200, 50);
         makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
         addDecreaseContrastEvent();
+        addHoverEvent(decreaseContrastButton);
 
         increaseVolumeButton = new Button("Increase Volume");
         increaseVolumeButton.setId("increaseVolume");
         customizeButton(increaseVolumeButton, 200, 50);
         makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
         addIncreaseVolumeEvent();
+        addHoverEvent(increaseVolumeButton);
 
         decreaseVolumeButton = new Button("Decrease Volume");
         decreaseVolumeButton.setId("decreaseVolume");
         customizeButton(decreaseVolumeButton, 200, 50);
         makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
         addDecreaseVolumeEvent();
+        addHoverEvent(decreaseVolumeButton);
 
         HBox brightness = new HBox();
         brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
@@ -567,6 +573,7 @@ public class AdventureGameView {
             customizeButton(menuButton, 200, 50);
             makeButtonAccessible(menuButton, "Home", "This button goes back to the homepage", "This button goes back to the homepage, click it to go back to the homepage");
             addMenuEvent();
+            addHoverEvent(menuButton);
             settingButtons.getChildren().add(menuButton);
 
             //paint rest of thebuttons
@@ -642,6 +649,7 @@ public class AdventureGameView {
             makeButtonAccessible(gobackButton, "Resume Game", "This button resumes the game", "This button resumes the game, press it to continue the game");
             addGoback();
             settingButtons.getChildren().add(gobackButton);
+            addHoverEvent(gobackButton);
 
             //paint rest of the buttons
             showSettingInGame();

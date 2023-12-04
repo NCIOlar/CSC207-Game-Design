@@ -2,17 +2,13 @@ package Tests;
 
 import java.io.IOException;
 
-import AdventureModel.AdventureGame;
 import javafx.scene.layout.GridPane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import org.junit.jupiter.api.Test;
-import views.AdventureGameView;
 import views.Setting;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SettingTest {
+public class BrightnessColorContrastVolumeTest {
     @Test
     void BrightnessTest() throws IOException {
         GridPane p = new GridPane();
