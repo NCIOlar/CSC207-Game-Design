@@ -21,11 +21,10 @@ import java.util.HashMap;
 public class Map {
 
     AdventureGame game; // This is the AdventureGame
-    HashMap<Integer, Room> rooms;
-    GridPane map;
-    ArrayList<Integer> isGenerated;
+    HashMap<Integer, Room> rooms; // Used to store and access room information
+    GridPane map; // This is where the map will be displayed
 
-    ArrayList<String[]> blueprint = new ArrayList<>();
+    ArrayList<String[]> blueprint = new ArrayList<>(); // The blueprint from which the map will be designed using
 
 
     public Map(AdventureGameView game) throws IOException {
@@ -38,10 +37,16 @@ public class Map {
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT)));
-        isGenerated = new ArrayList<>(Collections.nCopies(10, 0));
         createBlueprint();
     }
 
+
+    /**
+     * generateMap
+     * __________________________
+     *
+     * Generates the map based on the blueprint and if a room has been visited or not
+     */
     public void generateMap(){
         map.getChildren().clear();
         for (int i = 0; i < blueprint.size(); i++) {
@@ -100,6 +105,12 @@ public class Map {
     }
 
 
+    /**
+     * updateScene
+     * __________________________
+     *
+     * Creates the blueprint from mapLayout.txt
+     */
     public void createBlueprint() throws IOException {
         String roomFileName = game.getDirectoryName() + "/mapLayout.txt";
         BufferedReader buff = new BufferedReader(new FileReader(roomFileName));
@@ -109,12 +120,29 @@ public class Map {
 
     }
 
+    /**
+     * getImage
+     * __________________________
+     *
+     * Get the image for a room using roomNumber
+     *
+     * @param roomNumber the room from which to get the image for
+     */
     private ImageView getImage(String roomNumber){
         String roomImage = game.getDirectoryName() + "/room-images/" + roomNumber + ".png";
         Image roomImageFile = new Image(roomImage);
         return new ImageView(roomImageFile);
     }
 
+    /**
+     * checkSurroundings
+     * __________________________
+     *
+     * Checks passage surroundings to see if any rooms are visited
+     *
+     * @param row the row for which the passage is located
+     * @param column the column for which the passage is located
+     */
     private boolean checkSurroundings(int row, int column){
         if(checkUp(row, column)){
             return true;

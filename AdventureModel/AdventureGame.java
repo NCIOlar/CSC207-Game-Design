@@ -158,6 +158,7 @@ public class AdventureGame implements Serializable {
 
         if (motionTable.optionExists(inputArray[0])) {
             movePlayer(inputArray[0]);
+
             if (this.player.getCurrentRoom() instanceof TrollRoom) {
                 if (((TrollRoom) this.player.getCurrentRoom()).troll instanceof Fighting_Troll) {
                     if (((Fighting_Troll) ((TrollRoom) this.player.getCurrentRoom()).troll).getHealth() > 0) {

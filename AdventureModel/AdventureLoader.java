@@ -74,7 +74,9 @@ public class AdventureLoader {
             String roomName = roomSettings[0];
             if (roomSettings.length == 4 && roomSettings[1].equals("FIGHT")) {
                 Troll troll = new Fighting_Troll(Integer.parseInt(roomSettings[2]), Integer.parseInt(roomSettings[3]));
+
                 room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, troll);
+
             } else if (roomSettings.length == 3 && roomSettings[1].equals("DAMAGE")) {
                 room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
             } else {
