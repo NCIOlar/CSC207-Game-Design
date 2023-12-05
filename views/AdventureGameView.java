@@ -1538,6 +1538,10 @@ public class AdventureGameView {
      */
     public void addReturnEvent() {
         backButton.setOnAction(e -> {
+            if (model != null) {
+                this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+            }
+
             String soundFile = ("Games/BUTTON.mp3");
             Media sound = new Media(new File(soundFile).toURI().toString());
             MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
