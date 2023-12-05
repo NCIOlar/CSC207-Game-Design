@@ -1108,7 +1108,7 @@ public class AdventureGameView {
 
 
     }
-    /*
+    /**
      * Show the game instructions.
      *
      * If helpToggle is FALSE:
@@ -1153,7 +1153,7 @@ public class AdventureGameView {
         gridPane.add(lowButtons, 1, 2);
     }
 
-    /*
+    /**
      * Show the game instructions.
      *
      * If helpToggle is FALSE:
@@ -1272,7 +1272,7 @@ public class AdventureGameView {
     }
 
     /**
-     * This method handles the event related to the
+     * This method handles the event related to pressing the
      * easy button.
      */
     public void addEasyEvent() {
@@ -1297,6 +1297,10 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * medium button.
+     */
     public void addMediumEvent() {
         mediumButton_home.setOnAction(e -> {
             gridPane.requestFocus();
@@ -1317,6 +1321,10 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * hard button.
+     */
     public void addHardEvent() {
         hardButton_home.setOnAction(e -> {
             gridPane.requestFocus();
