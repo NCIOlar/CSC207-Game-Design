@@ -1389,6 +1389,11 @@ public class AdventureGameView {
 
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * home button
+     */
+
     public void addHomeEvent() {
         homepageButton.setOnAction(e -> {
             gridPane.requestFocus();
