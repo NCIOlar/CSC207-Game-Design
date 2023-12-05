@@ -1170,6 +1170,12 @@ public class AdventureGameView {
         gridPane.add(scI,2,1);
     }
 
+    /**
+     * showMap
+     * __________________________
+     *
+     * This method will make map pop up on and off the screen when called based on mapToggle
+     */
     public void showMap(){
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         if (mapToggle) {
@@ -1183,7 +1189,7 @@ public class AdventureGameView {
 
 
     }
-    /*
+    /**
      * Show the game instructions.
      *
      * If helpToggle is FALSE:
@@ -1228,7 +1234,7 @@ public class AdventureGameView {
         gridPane.add(lowButtons, 1, 2);
     }
 
-    /*
+    /**
      * Show the game instructions.
      *
      * If helpToggle is FALSE:
@@ -1372,7 +1378,7 @@ public class AdventureGameView {
     }
 
     /**
-     * This method handles the event related to the
+     * This method handles the event related to pressing the
      * easy button.
      */
     public void addEasyEvent() {
@@ -1404,6 +1410,10 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * medium button.
+     */
     public void addMediumEvent() {
         mediumButton_home.setOnAction(e -> {
             String soundFile = ("Games/BUTTON.mp3");
@@ -1431,6 +1441,10 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * hard button.
+     */
     public void addHardEvent() {
         hardButton_home.setOnAction(e -> {
             String soundFile = ("Games/BUTTON.mp3");
@@ -1471,6 +1485,11 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * This method handles the event related to pressing the
+     * home button
+     */
+
     public void addHomeEvent() {
         homepageButton.setOnAction(e -> {
             String soundFile = ("Games/BUTTON.mp3");
@@ -1484,6 +1503,12 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * addMapEvent
+     * __________________________
+     *
+     * Adds the showMap method as an event to the map button.
+     */
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
 

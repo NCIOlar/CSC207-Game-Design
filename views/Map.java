@@ -27,6 +27,7 @@ public class Map {
     ArrayList<String[]> blueprint = new ArrayList<>(); // The blueprint from which the map will be designed using
 
 
+    // Map now takes in AdventureGame instead of AdventureGameView
     public Map(AdventureGameView game) throws IOException {
         this.game = game.model;
         rooms = game.model.getRooms();
@@ -44,7 +45,6 @@ public class Map {
     /**
      * generateMap
      * __________________________
-     *
      * Generates the map based on the blueprint and if a room has been visited or not
      */
     public void generateMap(){
@@ -108,7 +108,6 @@ public class Map {
     /**
      * updateScene
      * __________________________
-     *
      * Creates the blueprint from mapLayout.txt
      */
     public void createBlueprint() throws IOException {
@@ -156,6 +155,15 @@ public class Map {
         return false;
     }
 
+    /**
+     * checkUp
+     * __________________________
+     *
+     * Checks if location above passage is a room and is visited
+     *
+     * @param row the row for which the passage is located
+     * @param column the column for which the passage is located
+     */
     private boolean checkUp(int row, int column){
         try{
             int top = Integer.parseInt(blueprint.get(row + 1)[column]);
@@ -165,6 +173,14 @@ public class Map {
         }
     }
 
+    /**
+     * checkDown
+     * __________________________
+     * Checks if location below passage is a room and is visited
+     *
+     * @param row the row for which the passage is located
+     * @param column the column for which the passage is located
+     */
     private boolean checkDown(int row, int column){
         try{
             int bot = Integer.parseInt(blueprint.get(row - 1)[column]);
@@ -174,6 +190,14 @@ public class Map {
         }
     }
 
+    /**
+     * checkLeft
+     * __________________________
+     * Checks if location left of passage is a room and is visited
+     *
+     * @param row the row for which the passage is located
+     * @param column the column for which the passage is located
+     */
     private boolean checkLeft(int row, int column){
         try{
             int left = Integer.parseInt(blueprint.get(row)[column - 1]);
@@ -183,6 +207,15 @@ public class Map {
         }
     }
 
+    /**
+     * checkRight
+     * __________________________
+     *
+     * Checks if location right of passage is a room and is visited
+     *
+     * @param row the row for which the passage is located
+     * @param column the column for which the passage is located
+     */
     private boolean checkRight(int row, int column){
         try{
             int right = Integer.parseInt(blueprint.get(row)[column + 1]);
@@ -192,10 +225,32 @@ public class Map {
         }
     }
 
+    /**
+     * showMap
+     * __________________________
+     * Returns the map
+     */
     public Pane showMap(){
 
         return map;
     }
 
+    /**
+     * getBlueprint
+     * __________________________
+     * Returns the blueprint
+     */
+    public ArrayList<String[]> getBlueprint() {
+        return blueprint;
+    }
+
+    /**
+     * getRooms
+     * __________________________
+     * Returns rooms
+     */
+    public HashMap<Integer, Room> getRooms() {
+        return rooms;
+    }
 }
 
