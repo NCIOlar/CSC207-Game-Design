@@ -1129,6 +1129,12 @@ public class AdventureGameView {
         gridPane.add(scI,2,1);
     }
 
+    /**
+     * showMap
+     * __________________________
+     *
+     * This method will make map pop up on and off the screen when called based on mapToggle
+     */
     public void showMap(){
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         if (mapToggle) {
@@ -1383,6 +1389,12 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * addMapEvent
+     * __________________________
+     *
+     * Adds the showMap method as an event to the map button.
+     */
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
             showMap();
