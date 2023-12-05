@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -61,11 +63,22 @@ public class LoadView {
         closeWindowButton.setStyle("-fx-background-color: #184ac9; -fx-text-fill: white;");
         closeWindowButton.setPrefSize(200, 50);
         closeWindowButton.setFont(new Font(16));
-        closeWindowButton.setOnAction(e -> dialog.close());
+        closeWindowButton.setOnAction(e -> {
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+            dialog.close();
+        });
         AdventureGameView.makeButtonAccessible(closeWindowButton, "close window", "This is a button to close the load game window", "Use this button to close the load game window.");
 
         //on selection, do something
         selectGameButton.setOnAction(e -> {
+            String hitNormal = ("Games/BUTTON.mp3");
+            Media sound = new Media(new File(hitNormal).toURI().toString());
+            MediaPlayer mediaPlayer2 = new MediaPlayer(sound);
+            mediaPlayer2.play();
+
             try {
                 selectGame(selectGameLabel, GameList);
             } catch (IOException ex) {

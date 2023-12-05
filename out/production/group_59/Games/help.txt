@@ -1,0 +1,13 @@
+Welcome to Last Hope
+
+2069, the superpowers of the world are locked in a stalement. With war breaking out at any time, top scientists gather together to develop a bioweapon. To the dismay of humanity, an enemy espionage leaks the hostile bioweapon into the water ways. Within days, most of the population are infected. The International Defense Agency sends the remaining scientists into the International Space Station to develop a vaccine as a last resort.
+
+All seems to be going perfectly, you are getting along with the other scientists, utilizing the vast resources and the combined scientific prowess, the final vaccine was finished after hours and hours of tests. Tired after a long days of testing, you store the vaccine in a cryogenic chamber and return to your living quarters to get some rest. Unknowingly, one of the scientists had contracted the virusfrom back on Earth. You wake up to a sea of dead silence. Seeing the bodies of your fellow colleagues all around you, you realize you are the last hope for humanity.
+
+You must reach the vaccine for the bioweapon before the infected reach you or succumbing to the effects of the hazardous gases.
+
+SmartShopExpress, your artificial intelligence companion is here to vend you supplies that may aid you on your journey for a price.
+
+To move, use the "WASD" keys to move Forward. Left, Backward, Right, respectively. Alternatively, you can type these commands into the User Input Panel.
+
+We hope you enjoy your adventure! - Group 59

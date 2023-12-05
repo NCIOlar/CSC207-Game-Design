@@ -14,7 +14,6 @@ public class AdventureLoader {
 
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
-
     private RoomFactory roomFactory; //the roomFactory that constructs the room
 
     /**
@@ -118,11 +117,11 @@ public class AdventureLoader {
             String objectName = buff.readLine();
             String objectDescription = buff.readLine();
             String objectLocation = buff.readLine();
-//            String objectType = buff.readLine();
-//            int objectEffect = Integer.parseInt(buff.readLine());
+            String objectType = buff.readLine();
+            int objectEffect = Integer.parseInt(buff.readLine());
 //            int objectCost = Integer.parseInt(buff.readLine());
-            String objectType = "";
-            int objectEffect = 0;
+//            String objectType = "";
+//            int objectEffect = 0;
             int objectCost = 0;
             String separator = buff.readLine();
             if (separator != null && !separator.isEmpty())

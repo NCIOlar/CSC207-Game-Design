@@ -1,6 +1,7 @@
 package AdventureModel;
 
 import jdk.jshell.spi.ExecutionControl;
+import AdventureModel.*;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -134,26 +135,65 @@ public class Player implements Serializable {
     }
 
     // new methods
+    /**
+     *
+     * @return player name
+     */
     public String getName() {
         return this.name;
     }
+    /**
+     *
+     * @return player health
+     */
     public int getHealth() {
         return this.health;
     }
+    /**
+     *
+     * @return player damage
+     */
     public int getDamage() {
         return this.damage;
     }
+    /**
+     *
+     * @return player defense
+     */
     public int getDefense() {
         return this.defense;
     }
+    /**
+     *
+     * @return player funds
+     */
     public int getFunds() {
         return this.funds;
     }
 
-    public boolean buyObject(AdventureObject object) {
-        if (this.funds >= object.getCost()) {
-            int updatedQuantity = this.shop.objectsForSale.get(object) - 1;
-            this.shop.objectsForSale.put(object, updatedQuantity);
+    /**
+     *
+     * @param object to be bought
+     * @return if the object was successfully purchased
+     */
+    public boolean buyObject(AdventureObject object, Shop shop) {
+        boolean outOfStock = true;
+        if (shop.objectsForSale.get(object) == 0) {
+            return false;
+        }
+        for (AdventureObject object1: shop.objectsForSale.keySet()) {
+            if (!(shop.objectsForSale.get(object1) == 0)) {
+                outOfStock = false;
+            }
+        }
+        if (outOfStock) {
+            shop.setOutOfStock();
+        }
+        if (shop.outOfStock) {
+            return false;
+        }else if (this.funds >= object.getCost()) {
+            int updatedQuantity = shop.objectsForSale.get(object) - 1;
+            shop.objectsForSale.put(object, updatedQuantity);
             this.inventory.add(object);
             this.funds -= object.getCost();
             return true;
@@ -161,7 +201,34 @@ public class Player implements Serializable {
             return false;
         }
     }
-//    CODE THESE BELOW NOW ⛈️ 中国打野
-//    public boolean sellObject(AdventureObject object) {}
-//    public void useItem(AdventureObject object) {}
+
+    /**
+     *
+     * @param object to be used from player inventory and have its effects applied
+     */
+    public void useItem(AdventureObject object) {
+        if (object.getName().equals("MEDKIT")) {
+            if ((this.health + object.getEffect()) >= 100) {
+                this.health = 100;
+                this.inventory.remove(object);
+            } else {
+                this.health += object.getEffect();
+                this.inventory.remove(object);
+            }
+        } else if (object.getName().equals("VEST")) {
+            this.defense += 10;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("MASK")) {
+            this.isImmune = true;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("STIM")) {
+            this.damage += 20;
+            this.inventory.remove(object);
+        } else if (object.getName().equals("SKIP")) {
+            this.inventory.remove(object);
+        } else if (object.getName().equals("MONEY")) {
+            this.funds += object.getEffect();
+            this.inventory.remove(object);
+        }
+    }
 }
