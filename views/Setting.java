@@ -26,11 +26,15 @@ public class Setting {
 
     public static double volume = 0.5;
     GridPane p;
-
+    /**
+     * Initiating class
+     */
     public Setting(GridPane p){
         this.p = p;
     }
-
+    /**
+     * increase Brightness
+     */
     public void increaseBrightness(GridPane p){
         if (brightness < 0.7) {
             brightness += 0.1;
@@ -39,7 +43,9 @@ public class Setting {
             p.setEffect(colorAdjust);
         }
     }
-
+    /**
+     * decrease Brightness
+     */
     public void decreaseBrightness(GridPane p){
         if (brightness > -0.7) {
             brightness -= 0.1;
@@ -48,7 +54,9 @@ public class Setting {
             p.setEffect(colorAdjust);
         }
     }
-
+    /**
+     * increaseContrast
+     */
     public void increaseContrast(GridPane p){
         if (contrast < 0.7) {
             contrast += 0.1;
@@ -57,7 +65,9 @@ public class Setting {
             p.setEffect(colorAdjust);
         }
     }
-
+    /**
+     * decreaseContrast
+     */
     public void decreaseContrast(GridPane p){
         if (contrast > -0.7) {
             contrast -= 0.1;
@@ -66,17 +76,24 @@ public class Setting {
             p.setEffect(colorAdjust);
         }
     }
-
+    /**
+     * Set volume for mediaPlayer
+     */
     public static void setVolume(MediaPlayer m){
         m.setVolume(volume);
     }
-
+    /**
+     * increase volume
+     */
     public static void increaseVolume(MediaPlayer m){
         if(volume < 1){
             volume += 0.1;
             m.setVolume(volume);
         }
     }
+    /**
+     * decrease volume
+     */
     public static void decreaseVolume(MediaPlayer m){
         if(volume > 0){
             volume -= 0.1;
