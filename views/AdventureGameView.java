@@ -47,25 +47,28 @@ import java.util.*;
  */
 public class AdventureGameView {
 
-    public AdventureGame model; //model of the game
-    public Stage stage; //stage on which all is rendered
-    public VBox Buttons;
+    AdventureGame model; //model of the game
+    Stage stage; //stage on which all is rendered
+    VBox Buttons;
 
     //Setting buttons
-    public Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton, decreaseContrastButton, settingInGameButton;
-    public Setting setting = new Setting(new GridPane());
-    public VBox settingButtons = new VBox();
+    //Setting buttons
+    Button increaseBrightnessButton, decreaseBrightnessButton, menuButton, gobackButton,increaseContrastButton,
+            decreaseContrastButton, settingInGameButton, increaseVolumeButton, decreaseVolumeButton;
+    Setting setting = new Setting(new GridPane());
+    VBox settingButtons = new VBox();
 
-    public Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
+
+    Button saveButton, loadButton, helpButton, settingsButton, loadButton_home, introductionButton_home,
             easyButton_home, mediumButton_home, hardButton_home, shopButton, mapButton, homepageButton; //buttons
-    public Boolean mapToggle = false;
-    public Map map;
+    Boolean mapToggle = false;
+    Map map;
 
-    public GridPane gridPane = new GridPane(); //to hold images and buttons
-    public Label roomDescLabel = new Label(); //to hold room description and/or instructions
-    public VBox objectsInRoom = new VBox(); //to hold room items
-    public VBox objectsInInventory = new VBox(); //to hold inventory items
-    public ImageView roomImageView; //to hold room image
+    GridPane gridPane = new GridPane(); //to hold images and buttons
+    Label roomDescLabel = new Label(); //to hold room description and/or instructions
+    VBox objectsInRoom = new VBox(); //to hold room items
+    VBox objectsInInventory = new VBox(); //to hold inventory items
+    ImageView roomImageView; //to hold room image
 
     private MediaPlayer mediaPlayer; //to play music
     private boolean mediaPlaying; //to know if the music is playing
@@ -75,13 +78,12 @@ public class AdventureGameView {
 
     private String preMusic = "Games/Solar_Sailer.mp3";
 
-    public EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
+    EventHandler<KeyEvent> eventhandler; //EventHandler for WASD
+    String helpText; //help text
 
-    public String helpText; //help text
+    TextField inputTextField; //for user input
 
-    public TextField inputTextField; //for user input
-
-    public Boolean helpToggle = false; //is help on display?
+    Boolean helpToggle = false; //is help on display?
 
     /**
      * Adventure Game View Constructor
@@ -250,11 +252,13 @@ public class AdventureGameView {
         customizeButton(settingsButton, 50, 50);
         makeButtonAccessible(settingsButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingEvent();
+        addHoverEvent(settingsButton);
         settingInGameButton = new Button("", settings_iv);
         settingInGameButton.setId("SettingInGame");
         customizeButton(settingInGameButton, 50, 50);
         makeButtonAccessible(settingInGameButton, "Settings Button", "This button opens the settings menu.", "This button opens the settings menu, it pops up settings where you can change displays.");
         addSettingInGameEvent();
+        addHoverEvent(settingInGameButton);
 
 
         VBox Buttons = new VBox();
@@ -284,6 +288,7 @@ public class AdventureGameView {
         Setting.setVolume(mediaPlayer);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlaying = true;
+
     }
 
     /**
@@ -394,8 +399,6 @@ public class AdventureGameView {
                     submitEvent("A");
                 } else if (keyEvent.getCode() == KeyCode.D) {
                     submitEvent("D");
-                } else if (keyEvent.getCode() == KeyCode.E) {
-                    submitEvent("E");
                 }
             }
         };
@@ -449,9 +452,6 @@ public class AdventureGameView {
         if (text.equalsIgnoreCase("COMMANDS") || text.equalsIgnoreCase("C")) {
             showCommands(); //this is new!  We did not have this command in A1
             return;
-        } else if (text.equalsIgnoreCase("BAG") || text.equalsIgnoreCase("E")) {
-            //IMPLEMENT BAG FUNCTION HERE!
-            return;
         }
 
         //try to move!
@@ -487,18 +487,17 @@ public class AdventureGameView {
         commands = "You possible moves are:\n" + commands;
         roomDescLabel.setText(commands);
     }
-
+    /**
+     * Show the setting menu
+     */
     public void showSettingMenu(){
         //update setting on current girdpane
 
+        if (model != null) {
+            this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+        }
+
         gridPane.getChildren().clear(); // reset gridpane
-        // Buttons
-        menuButton = new Button("Menu");
-        menuButton.setId("menu");
-        customizeButton(menuButton, 200, 50);
-        makeButtonAccessible(menuButton, "menu", "menu", "menu");
-//        addMenu();
-        addHoverEvent(menuButton);
 
         increaseBrightnessButton = new Button("Increase Brightness");
         increaseBrightnessButton.setId("Increase Brightness");
@@ -519,24 +518,28 @@ public class AdventureGameView {
         customizeButton(increaseContrastButton, 200, 50);
         makeButtonAccessible(increaseContrastButton, "Increase Contrast", "This button increases contrast", "This button increases contrast, press it to increase the contrast of the scene");
         addIncreaseContrastEvent();
+        addHoverEvent(increaseContrastButton);
 
         decreaseContrastButton = new Button("Decrease Contrast");
         decreaseContrastButton.setId("decreaseContrast");
         customizeButton(decreaseContrastButton, 200, 50);
         makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
         addDecreaseContrastEvent();
+        addHoverEvent(decreaseContrastButton);
 
-//        increaseVolumeButton = new Button("Increase Volume");
-//        increaseVolumeButton.setId("increaseVolume");
-//        customizeButton(increaseVolumeButton, 200, 50);
-//        makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
-//        addIncreaseVolumeEvent();
-//
-//        decreaseVolumeButton = new Button("Decrease Volume");
-//        decreaseVolumeButton.setId("decreaseVolume");
-//        customizeButton(decreaseVolumeButton, 200, 50);
-//        makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
-//        addDecreaseVolumeEvent();
+        increaseVolumeButton = new Button("Increase Volume");
+        increaseVolumeButton.setId("increaseVolume");
+        customizeButton(increaseVolumeButton, 200, 50);
+        makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
+        addIncreaseVolumeEvent();
+        addHoverEvent(increaseVolumeButton);
+
+        decreaseVolumeButton = new Button("Decrease Volume");
+        decreaseVolumeButton.setId("decreaseVolume");
+        customizeButton(decreaseVolumeButton, 200, 50);
+        makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
+        addDecreaseVolumeEvent();
+        addHoverEvent(decreaseVolumeButton);
 
         HBox brightness = new HBox();
         brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
@@ -549,19 +552,21 @@ public class AdventureGameView {
         contrast.setAlignment(Pos.CENTER);
 
         HBox volume = new HBox();
-//        volume.getChildren().addAll(increaseVolumeButton, decreaseVolumeButton);
+        volume.getChildren().addAll(increaseVolumeButton, decreaseVolumeButton);
         volume.setSpacing(30);
         volume.setAlignment(Pos.CENTER);
 
         //settingButtons.getChildren().clear();
         settingButtons.getChildren().addAll(brightness, contrast, volume);
         settingButtons.setSpacing(30);
-        settingButtons.setAlignment(Pos.CENTER);
+        settingButtons.setAlignment(Pos.BOTTOM_CENTER);
 
         gridPane.add(settingButtons, 1 ,1);
 
     }
-
+    /**
+     * setup the setting button
+     */
     public void addSettingEvent(){
         settingsButton.setOnAction(e -> {
             gridPane.getChildren().clear(); // reset gridpane
@@ -572,6 +577,7 @@ public class AdventureGameView {
             customizeButton(menuButton, 200, 50);
             makeButtonAccessible(menuButton, "Home", "This button goes back to the homepage", "This button goes back to the homepage, click it to go back to the homepage");
             addMenuEvent();
+            addHoverEvent(menuButton);
             settingButtons.getChildren().add(menuButton);
 
             //paint rest of thebuttons
@@ -579,7 +585,9 @@ public class AdventureGameView {
         });
     }
 
-
+    /**
+     * setting up Home Button
+     */
     public void addMenuEvent(){
         menuButton.setOnAction(e -> {
 //          gridPane.getChildren().clear();
@@ -593,48 +601,66 @@ public class AdventureGameView {
         });
 
     }
+    /**
+     * Setup increaseBrightness Button
+     */
     public void addIncreaseBrightnessEvent(){
         increaseBrightnessButton.setOnAction(e -> {
             setting.increaseBrightness(this.gridPane);
         });
 
     }
-
+    /**
+     * Setup decreaseBrightness Button
+     */
     public void addDecreaseBrightnessEvent(){
         decreaseBrightnessButton.setOnAction(e -> {
               setting.decreaseBrightness(this.gridPane);
         });
 
     }
-
+    /**
+     * Setup increaseContrast Button
+     */
     public void addIncreaseContrastEvent(){
         increaseContrastButton.setOnAction(e -> {
             setting.increaseContrast(this.gridPane);
         });
     }
-
+    /**
+     * Setup decreaseContrast Button
+     */
     public void addDecreaseContrastEvent(){
         decreaseContrastButton.setOnAction(e -> {
             setting.decreaseContrast(this.gridPane);
         });
     }
-
+    /**
+     * showSetting in Game
+     */
     public void showSettingInGame(){
         showSettingMenu();
     }
+    /**
+     * Setup increaseVolume Button
+     */
+    public void addIncreaseVolumeEvent(){
+        increaseVolumeButton.setOnAction(e -> {
+            Setting.increaseVolume(this.mediaPlayer);
+        });
+    }
+    /**
+     * Setup decreaseVolume Button
+     */
+    public void addDecreaseVolumeEvent(){
+        decreaseVolumeButton.setOnAction(e -> {
+            Setting.decreaseVolume(this.mediaPlayer);
+        });
+    }
 
-//    public void addIncreaseVolumeEvent(){
-//        increaseVolumeButton.setOnAction(e -> {
-//            Setting.increaseVolume(this.mediaPlayer);
-//        });
-//    }
-//
-//    public void addDecreaseVolumeEvent(){
-//        decreaseVolumeButton.setOnAction(e -> {
-//            Setting.decreaseVolume(this.mediaPlayer);
-//        });
-//    }
-
+    /**
+     * Set up setting button in Game
+     */
     public void addSettingInGameEvent(){
         settingInGameButton.setOnAction(e -> {
             gridPane.getChildren().clear(); // reset gridpane
@@ -647,12 +673,15 @@ public class AdventureGameView {
             makeButtonAccessible(gobackButton, "Resume Game", "This button resumes the game", "This button resumes the game, press it to continue the game");
             addGoback();
             settingButtons.getChildren().add(gobackButton);
+            addHoverEvent(gobackButton);
 
             //paint rest of the buttons
             showSettingInGame();
         });
     }
-
+    /**
+     * Setup Resume Game Button
+     */
     public void addGoback(){
         gobackButton.setOnAction(e -> {
             gridPane.getChildren().clear();
@@ -1180,6 +1209,9 @@ public class AdventureGameView {
      */
     public void showHelp() throws IOException {
         if (helpToggle) {
+            if (model != null) {
+                this.stage.getScene().removeEventHandler(KeyEvent.KEY_PRESSED, eventhandler);
+            }
             gridPane.getChildren().removeIf(node -> true);
             helpToggle = false;
             intiGame();
@@ -1391,7 +1423,7 @@ public class AdventureGameView {
         String adventureName = this.model.getDirectoryName();
         String roomName = this.model.getPlayer().getCurrentRoom().getRoomName();
 
-        if (!this.model.getPlayer().getCurrentRoom().getVisited()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
+        if (!this.model.getPlayer().getCurrentRoom().getVisitedNormal()) musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-long.mp3" ;
         else musicFile = "./" + adventureName + "/sounds/" + roomName.toLowerCase() + "-short.mp3" ;
         musicFile = musicFile.replace(" ","-");
         Media sound = new Media(new File(musicFile).toURI().toString());

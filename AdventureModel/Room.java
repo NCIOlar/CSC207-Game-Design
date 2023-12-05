@@ -92,6 +92,18 @@ public interface Room extends Serializable {
      */
     public boolean getVisited();
 
+    /**
+     * Getter method for the isVisitNormal attribute.
+     *
+     * @return: visit status of the room
+     */
+    public boolean getVisitedNormal();
+
+    /**
+     * Reset the room isvisited attribute to false
+     *
+     */
+    public void resetVisited();
 
     /**
      * Getter method for the motionTable attribute.
