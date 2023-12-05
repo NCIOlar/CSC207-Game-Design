@@ -487,7 +487,9 @@ public class AdventureGameView {
         commands = "You possible moves are:\n" + commands;
         roomDescLabel.setText(commands);
     }
-
+    /**
+     * Show the setting menu
+     */
     public void showSettingMenu(){
         //update setting on current girdpane
 
@@ -562,7 +564,9 @@ public class AdventureGameView {
         gridPane.add(settingButtons, 1 ,1);
 
     }
-
+    /**
+     * setup the setting button
+     */
     public void addSettingEvent(){
         settingsButton.setOnAction(e -> {
             gridPane.getChildren().clear(); // reset gridpane
@@ -581,7 +585,9 @@ public class AdventureGameView {
         });
     }
 
-
+    /**
+     * setting up Home Button
+     */
     public void addMenuEvent(){
         menuButton.setOnAction(e -> {
 //          gridPane.getChildren().clear();
@@ -595,48 +601,66 @@ public class AdventureGameView {
         });
 
     }
+    /**
+     * Setup increaseBrightness Button
+     */
     public void addIncreaseBrightnessEvent(){
         increaseBrightnessButton.setOnAction(e -> {
             setting.increaseBrightness(this.gridPane);
         });
 
     }
-
+    /**
+     * Setup decreaseBrightness Button
+     */
     public void addDecreaseBrightnessEvent(){
         decreaseBrightnessButton.setOnAction(e -> {
               setting.decreaseBrightness(this.gridPane);
         });
 
     }
-
+    /**
+     * Setup increaseContrast Button
+     */
     public void addIncreaseContrastEvent(){
         increaseContrastButton.setOnAction(e -> {
             setting.increaseContrast(this.gridPane);
         });
     }
-
+    /**
+     * Setup decreaseContrast Button
+     */
     public void addDecreaseContrastEvent(){
         decreaseContrastButton.setOnAction(e -> {
             setting.decreaseContrast(this.gridPane);
         });
     }
-
+    /**
+     * showSetting in Game
+     */
     public void showSettingInGame(){
         showSettingMenu();
     }
-
+    /**
+     * Setup increaseVolume Button
+     */
     public void addIncreaseVolumeEvent(){
         increaseVolumeButton.setOnAction(e -> {
             Setting.increaseVolume(this.mediaPlayer);
         });
     }
-
+    /**
+     * Setup decreaseVolume Button
+     */
     public void addDecreaseVolumeEvent(){
         decreaseVolumeButton.setOnAction(e -> {
             Setting.decreaseVolume(this.mediaPlayer);
         });
     }
 
+    /**
+     * Set up setting button in Game
+     */
     public void addSettingInGameEvent(){
         settingInGameButton.setOnAction(e -> {
             gridPane.getChildren().clear(); // reset gridpane
@@ -655,7 +679,9 @@ public class AdventureGameView {
             showSettingInGame();
         });
     }
-
+    /**
+     * Setup Resume Game Button
+     */
     public void addGoback(){
         gobackButton.setOnAction(e -> {
             gridPane.getChildren().clear();
