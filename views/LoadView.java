@@ -17,6 +17,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.util.Set;
 
 
 /**
@@ -142,6 +143,10 @@ public class LoadView {
             adventureGameView.stopMusic();
             this.adventureGameView = new AdventureGameView(adventureGameView.stage);
             this.adventureGameView.model = game;
+            Set<Integer> rooms = this.adventureGameView.model.getRooms().keySet();
+            for (Integer i : rooms) {
+                this.adventureGameView.model.getRooms().get(i).resetVisited();
+            }
             this.adventureGameView.intiGame();
             selectGameLabel.setText(selected);
         } catch (Exception e) {
