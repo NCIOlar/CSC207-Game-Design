@@ -497,7 +497,7 @@ public class AdventureGameView {
         menuButton.setId("menu");
         customizeButton(menuButton, 200, 50);
         makeButtonAccessible(menuButton, "menu", "menu", "menu");
-        addMenu();
+//        addMenu();
         addHoverEvent(menuButton);
 
         increaseBrightnessButton = new Button("Increase Brightness");
@@ -526,17 +526,17 @@ public class AdventureGameView {
         makeButtonAccessible(decreaseContrastButton, "Decrease Contrast", "This button decreases contrast", "This button decreases contrast, press it to decrease the contrast of the scene");
         addDecreaseContrastEvent();
 
-        increaseVolumeButton = new Button("Increase Volume");
-        increaseVolumeButton.setId("increaseVolume");
-        customizeButton(increaseVolumeButton, 200, 50);
-        makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
-        addIncreaseVolumeEvent();
-
-        decreaseVolumeButton = new Button("Decrease Volume");
-        decreaseVolumeButton.setId("decreaseVolume");
-        customizeButton(decreaseVolumeButton, 200, 50);
-        makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
-        addDecreaseVolumeEvent();
+//        increaseVolumeButton = new Button("Increase Volume");
+//        increaseVolumeButton.setId("increaseVolume");
+//        customizeButton(increaseVolumeButton, 200, 50);
+//        makeButtonAccessible(increaseVolumeButton, "Increase Volume", "This button increases volume", "This button increases the volume of background music");
+//        addIncreaseVolumeEvent();
+//
+//        decreaseVolumeButton = new Button("Decrease Volume");
+//        decreaseVolumeButton.setId("decreaseVolume");
+//        customizeButton(decreaseVolumeButton, 200, 50);
+//        makeButtonAccessible(decreaseVolumeButton, "Decrease Volume", "This button Decreases volume", "This button Decreases the volume of background music");
+//        addDecreaseVolumeEvent();
 
         HBox brightness = new HBox();
         brightness.getChildren().addAll(increaseBrightnessButton, decreaseBrightnessButton);
@@ -549,7 +549,7 @@ public class AdventureGameView {
         contrast.setAlignment(Pos.CENTER);
 
         HBox volume = new HBox();
-        volume.getChildren().addAll(increaseVolumeButton, decreaseVolumeButton);
+//        volume.getChildren().addAll(increaseVolumeButton, decreaseVolumeButton);
         volume.setSpacing(30);
         volume.setAlignment(Pos.CENTER);
 
@@ -623,17 +623,17 @@ public class AdventureGameView {
         showSettingMenu();
     }
 
-    public void addIncreaseVolumeEvent(){
-        increaseVolumeButton.setOnAction(e -> {
-            Setting.increaseVolume(this.mediaPlayer);
-        });
-    }
-
-    public void addDecreaseVolumeEvent(){
-        decreaseVolumeButton.setOnAction(e -> {
-            Setting.decreaseVolume(this.mediaPlayer);
-        });
-    }
+//    public void addIncreaseVolumeEvent(){
+//        increaseVolumeButton.setOnAction(e -> {
+//            Setting.increaseVolume(this.mediaPlayer);
+//        });
+//    }
+//
+//    public void addDecreaseVolumeEvent(){
+//        decreaseVolumeButton.setOnAction(e -> {
+//            Setting.decreaseVolume(this.mediaPlayer);
+//        });
+//    }
 
     public void addSettingInGameEvent(){
         settingInGameButton.setOnAction(e -> {
@@ -1100,6 +1100,12 @@ public class AdventureGameView {
         gridPane.add(scI,2,1);
     }
 
+    /**
+     * showMap
+     * __________________________
+     *
+     * This method will make map pop up on and off the screen when called based on mapToggle
+     */
     public void showMap(){
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
         if (mapToggle) {
@@ -1351,6 +1357,12 @@ public class AdventureGameView {
         });
     }
 
+    /**
+     * addMapEvent
+     * __________________________
+     *
+     * Adds the showMap method as an event to the map button.
+     */
     public void addMapEvent() {
         mapButton.setOnAction(e -> {
             showMap();
