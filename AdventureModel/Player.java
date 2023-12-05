@@ -100,7 +100,6 @@ public class Player implements Serializable {
      */
     public void setCurrentRoom(Room currentRoom) {
         this.currentRoom = currentRoom;
-        this.currentRoom.visit();
     }
 
     /**
@@ -179,6 +178,9 @@ public class Player implements Serializable {
      */
     public boolean buyObject(AdventureObject object, Shop shop) {
         boolean outOfStock = true;
+        if (shop.objectsForSale.get(object) == 0) {
+            return false;
+        }
         for (AdventureObject object1: shop.objectsForSale.keySet()) {
             if (!(shop.objectsForSale.get(object1) == 0)) {
                 outOfStock = false;
@@ -223,6 +225,9 @@ public class Player implements Serializable {
             this.damage += 20;
             this.inventory.remove(object);
         } else if (object.getName().equals("SKIP")) {
+            this.inventory.remove(object);
+        } else if (object.getName().equals("MONEY")) {
+            this.funds += object.getEffect();
             this.inventory.remove(object);
         }
     }

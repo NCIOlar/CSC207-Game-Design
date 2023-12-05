@@ -14,6 +14,7 @@ public class AdventureLoader {
 
     private AdventureGame game; //the game to return
     private String adventureName; //the name of the adventure
+    private RoomFactory roomFactory; //the roomFactory that constructs the room
 
     /**
      * Adventure Loader Constructor
@@ -25,6 +26,7 @@ public class AdventureLoader {
     public AdventureLoader(AdventureGame game, String directoryName) {
         this.game = game;
         this.adventureName = directoryName;
+        this.roomFactory = new RoomFactory();
     }
 
      /**
@@ -71,11 +73,13 @@ public class AdventureLoader {
             String roomName = roomSettings[0];
             if (roomSettings.length == 4 && roomSettings[1].equals("FIGHT")) {
                 Troll troll = new Fighting_Troll(Integer.parseInt(roomSettings[2]), Integer.parseInt(roomSettings[3]));
-                room = new Room(roomName, roomNumber, roomDescription, adventureName, troll);
+
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, troll);
+
             } else if (roomSettings.length == 3 && roomSettings[1].equals("DAMAGE")) {
-                room = new Room(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName, Integer.parseInt(roomSettings[2]));
             } else {
-                room = new Room(roomName, roomNumber, roomDescription, adventureName);
+                room = roomFactory.createRoom(roomName, roomNumber, roomDescription, adventureName);
             }
 
             // now we make the motion table
@@ -113,11 +117,11 @@ public class AdventureLoader {
             String objectName = buff.readLine();
             String objectDescription = buff.readLine();
             String objectLocation = buff.readLine();
-//            String objectType = buff.readLine();
-//            int objectEffect = Integer.parseInt(buff.readLine());
+            String objectType = buff.readLine();
+            int objectEffect = Integer.parseInt(buff.readLine());
 //            int objectCost = Integer.parseInt(buff.readLine());
-            String objectType = "";
-            int objectEffect = 0;
+//            String objectType = "";
+//            int objectEffect = 0;
             int objectCost = 0;
             String separator = buff.readLine();
             if (separator != null && !separator.isEmpty())

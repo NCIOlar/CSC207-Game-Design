@@ -1,23 +1,35 @@
 POTATO
 A scrumptious raw potato.
 2
+N/A
+0
 
 BATTERY
 A battery that can power anything.
 5
+N/A
+0
 
 MONEY
 Some money ($10)
 4
+Consumable
+10
 
 MONEY
 Some money ($10)
 16
+Consumable
+10
 
 KEYCARD
 A keycard for some door.
 10
+N/A
+0
 
 VACCINE
 Vaccine for the Scourge bioweapon virus. Humanity's "Last Hope".
 14
+N/A
+0

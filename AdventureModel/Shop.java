@@ -71,7 +71,9 @@ public class Shop {
         }
     }
 
-    // When the supply is depleted
+    /**
+     * Check if shop is out of stock
+     */
     public void setOutOfStock() {
         this.outOfStock = true;
     }
