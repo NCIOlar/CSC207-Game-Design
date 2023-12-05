@@ -38,9 +38,17 @@ public class TrollRoom implements Room {
     public ArrayList<AdventureObject> objectsInRoom = new ArrayList<AdventureObject>();
 
     /**
-     * A boolean to store if the room has been visited or not
+     * A boolean to store if the room has been visited or not for map function,
+     * it won't change when loading the game
      */
     public boolean isVisited;
+
+    /**
+     * A boolean to store if the room has been visited or not for articulation
+     * it will change when loading the game. Evne the room is visited, articulation
+     * will articulate long audio
+     */
+    public boolean isVisitedNormal;
 
     /**
      * The damage to the player of the room, if available.
@@ -61,6 +69,7 @@ public class TrollRoom implements Room {
         this.adventureName = adventureName;
         this.isVisited = false;
         this.troll = troll;
+        this.isVisitedNormal = false;
     }
 
     /**
@@ -131,6 +140,7 @@ public class TrollRoom implements Room {
      */
     public void visit(){
         isVisited = true;
+        isVisitedNormal = true;
     }
 
     /**
@@ -184,6 +194,23 @@ public class TrollRoom implements Room {
         return this.isVisited;
     }
 
+    /**
+     * Getter method for the isvisitNormal attribute.
+     *
+     * @return: visit status of the room
+     */
+    public boolean getVisitedNormal(){
+        return this.isVisitedNormal;
+    }
+
+
+    /**
+     * Reset the room isvisited attribute to false
+     *
+     */
+    public void resetVisited() {
+        isVisitedNormal = false;
+    };
 
     /**
      * Getter method for the motionTable attribute.
