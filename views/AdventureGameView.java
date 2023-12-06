@@ -768,7 +768,7 @@ public class AdventureGameView {
     public void updateScene(String textToDisplay) {
 
         gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 0 && GridPane.getRowIndex(node) == 2);
-        Label playerHealth = new Label("❤️: " + model.player.health);
+        Label playerHealth = new Label("♥: " + model.player.health);
         playerHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
         playerHealth.setFont(new Font("Arial", 24));
         playerHealth.setAlignment(Pos.CENTER);
@@ -776,7 +776,7 @@ public class AdventureGameView {
         playerDamage.setStyle("-fx-text-fill: YELLOW; -fx-background: transparent; -fx-background-color: transparent");
         playerDamage.setFont(new Font("Arial", 24));
         playerDamage.setAlignment(Pos.CENTER);
-        Label playerDefense = new Label("🛡️: " + model.player.defense);
+        Label playerDefense = new Label("⛑: " + model.player.defense);
         playerDefense.setStyle("-fx-text-fill: GREEN; -fx-background: transparent; -fx-background-color: transparent");
         playerDefense.setFont(new Font("Arial", 24));
         playerDefense.setAlignment(Pos.CENTER);
@@ -826,7 +826,7 @@ public class AdventureGameView {
 
                 if (this.model.player.health > 0 && ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth() > 0) {
                     gridPane.getChildren().removeIf(node -> GridPane.getColumnIndex(node) == 1 && GridPane.getRowIndex(node) == 1);
-                    Label zombieHealth = new Label("❤️: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth());
+                    Label zombieHealth = new Label("❤: " + ((Fighting_Troll) ((TrollRoom) model.player.getCurrentRoom()).troll).getHealth());
                     zombieHealth.setStyle("-fx-text-fill: RED; -fx-background: transparent; -fx-background-color: transparent");
                     zombieHealth.setFont(new Font("Arial", 24));
                     zombieHealth.setAlignment(Pos.CENTER);

@@ -38,7 +38,7 @@ public class Player implements Serializable {
         this.health = 100;
         this.damage = 20;
         this.defense = 0;
-        this.funds = 0;
+        this.funds = 20;
         this.isImmune = false;
     }
 
